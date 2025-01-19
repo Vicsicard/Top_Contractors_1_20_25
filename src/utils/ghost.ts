@@ -140,7 +140,7 @@ export async function getPosts(page = 1, limit = 10): Promise<PaginatedPosts> {
     try {
         // Fetch all posts from both Ghost instances
         const [newGhostPosts, oldGhostPosts] = await Promise.all([
-            NEW_GHOST_KEY ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
+            (NEW_GHOST_URL && NEW_GHOST_KEY) ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
             fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY)
         ]);
 
@@ -209,7 +209,7 @@ export async function getPosts(page = 1, limit = 10): Promise<PaginatedPosts> {
 export async function getAllPosts(): Promise<GhostPost[]> {
     try {
         const [newPosts, oldPosts] = await Promise.all([
-            NEW_GHOST_KEY ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
+            (NEW_GHOST_URL && NEW_GHOST_KEY) ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
             fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY)
         ]);
 
@@ -290,7 +290,7 @@ export async function getPostsByTag(tag: string, page = 1, limit = 10): Promise<
     try {
         // Fetch all posts from both Ghost instances
         const [newGhostPosts, oldGhostPosts] = await Promise.all([
-            NEW_GHOST_KEY ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
+            (NEW_GHOST_URL && NEW_GHOST_KEY) ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
             fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY)
         ]);
 
