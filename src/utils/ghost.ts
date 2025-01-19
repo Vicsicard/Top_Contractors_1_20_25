@@ -100,7 +100,7 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
             }
             
             console.log(`Found ${data.posts.length} posts on page ${currentPage}`);
-            console.log(`Sample post titles:`, data.posts.slice(0, 3).map(p => p.title));
+            console.log(`Sample post titles:`, data.posts.slice(0, 3).map((post: GhostPost) => post.title));
             
             allPosts.push(...data.posts);
             
