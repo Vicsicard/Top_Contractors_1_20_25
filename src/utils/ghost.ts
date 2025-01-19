@@ -1,10 +1,10 @@
 import { notifySearchEngines } from './indexing';
 
 const NEW_GHOST_URL = process.env.GHOST_URL || 'https://top-contractors-denver-2.ghost.io';
-const NEW_GHOST_KEY = process.env.GHOST_ORG_CONTENT_API_KEY;
+const NEW_GHOST_KEY = process.env.GHOST_ORG_CONTENT_API_KEY || '';
 
 if (!NEW_GHOST_KEY) {
-    console.error('Warning: GHOST_ORG_CONTENT_API_KEY is not set in environment variables');
+    console.error('Error: GHOST_ORG_CONTENT_API_KEY is not set in environment variables');
 }
 
 const OLD_GHOST_URL = process.env.OLD_GHOST_URL || 'https://top-contractors-denver-1.ghost.io';
@@ -109,7 +109,7 @@ export async function getPosts(page = 1, limit = 10): Promise<PaginatedPosts> {
     try {
         // Fetch all posts from both Ghost instances
         const [newGhostPosts, oldGhostPosts] = await Promise.all([
-            fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY),
+            NEW_GHOST_KEY ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
             fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY)
         ]);
 
@@ -178,7 +178,7 @@ export async function getPosts(page = 1, limit = 10): Promise<PaginatedPosts> {
 export async function getAllPosts(): Promise<GhostPost[]> {
     try {
         const [newPosts, oldPosts] = await Promise.all([
-            fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY),
+            NEW_GHOST_KEY ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
             fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY)
         ]);
 
@@ -259,7 +259,7 @@ export async function getPostsByTag(tag: string, page = 1, limit = 10): Promise<
     try {
         // Fetch all posts from both Ghost instances
         const [newGhostPosts, oldGhostPosts] = await Promise.all([
-            fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY),
+            NEW_GHOST_KEY ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
             fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY)
         ]);
 
