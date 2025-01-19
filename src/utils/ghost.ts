@@ -1,22 +1,28 @@
 import { notifySearchEngines } from './indexing';
 
-const NEW_GHOST_URL = process.env.GHOST_URL || 'https://top-contractors-denver-2.ghost.io';
-const NEW_GHOST_KEY = process.env.GHOST_ORG_CONTENT_API_KEY || '';
-
-// Debug logging for configuration
-console.log('Ghost Configuration:', {
-    NEW_GHOST_URL,
-    NEW_GHOST_KEY_SET: NEW_GHOST_KEY ? 'Yes' : 'No',
-    OLD_GHOST_URL: process.env.OLD_GHOST_URL || 'https://top-contractors-denver-1.ghost.io',
-    OLD_GHOST_KEY_SET: 'Yes'
-});
-
-if (!NEW_GHOST_KEY) {
-    console.error('Error: GHOST_ORG_CONTENT_API_KEY is not set in environment variables');
-}
-
+// Ghost Configuration
+const NEW_GHOST_URL = process.env.GHOST_URL;
+const NEW_GHOST_KEY = process.env.GHOST_ORG_CONTENT_API_KEY;
 const OLD_GHOST_URL = process.env.OLD_GHOST_URL || 'https://top-contractors-denver-1.ghost.io';
 const OLD_GHOST_KEY = process.env.OLD_GHOST_KEY || '130d98b20875066982b1a8314f';
+
+// Debug environment variables (safely)
+console.log('Ghost Configuration Check:', {
+    NEW_GHOST_URL,
+    NEW_GHOST_KEY_SET: NEW_GHOST_KEY ? `Key present (length: ${NEW_GHOST_KEY.length})` : 'No key set',
+    NEW_GHOST_KEY_MATCHES: NEW_GHOST_KEY === '6229b20c390c831641ea577093' ? 'Yes' : 'No',
+    OLD_GHOST_URL,
+    OLD_GHOST_KEY_SET: OLD_GHOST_KEY ? 'Yes' : 'No',
+    NODE_ENV: process.env.NODE_ENV
+});
+
+if (!NEW_GHOST_URL || NEW_GHOST_URL !== 'https://top-contractors-denver-2.ghost.io') {
+    console.error('Error: GHOST_URL is not set correctly. Expected: https://top-contractors-denver-2.ghost.io, Got:', NEW_GHOST_URL);
+}
+
+if (!NEW_GHOST_KEY || NEW_GHOST_KEY !== '6229b20c390c831641ea577093') {
+    console.error('Error: GHOST_ORG_CONTENT_API_KEY is not set correctly');
+}
 
 // Cache for posts to detect new content
 const postCache: { [key: string]: string } = {};
