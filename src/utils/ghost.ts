@@ -1,10 +1,14 @@
 import { notifySearchEngines } from './indexing';
 
 const NEW_GHOST_URL = process.env.GHOST_URL || 'https://top-contractors-denver-2.ghost.io';
-const NEW_GHOST_KEY = process.env.GHOST_ORG_CONTENT_API_KEY || '6229b20c390c831641ea577093';
+const NEW_GHOST_KEY = process.env.GHOST_ORG_CONTENT_API_KEY;
 
-const OLD_GHOST_URL = 'https://top-contractors-denver-1.ghost.io';
-const OLD_GHOST_KEY = '130d98b20875066982b1a8314f';
+if (!NEW_GHOST_KEY) {
+    console.error('Warning: GHOST_ORG_CONTENT_API_KEY is not set in environment variables');
+}
+
+const OLD_GHOST_URL = process.env.OLD_GHOST_URL || 'https://top-contractors-denver-1.ghost.io';
+const OLD_GHOST_KEY = process.env.OLD_GHOST_KEY || '130d98b20875066982b1a8314f';
 
 // Cache for posts to detect new content
 const postCache: { [key: string]: string } = {};
@@ -46,21 +50,37 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
     
     while (true) {
         try {
-            const response = await fetch(
-                `${url}/ghost/api/content/posts/?key=${key}&limit=${limit}&page=${currentPage}&include=tags,authors`,
-                { next: { revalidate: 3600 } }
-            );
+            // Remove /ghost/api/content/posts from the URL if it's already included
+            const baseUrl = url.replace(/\/ghost\/api\/content\/posts\/?$/, '');
+            const apiUrl = `${baseUrl}/ghost/api/content/posts/?key=${key}&limit=${limit}&page=${currentPage}&include=tags,authors`;
+            
+            console.log(`Fetching posts from: ${url} (Page ${currentPage})`); // Debug log
+            
+            const response = await fetch(apiUrl, { 
+                next: { revalidate: 3600 },
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
             
             if (!response.ok) {
-                console.error(`Error fetching from ${url} page ${currentPage}:`, response.status);
+                const errorText = await response.text();
+                console.error(`Error fetching from ${url} page ${currentPage}:`, {
+                    status: response.status,
+                    statusText: response.statusText,
+                    error: errorText
+                });
                 break;
             }
             
             const data = await response.json();
             if (!data.posts || data.posts.length === 0) {
+                console.log(`No posts found for ${url} on page ${currentPage}`); // Debug log
                 break;
             }
             
+            console.log(`Found ${data.posts.length} posts on page ${currentPage}`); // Debug log
             allPosts.push(...data.posts);
             
             if (data.posts.length < limit) {
@@ -74,6 +94,7 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
         }
     }
     
+    console.log(`Total posts fetched from ${url}: ${allPosts.length}`); // Debug log
     return allPosts;
 }
 
