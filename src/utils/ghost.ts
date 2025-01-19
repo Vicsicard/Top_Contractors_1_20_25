@@ -92,25 +92,38 @@ export async function getPosts(page = 1, limit = 10): Promise<PaginatedPosts> {
             fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY)
         ]);
 
-        // Combine and process posts
-        const allPosts: GhostPost[] = [];
+        // Create a Map to store unique posts by slug
+        const uniquePosts = new Map<string, GhostPost>();
         
+        // Process new posts first (they take precedence)
         if (newGhostPosts.length > 0) {
-            allPosts.push(...newGhostPosts.map((post: GhostPost) => ({
-                ...post,
-                source: 'new'
-            })));
+            newGhostPosts.forEach((post: GhostPost) => {
+                uniquePosts.set(post.slug, {
+                    ...post,
+                    source: 'new'
+                });
+            });
         }
         
+        // Add old posts only if they don't exist in new posts
         if (oldGhostPosts.length > 0) {
-            allPosts.push(...oldGhostPosts.map((post: GhostPost) => ({
-                ...post,
-                source: 'old'
-            })));
+            oldGhostPosts.forEach((post: GhostPost) => {
+                if (!uniquePosts.has(post.slug)) {
+                    uniquePosts.set(post.slug, {
+                        ...post,
+                        source: 'old'
+                    });
+                }
+            });
         }
 
-        // Sort posts by date
-        allPosts.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+        // Convert Map to array and sort by date
+        const allPosts = Array.from(uniquePosts.values())
+            .sort((a, b) => {
+                const dateA = new Date(a.published_at).getTime();
+                const dateB = new Date(b.published_at).getTime();
+                return dateB - dateA;
+            });
 
         // Calculate pagination
         const startIndex = (page - 1) * limit;
