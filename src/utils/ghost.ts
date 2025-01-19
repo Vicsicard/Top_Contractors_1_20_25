@@ -3,6 +3,14 @@ import { notifySearchEngines } from './indexing';
 const NEW_GHOST_URL = process.env.GHOST_URL || 'https://top-contractors-denver-2.ghost.io';
 const NEW_GHOST_KEY = process.env.GHOST_ORG_CONTENT_API_KEY || '';
 
+// Debug logging for configuration
+console.log('Ghost Configuration:', {
+    NEW_GHOST_URL,
+    NEW_GHOST_KEY_SET: NEW_GHOST_KEY ? 'Yes' : 'No',
+    OLD_GHOST_URL: process.env.OLD_GHOST_URL || 'https://top-contractors-denver-1.ghost.io',
+    OLD_GHOST_KEY_SET: 'Yes'
+});
+
 if (!NEW_GHOST_KEY) {
     console.error('Error: GHOST_ORG_CONTENT_API_KEY is not set in environment variables');
 }
@@ -48,13 +56,16 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
     let currentPage = 1;
     const limit = 100; // Maximum allowed by Ghost API
     
+    console.log(`Starting to fetch posts from ${url}`);
+    
     while (true) {
         try {
             // Remove /ghost/api/content/posts from the URL if it's already included
             const baseUrl = url.replace(/\/ghost\/api\/content\/posts\/?$/, '');
             const apiUrl = `${baseUrl}/ghost/api/content/posts/?key=${key}&limit=${limit}&page=${currentPage}&include=tags,authors`;
             
-            console.log(`Fetching posts from: ${url} (Page ${currentPage})`); // Debug log
+            console.log(`Fetching page ${currentPage} from: ${url}`);
+            console.log(`Full API URL (without key): ${apiUrl.replace(key, 'KEY_HIDDEN')}`);
             
             const response = await fetch(apiUrl, { 
                 next: { revalidate: 3600 },
@@ -69,18 +80,28 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
                 console.error(`Error fetching from ${url} page ${currentPage}:`, {
                     status: response.status,
                     statusText: response.statusText,
-                    error: errorText
+                    error: errorText,
+                    headers: Object.fromEntries(response.headers.entries())
                 });
                 break;
             }
             
             const data = await response.json();
+            console.log(`Response data structure:`, {
+                hasPosts: !!data.posts,
+                postCount: data.posts?.length || 0,
+                meta: data.meta || {},
+                pagination: data.meta?.pagination || {}
+            });
+            
             if (!data.posts || data.posts.length === 0) {
-                console.log(`No posts found for ${url} on page ${currentPage}`); // Debug log
+                console.log(`No posts found for ${url} on page ${currentPage}`);
                 break;
             }
             
-            console.log(`Found ${data.posts.length} posts on page ${currentPage}`); // Debug log
+            console.log(`Found ${data.posts.length} posts on page ${currentPage}`);
+            console.log(`Sample post titles:`, data.posts.slice(0, 3).map(p => p.title));
+            
             allPosts.push(...data.posts);
             
             if (data.posts.length < limit) {
@@ -94,7 +115,11 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
         }
     }
     
-    console.log(`Total posts fetched from ${url}: ${allPosts.length}`); // Debug log
+    console.log(`Total posts fetched from ${url}: ${allPosts.length}`);
+    if (allPosts.length > 0) {
+        console.log(`Date range: ${new Date(allPosts[allPosts.length-1].published_at).toISOString()} to ${new Date(allPosts[0].published_at).toISOString()}`);
+    }
+    
     return allPosts;
 }
 
