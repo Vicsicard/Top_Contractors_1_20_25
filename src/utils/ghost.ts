@@ -1,27 +1,43 @@
 import { notifySearchEngines } from './indexing';
 
 // Ghost Configuration
-const NEW_GHOST_URL = process.env.GHOST_URL;
-const NEW_GHOST_KEY = process.env.GHOST_ORG_CONTENT_API_KEY;
-const OLD_GHOST_URL = process.env.OLD_GHOST_URL || 'https://top-contractors-denver-1.ghost.io';
-const OLD_GHOST_KEY = process.env.OLD_GHOST_KEY || '130d98b20875066982b1a8314f';
+const NEW_GHOST_URL = process.env.NEXT_PUBLIC_GHOST_URL;
+const NEW_GHOST_KEY = process.env.NEXT_PUBLIC_GHOST_ORG_CONTENT_API_KEY;
+const OLD_GHOST_URL = process.env.NEXT_PUBLIC_OLD_GHOST_URL;
+const OLD_GHOST_KEY = process.env.NEXT_PUBLIC_OLD_GHOST_ORG_CONTENT_API_KEY;
 
-// Debug environment variables (safely)
-console.log('Ghost Configuration Check:', {
+// Debug environment variables and runtime context
+console.log('=== Ghost Configuration Debug ===');
+console.log('Environment:', {
+    NODE_ENV: process.env.NODE_ENV,
+    VERCEL_ENV: process.env.VERCEL_ENV,
+    IS_VERCEL: process.env.VERCEL === '1'
+});
+console.log('Ghost URLs:', {
     NEW_GHOST_URL,
-    NEW_GHOST_KEY_SET: NEW_GHOST_KEY ? `Key present (length: ${NEW_GHOST_KEY.length})` : 'No key set',
-    NEW_GHOST_KEY_MATCHES: NEW_GHOST_KEY === '6229b20c390c831641ea577093' ? 'Yes' : 'No',
-    OLD_GHOST_URL,
-    OLD_GHOST_KEY_SET: OLD_GHOST_KEY ? 'Yes' : 'No',
-    NODE_ENV: process.env.NODE_ENV
+    OLD_GHOST_URL
+});
+console.log('API Keys Status:', {
+    NEW_GHOST_KEY_LENGTH: NEW_GHOST_KEY ? NEW_GHOST_KEY.length : 0,
+    NEW_GHOST_KEY_PRESENT: !!NEW_GHOST_KEY,
+    OLD_GHOST_KEY_LENGTH: OLD_GHOST_KEY ? OLD_GHOST_KEY.length : 0,
+    OLD_GHOST_KEY_PRESENT: !!OLD_GHOST_KEY
 });
 
 if (!NEW_GHOST_URL || NEW_GHOST_URL !== 'https://top-contractors-denver-2.ghost.io') {
-    console.error('Error: GHOST_URL is not set correctly. Expected: https://top-contractors-denver-2.ghost.io, Got:', NEW_GHOST_URL);
+    console.error('Error: NEXT_PUBLIC_GHOST_URL is not set correctly. Expected: https://top-contractors-denver-2.ghost.io, Got:', NEW_GHOST_URL);
 }
 
 if (!NEW_GHOST_KEY || NEW_GHOST_KEY !== '6229b20c390c831641ea577093') {
-    console.error('Error: GHOST_ORG_CONTENT_API_KEY is not set correctly');
+    console.error('Error: NEXT_PUBLIC_GHOST_ORG_CONTENT_API_KEY is not set correctly');
+}
+
+if (!OLD_GHOST_URL || OLD_GHOST_URL !== 'https://top-contractors-denver-1.ghost.io') {
+    console.error('Error: NEXT_PUBLIC_OLD_GHOST_URL is not set correctly. Expected: https://top-contractors-denver-1.ghost.io, Got:', OLD_GHOST_URL);
+}
+
+if (!OLD_GHOST_KEY || OLD_GHOST_KEY !== '130d98b20875066982b1a8314f') {
+    console.error('Error: NEXT_PUBLIC_OLD_GHOST_ORG_CONTENT_API_KEY is not set correctly');
 }
 
 // Cache for posts to detect new content
@@ -62,7 +78,7 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
     let currentPage = 1;
     const limit = 100; // Maximum allowed by Ghost API
     
-    console.log(`Starting to fetch posts from ${url}`);
+    console.log(`[${process.env.NODE_ENV}] Starting to fetch posts from ${url}`);
     
     while (true) {
         try {
@@ -70,8 +86,7 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
             const baseUrl = url.replace(/\/ghost\/api\/content\/posts\/?$/, '');
             const apiUrl = `${baseUrl}/ghost/api/content/posts/?key=${key}&limit=${limit}&page=${currentPage}&include=tags,authors`;
             
-            console.log(`Fetching page ${currentPage} from: ${url}`);
-            console.log(`Full API URL (without key): ${apiUrl.replace(key, 'KEY_HIDDEN')}`);
+            console.log(`[${process.env.NODE_ENV}] Fetching page ${currentPage} from: ${url}`);
             
             const response = await fetch(apiUrl, { 
                 next: { revalidate: 3600 },
@@ -83,7 +98,7 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
             
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error(`Error fetching from ${url} page ${currentPage}:`, {
+                console.error(`[${process.env.NODE_ENV}] Error fetching from ${url}:`, {
                     status: response.status,
                     statusText: response.statusText,
                     error: errorText,
@@ -93,20 +108,17 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
             }
             
             const data = await response.json();
-            console.log(`Response data structure:`, {
+            console.log(`[${process.env.NODE_ENV}] Response from ${url}:`, {
                 hasPosts: !!data.posts,
                 postCount: data.posts?.length || 0,
                 meta: data.meta || {},
-                pagination: data.meta?.pagination || {}
+                sampleTitles: data.posts?.slice(0, 3).map((p: any) => p.title) || []
             });
             
             if (!data.posts || data.posts.length === 0) {
-                console.log(`No posts found for ${url} on page ${currentPage}`);
+                console.log(`[${process.env.NODE_ENV}] No posts found for ${url} on page ${currentPage}`);
                 break;
             }
-            
-            console.log(`Found ${data.posts.length} posts on page ${currentPage}`);
-            console.log(`Sample post titles:`, data.posts.slice(0, 3).map((post: GhostPost) => post.title));
             
             allPosts.push(...data.posts);
             
@@ -116,15 +128,16 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
             
             currentPage++;
         } catch (error) {
-            console.error(`Error fetching posts from ${url}:`, error);
+            console.error(`[${process.env.NODE_ENV}] Error fetching posts from ${url}:`, error);
             break;
         }
     }
     
-    console.log(`Total posts fetched from ${url}: ${allPosts.length}`);
-    if (allPosts.length > 0) {
-        console.log(`Date range: ${new Date(allPosts[allPosts.length-1].published_at).toISOString()} to ${new Date(allPosts[0].published_at).toISOString()}`);
-    }
+    console.log(`[${process.env.NODE_ENV}] Completed fetch from ${url}:`, {
+        totalPosts: allPosts.length,
+        firstPostTitle: allPosts[0]?.title || 'No posts',
+        lastPostTitle: allPosts[allPosts.length - 1]?.title || 'No posts'
+    });
     
     return allPosts;
 }
@@ -138,11 +151,23 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
  */
 export async function getPosts(page = 1, limit = 10): Promise<PaginatedPosts> {
     try {
+        console.log('[getPosts] Starting to fetch posts with config:', {
+            NEW_GHOST_URL,
+            OLD_GHOST_URL,
+            NEW_KEY_PRESENT: !!NEW_GHOST_KEY,
+            OLD_KEY_PRESENT: !!OLD_GHOST_KEY
+        });
+
         // Fetch all posts from both Ghost instances
         const [newGhostPosts, oldGhostPosts] = await Promise.all([
             (NEW_GHOST_URL && NEW_GHOST_KEY) ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
-            fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY)
+            (OLD_GHOST_URL && OLD_GHOST_KEY) ? fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY) : Promise.resolve([])
         ]);
+
+        console.log('[getPosts] Fetched posts count:', {
+            newGhostPosts: newGhostPosts.length,
+            oldGhostPosts: oldGhostPosts.length
+        });
 
         // Create a Map to store unique posts by slug
         const uniquePosts = new Map<string, GhostPost>();
@@ -210,7 +235,7 @@ export async function getAllPosts(): Promise<GhostPost[]> {
     try {
         const [newPosts, oldPosts] = await Promise.all([
             (NEW_GHOST_URL && NEW_GHOST_KEY) ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
-            fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY)
+            (OLD_GHOST_URL && OLD_GHOST_KEY) ? fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY) : Promise.resolve([])
         ]);
 
         const combinedPosts = [...newPosts, ...oldPosts];
@@ -291,7 +316,7 @@ export async function getPostsByTag(tag: string, page = 1, limit = 10): Promise<
         // Fetch all posts from both Ghost instances
         const [newGhostPosts, oldGhostPosts] = await Promise.all([
             (NEW_GHOST_URL && NEW_GHOST_KEY) ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
-            fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY)
+            (OLD_GHOST_URL && OLD_GHOST_KEY) ? fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY) : Promise.resolve([])
         ]);
 
         // Combine and process posts, filtering by tag
