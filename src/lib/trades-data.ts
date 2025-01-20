@@ -12,6 +12,7 @@ export interface Trade {
         [key: string]: string;
     };
     keywords?: string[];
+    icon?: string;
 }
 
 export const tradesData: Record<string, Trade> = {
@@ -19,32 +20,38 @@ export const tradesData: Record<string, Trade> = {
     id: "plumber",
     title: "Plumber",
     metaTitle: "Licensed Plumbers in Denver | Professional Plumbing Services",
-    metaDescription: "Find trusted, licensed plumbers in Denver, CO. Expert plumbing services for residential and commercial properties. Available 24/7 for emergencies.",
-    heading: "Licensed Plumbers in Denver, CO",
-    subheading: "Connect with experienced plumbing professionals for all your needs",
-    description: "Our directory connects you with licensed, insured, and experienced plumbers throughout the Denver metropolitan area. From emergency repairs to new installations, our verified professionals are ready to help.",
+    metaDescription: "Find top-rated licensed plumbers in Denver. Our network of professional plumbers provides expert residential and commercial plumbing services.",
+    heading: "Expert Plumbing Services in Denver",
+    subheading: "Professional Licensed Plumbers for All Your Needs",
+    description: "Our network of licensed plumbers in Denver provides comprehensive plumbing services for both residential and commercial properties. From emergency repairs to new installations, our experienced professionals deliver quality workmanship and reliable service.",
     benefits: [
-      "Licensed and insured professionals",
-      "24/7 emergency services available",
-      "Transparent pricing",
-      "Verified reviews from local customers",
-      "Expertise in residential and commercial plumbing"
+      "24/7 Emergency Service Available",
+      "Licensed & Insured Professionals",
+      "Upfront Pricing",
+      "Satisfaction Guaranteed",
+      "Latest Tools & Technology"
     ],
     services: [
-      "Emergency leak repair",
-      "Water heater installation and repair",
-      "Drain cleaning and unclogging",
-      "Pipe repair and replacement",
-      "Fixture installation",
-      "Sewer line services",
-      "Bathroom and kitchen remodeling"
+      "Emergency Plumbing Repairs",
+      "Pipe Installation & Repair",
+      "Water Heater Services",
+      "Drain Cleaning",
+      "Fixture Installation",
+      "Sewer Line Services",
+      "Gas Line Services",
+      "Water Line Services"
     ],
     regionDescriptions: {
-      "Central Denver": "Expert plumbers serving downtown Denver and central neighborhoods with 24/7 availability.",
-      "East Denver": "Reliable plumbing services in Park Hill and eastern Denver communities.",
-      "Denver Suburbs": "Professional plumbing contractors serving the greater Denver metropolitan area."
+      "denver": "Our Denver plumbers are available 24/7 for all your plumbing needs. We service the entire Denver metro area with fast, reliable service.",
+      "boulder": "Looking for a plumber in Boulder? Our team provides comprehensive plumbing services throughout Boulder County.",
+      "aurora": "Our Aurora plumbers deliver expert plumbing services with quick response times and professional results.",
+      "lakewood": "Need a plumber in Lakewood? Our licensed professionals provide reliable plumbing services throughout the Lakewood area.",
+      "arvada": "Our Arvada plumbers are here to help with all your plumbing needs, from repairs to installations.",
+      "westminster": "Looking for plumbing services in Westminster? Our team provides expert solutions for all your plumbing problems.",
+      "thornton": "Our Thornton plumbers deliver professional plumbing services with a focus on quality and customer satisfaction.",
+      "highlands-ranch": "Need a plumber in Highlands Ranch? Our team provides comprehensive plumbing services throughout the area."
     },
-    keywords: ['plumbing', 'drain', 'sewer', 'water', 'leak', 'pipe', 'faucet', 'toilet', 'sink']
+    icon: "/icons/plumbing.svg"
   },
   "electrician": {
     id: "electrician",
@@ -75,7 +82,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Reliable electrical services in Park Hill and eastern Denver communities.",
       "Denver Suburbs": "Professional electrical contractors serving the greater Denver metropolitan area."
     },
-    keywords: ['electrical', 'wiring', 'lighting', 'power', 'circuit', 'outlet', 'breaker', 'panel']
+    keywords: ['electrical', 'wiring', 'lighting', 'power', 'circuit', 'outlet', 'breaker', 'panel'],
+    icon: "/icons/electrician.svg"
   },
   "hvac": {
     id: "hvac",
@@ -106,7 +114,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Reliable heating and cooling services for eastern Denver neighborhoods.",
       "Denver Suburbs": "Comprehensive HVAC solutions throughout the Denver metro area."
     },
-    keywords: ['heating', 'cooling', 'air conditioning', 'ventilation', 'furnace', 'ac', 'heat', 'duct']
+    keywords: ['heating', 'cooling', 'air conditioning', 'ventilation', 'furnace', 'ac', 'heat', 'duct'],
+    icon: "/icons/hvac.svg"
   },
   "roofer": {
     id: "roofer",
@@ -137,7 +146,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Quality roofing services for eastern Denver communities.",
       "Denver Suburbs": "Comprehensive roofing solutions throughout the Denver metro area."
     },
-    keywords: ['roofing', 'roof', 'shingle', 'metal roof', 'tile roof', 'flat roof', 'commercial roof']
+    keywords: ['roofing', 'roof', 'shingle', 'metal roof', 'tile roof', 'flat roof', 'commercial roof'],
+    icon: "/icons/roofer.svg"
   },
   "carpenter": {
     id: "carpenter",
@@ -168,7 +178,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Quality carpentry services for eastern Denver neighborhoods.",
       "Denver Suburbs": "Professional carpentry solutions throughout the metro area."
     },
-    keywords: ['carpentry', 'wood', 'framing', 'trim', 'cabinet', 'door', 'window frame']
+    keywords: ['carpentry', 'wood', 'framing', 'trim', 'cabinet', 'door', 'window frame'],
+    icon: "/icons/carpenter.svg"
   },
   "painter": {
     id: "painter",
@@ -199,7 +210,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Quality painting services for eastern Denver communities.",
       "Denver Suburbs": "Professional painting solutions throughout the metro area."
     },
-    keywords: ['painting', 'paint', 'interior paint', 'exterior paint', 'wall', 'texture']
+    keywords: ['painting', 'paint', 'interior paint', 'exterior paint', 'wall', 'texture'],
+    icon: "/icons/painter.svg"
   },
   "landscaper": {
     id: "landscaper",
@@ -230,7 +242,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Quality landscaping services for eastern Denver homes.",
       "Denver Suburbs": "Comprehensive landscape solutions for the metro area."
     },
-    keywords: ['landscaping', 'lawn', 'garden', 'yard', 'outdoor', 'tree', 'shrub', 'grass']
+    keywords: ['landscaping', 'lawn', 'garden', 'yard', 'outdoor', 'tree', 'shrub', 'grass'],
+    icon: "/icons/landscaper.svg"
   },
   "home-remodeling": {
     id: "home-remodeling",
@@ -261,7 +274,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Quality renovation services for eastern Denver properties.",
       "Denver Suburbs": "Comprehensive remodeling solutions throughout the metro area."
     },
-    keywords: ['remodel', 'renovation', 'home improvement', 'contractor', 'construction']
+    keywords: ['remodel', 'renovation', 'home improvement', 'contractor', 'construction'],
+    icon: "/icons/home-remodeling.svg"
   },
   "bathroom-remodeling": {
     id: "bathroom-remodeling",
@@ -292,7 +306,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Quality bathroom renovation services for eastern Denver.",
       "Denver Suburbs": "Professional bathroom remodeling throughout the metro area."
     },
-    keywords: ['bathroom', 'bath', 'shower', 'vanity', 'tile', 'bathroom renovation']
+    keywords: ['bathroom', 'bath', 'shower', 'vanity', 'tile', 'bathroom renovation'],
+    icon: "/icons/bathroom-remodeling.svg"
   },
   "kitchen-remodeling": {
     id: "kitchen-remodeling",
@@ -323,7 +338,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Quality kitchen renovation services for eastern Denver.",
       "Denver Suburbs": "Professional kitchen remodeling throughout the metro area."
     },
-    keywords: ['kitchen', 'cabinets', 'countertop', 'appliance', 'kitchen renovation']
+    keywords: ['kitchen', 'cabinets', 'countertop', 'appliance', 'kitchen renovation'],
+    icon: "/icons/kitchen-remodeling.svg"
   },
   "siding-gutters": {
     id: "siding-gutters",
@@ -354,7 +370,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Quality installation services for eastern Denver.",
       "Denver Suburbs": "Comprehensive solutions throughout the metro area."
     },
-    keywords: ['siding', 'gutter', 'vinyl siding', 'fiber cement', 'aluminum', 'downspout']
+    keywords: ['siding', 'gutter', 'vinyl siding', 'fiber cement', 'aluminum', 'downspout'],
+    icon: "/icons/siding-gutters.svg"
   },
   "masonry": {
     id: "masonry",
@@ -385,7 +402,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Quality masonry services for eastern Denver.",
       "Denver Suburbs": "Professional masonry throughout the metro area."
     },
-    keywords: ['masonry', 'brick', 'stone', 'concrete', 'block', 'patio', 'retaining wall']
+    keywords: ['masonry', 'brick', 'stone', 'concrete', 'block', 'patio', 'retaining wall'],
+    icon: "/icons/masonry.svg"
   },
   "decks": {
     id: "decks",
@@ -416,7 +434,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Quality deck services for eastern Denver homes.",
       "Denver Suburbs": "Professional deck construction throughout the metro area."
     },
-    keywords: ['deck', 'patio', 'composite deck', 'wood deck', 'outdoor living']
+    keywords: ['deck', 'patio', 'composite deck', 'wood deck', 'outdoor living'],
+    icon: "/icons/decks.svg"
   },
   "flooring": {
     id: "flooring",
@@ -447,7 +466,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Quality flooring installation for eastern Denver.",
       "Denver Suburbs": "Professional flooring throughout the metro area."
     },
-    keywords: ['floor', 'hardwood', 'tile', 'carpet', 'vinyl', 'laminate', 'luxury vinyl']
+    keywords: ['floor', 'hardwood', 'tile', 'carpet', 'vinyl', 'laminate', 'luxury vinyl'],
+    icon: "/icons/flooring.svg"
   },
   "windows": {
     id: "windows",
@@ -478,7 +498,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Quality window installation for eastern Denver.",
       "Denver Suburbs": "Professional window services throughout the metro area."
     },
-    keywords: ['window', 'replacement window', 'energy efficient', 'double pane', 'triple pane']
+    keywords: ['window', 'replacement window', 'energy efficient', 'double pane', 'triple pane'],
+    icon: "/icons/windows.svg"
   },
   "fencing": {
     id: "fencing",
@@ -509,7 +530,8 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Quality fence installation for eastern Denver.",
       "Denver Suburbs": "Professional fencing throughout the metro area."
     },
-    keywords: ['fence', 'privacy fence', 'wood fence', 'vinyl fence', 'chain link', 'metal fence']
+    keywords: ['fence', 'privacy fence', 'wood fence', 'vinyl fence', 'chain link', 'metal fence'],
+    icon: "/icons/fencing.svg"
   },
   "epoxy-garage": {
     id: "epoxy-garage",
@@ -540,6 +562,7 @@ export const tradesData: Record<string, Trade> = {
       "East Denver": "Quality garage floor coating for eastern Denver.",
       "Denver Suburbs": "Professional epoxy throughout the metro area."
     },
-    keywords: ['epoxy', 'garage floor', 'floor coating', 'concrete coating', 'metallic epoxy']
+    keywords: ['epoxy', 'garage floor', 'floor coating', 'concrete coating', 'metallic epoxy'],
+    icon: "/icons/epoxy-garage.svg"
   }
 };
