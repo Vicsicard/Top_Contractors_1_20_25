@@ -94,7 +94,6 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         
         {/* Preload critical assets */}
-        <link rel="preload" href="/images/hero.jpg" as="image" />
         <link rel="preload" href="/images/logo.png" as="image" />
       </head>
       <body className={inter.className}>
