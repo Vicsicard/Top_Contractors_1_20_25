@@ -6,7 +6,7 @@ import { PerformanceMonitor } from '@/components/PerformanceMonitor'
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import Navigation from '@/components/Navigation';
-import MobileMenu from '@/components/MobileMenu';
+import Footer from '@/components/Footer';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 
 // Optimize font loading
@@ -87,26 +87,26 @@ export default function RootLayout({
             __html: JSON.stringify(generateOrganizationSchema())
           }}
         />
+        <meta name="google-site-verification" content="vCjZeZRa8ZXOrXKi2vGCF4pJr454IEI_A30mEG92-co" />
         {/* Resource hints */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         
         {/* Preload critical assets */}
+        <link rel="preload" href="/images/hero.jpg" as="image" />
         <link rel="preload" href="/images/logo.png" as="image" />
       </head>
       <body className={inter.className}>
-        <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-gray-900/75 to-transparent backdrop-blur-sm">
-          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-primary shadow-lg">
+          <div className="container mx-auto px-4 py-4">
             <Navigation />
-            <div className="md:hidden">
-              <MobileMenu />
-            </div>
           </div>
         </header>
         <main className="min-h-screen bg-gray-50 pt-20">
           {children}
         </main>
+        <Footer />
         <GoogleAnalytics />
         <PerformanceMonitor />
         <Analytics />

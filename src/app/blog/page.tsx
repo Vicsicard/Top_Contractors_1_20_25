@@ -3,7 +3,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getPosts, getPostsByCategory, GhostPost } from '@/utils/ghost';
 import { tradesData } from '@/lib/trades-data';
-import { getCategoryIcon } from '@/components/trade-icons';
 import { JsonLd } from '@/components/json-ld';
 
 interface Props {
@@ -15,7 +14,7 @@ interface Props {
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
     const category = searchParams.category;
-    const currentPage = Number(searchParams.page) || 1;
+    const currentPage = parseInt(searchParams.page || '1');
     
     let title = 'Home Improvement Blog | Top Contractors Denver';
     let description = 'Expert home improvement tips, guides, and advice for Denver homeowners. Find professional insights and practical solutions for your next project.';
@@ -50,7 +49,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 }
 
 export default async function BlogPage({ searchParams }: Props) {
-    const currentPage = Number(searchParams.page) || 1;
+    const currentPage = parseInt(searchParams.page || '1');
     const category = searchParams.category;
     
     let posts: GhostPost[] = [];
@@ -72,9 +71,6 @@ export default async function BlogPage({ searchParams }: Props) {
         console.error('Error fetching posts:', error);
         // Don't throw the error, let's handle it gracefully in the UI
     }
-
-    // Get all available categories
-    const categories = Object.entries(tradesData).map(([_, data]) => data);
 
     // Prepare structured data
     const structuredData = {
@@ -141,81 +137,39 @@ export default async function BlogPage({ searchParams }: Props) {
                                 </p>
                             </div>
                         </Link>
-                        {categories
-                            .filter(cat => cat.id !== 'carpenter')
-                            .map((cat) => {
-                                const icons: Record<string, string> = {
-                                    plumber: "🔧",
-                                    electrician: "⚡",
-                                    hvac: "❄️",
-                                    roofer: "🏠",
-                                    painter: "🎨",
-                                    landscaper: "🌳",
-                                    home_remodeler: "/icons/house.svg",
-                                    bathroom_remodeler: "/icons/shower.svg",
-                                    kitchen_remodeler: "/icons/stove.svg",
-                                    siding_and_gutters: "/icons/house.svg",
-                                    masonry: "🏠",
-                                    decks: "🪑",
-                                    flooring: "🏠",
-                                    windows: "🪟",
-                                    fencing: "🚧",
-                                    epoxy_garage: "🚗"
-                                };
-
-                                const descriptions: Record<string, string> = {
-                                    plumber: "Expert plumbing tips and guides",
-                                    electrician: "Electrical solutions and safety advice",
-                                    hvac: "Heating and cooling maintenance tips",
-                                    roofer: "Roofing insights and maintenance guides",
-                                    painter: "Professional painting techniques and tips",
-                                    landscaper: "Professional landscaping and yard care tips",
-                                    home_remodeler: "Home renovation and remodeling guides",
-                                    bathroom_remodeler: "Bathroom renovation tips and ideas",
-                                    kitchen_remodeler: "Kitchen design and remodeling advice",
-                                    siding_and_gutters: "Siding maintenance and gutter care tips",
-                                    masonry: "Masonry and stonework guides",
-                                    decks: "Deck building and maintenance tips",
-                                    flooring: "Flooring installation and care guides",
-                                    windows: "Window replacement and maintenance tips",
-                                    fencing: "Fence installation and repair guides",
-                                    epoxy_garage: "Garage floor coating tips and guides"
-                                };
-
-                                return (
-                                    <Link
-                                        key={cat.id}
-                                        href={`/blog?category=${cat.id}`}
-                                        className="group"
-                                    >
-                                        <div className={`bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow ${category === cat.id ? 'ring-2 ring-blue-600' : ''}`}>
-                                            <div className="flex items-center mb-4">
-                                                {icons[cat.id] && icons[cat.id].startsWith('/') ? (
-                                                    <div className={`w-12 h-12 mr-3 flex items-center justify-center rounded-lg ${category === cat.id ? 'bg-blue-600' : 'bg-[#e8f0fe]'} transition-colors duration-300 group-hover:bg-blue-600`}>
-                                                        <Image
-                                                            src={icons[cat.id]}
-                                                            alt={cat.title}
-                                                            width={32}
-                                                            height={32}
-                                                            className={`${category === cat.id ? 'text-white' : 'text-blue-600'} group-hover:text-white transition-colors duration-300`}
-                                                        />
-                                                    </div>
-                                                ) : (
-                                                    <span className="text-3xl mr-3" aria-hidden="true">
-                                                        {icons[cat.id] || "📝"}
-                                                    </span>
-                                                )}
-                                                <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                                    {cat.title}
-                                                </h3>
+                        {Object.entries(tradesData).map(([id, data]) => (
+                            <Link
+                                key={id}
+                                href={`/blog?category=${id}`}
+                                className="group"
+                            >
+                                <div className={`bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow ${category === id ? 'ring-2 ring-blue-600' : ''}`}>
+                                    <div className="flex items-center mb-4">
+                                        {data.icon && data.icon.startsWith('/') ? (
+                                            <div className={`w-12 h-12 mr-3 flex items-center justify-center rounded-lg ${category === id ? 'bg-blue-600' : 'bg-[#e8f0fe]'} transition-colors duration-300 group-hover:bg-blue-600`}>
+                                                <Image
+                                                    src={data.icon}
+                                                    alt={data.title}
+                                                    width={32}
+                                                    height={32}
+                                                    className={`${category === id ? 'text-white' : 'text-blue-600'} group-hover:text-white transition-colors duration-300`}
+                                                />
                                             </div>
-                                            <p className="text-gray-600">
-                                                {descriptions[cat.id] || `${cat.title} tips and guides`}
-                                            </p>
-                                        </div>
-                                    </Link>
-                                );
-                        })}
+                                        ) : (
+                                            <span className="text-3xl mr-3" aria-hidden="true">
+                                                {data.icon || "📝"}
+                                            </span>
+                                        )}
+                                        <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                            {data.title}
+                                        </h3>
+                                    </div>
+                                    <p className="text-gray-600">
+                                        {data.description || `${data.title} tips and guides`}
+                                    </p>
+                                </div>
+                            </Link>
+                        ))}
                     </div>
                 </nav>
 
