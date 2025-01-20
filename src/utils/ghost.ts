@@ -1,5 +1,4 @@
 import { notifySearchEngines } from './indexing';
-import { tradesData } from '../lib/trades-data';
 
 // Ghost Configuration
 let NEW_GHOST_URL = process.env.NEXT_PUBLIC_GHOST_URL;

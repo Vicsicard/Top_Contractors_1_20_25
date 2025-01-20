@@ -25,9 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         };
     }
 
-    // Extract category and get trade data if available
+    // Extract category
     const category = extractPostCategory(post);
-    const tradeData = category ? tradesData[category] : null;
     
     return {
         title: post.title + ' | Top Contractors Denver Blog',

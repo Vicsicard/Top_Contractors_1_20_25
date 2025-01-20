@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getPostsByTag, GhostPost } from '@/utils/ghost';
+import { getPostsByTag } from '@/utils/ghost';
 import { formatDate } from '@/utils/date';
 import { JsonLd } from '@/components/json-ld';
 
@@ -65,7 +65,7 @@ export default async function TagPage({ params, searchParams }: Props) {
             <JsonLd data={tagPageSchema} />
             
             <header className="mb-8">
-                <h1 className="text-4xl font-bold mb-2">Posts tagged with "{tag}"</h1>
+                <h1 className="text-4xl font-bold mb-2">Posts tagged with &ldquo;{tag}&rdquo;</h1>
                 <p className="text-gray-600">Browse all our blog posts about {tag.toLowerCase()} and related topics.</p>
             </header>
 
