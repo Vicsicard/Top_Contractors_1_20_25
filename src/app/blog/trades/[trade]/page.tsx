@@ -109,7 +109,7 @@ export default async function TradeBlogPage({ params, searchParams }: Props) {
                 {blogPosts.map((post) => (
                     <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                         {post.feature_image && isValidImageUrl(post.feature_image) && (
-                            <Link href={`/blog/${post.slug}`}>
+                            <Link href={`/blog/trades/${trade}/${post.slug}`}>
                                 <div className="relative h-48 overflow-hidden">
                                     <Image
                                         src={post.feature_image}
@@ -122,7 +122,7 @@ export default async function TradeBlogPage({ params, searchParams }: Props) {
                             </Link>
                         )}
                         <div className="p-6">
-                            <Link href={`/blog/${post.slug}`}>
+                            <Link href={`/blog/trades/${trade}/${post.slug}`}>
                                 <h2 className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
                                     {post.title}
                                 </h2>
@@ -135,7 +135,7 @@ export default async function TradeBlogPage({ params, searchParams }: Props) {
                                     {formatDate(post.published_at)}
                                 </time>
                                 <Link
-                                    href={`/blog/${post.slug}`}
+                                    href={`/blog/trades/${trade}/${post.slug}`}
                                     className="text-blue-600 hover:text-blue-700 font-medium"
                                 >
                                     Read More →
