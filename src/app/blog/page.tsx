@@ -42,10 +42,7 @@ export default async function BlogPage({ searchParams }: Props) {
     }
 
     // Get all available categories
-    const categories = Object.entries(tradesData).map(([categoryId, data]) => ({
-        id: categoryId,
-        ...data
-    }));
+    const categories = Object.entries(tradesData).map(([_, data]) => data);
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
