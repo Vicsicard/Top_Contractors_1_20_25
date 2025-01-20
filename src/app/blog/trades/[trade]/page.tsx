@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { getPosts, getPostsByCategory, GhostPost, PaginatedPosts } from '@/utils/ghost';
-import { tradesData, Trade } from '@/lib/trades-data';
+import { getPostsByCategory } from '@/utils/ghost';
+import { tradesData } from '@/lib/trades-data';
 import { formatDate } from '@/utils/date';
 import { JsonLd } from '@/components/json-ld';
 
