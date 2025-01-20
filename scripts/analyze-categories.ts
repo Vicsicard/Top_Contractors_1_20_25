@@ -48,10 +48,11 @@ setGhostConfig({
     newGhostKey: argv.ghostOrgContentApiKey
 });
 
-process.env.NODE_ENV = argv.nodeEnv;
+const isProduction = argv.nodeEnv === 'production';
 
 async function analyzeCategories() {
     console.log('Starting blog category analysis...');
+    console.log(`Environment: ${argv.nodeEnv}`);
     
     try {
         // Get all posts

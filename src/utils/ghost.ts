@@ -81,33 +81,20 @@ export interface GhostPost {
 }
 
 // Fetch options based on environment
-interface NextFetchOptions {
-    next: {
-        revalidate: number;
-    };
-}
-
 const getFetchOptions = (): RequestInit & { next: { revalidate: number } } => {
     const baseOptions: RequestInit = {
         headers: {
-            'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
     };
 
-    if (typeof window === 'undefined' && process.env.NODE_ENV === 'development') {
-        // Node.js environment (scripts)
-        return {
-            ...baseOptions,
-            next: { revalidate: 3600 }
-        };
-    } else {
-        // Next.js environment
-        return {
-            ...baseOptions,
-            next: { revalidate: 3600 }
-        };
-    }
+    // Add revalidation based on environment
+    return {
+        ...baseOptions,
+        next: {
+            revalidate: process.env.NODE_ENV === 'development' ? 0 : 3600 // 1 hour in production
+        }
+    };
 };
 
 /**
