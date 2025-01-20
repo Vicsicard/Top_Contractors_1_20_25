@@ -82,12 +82,12 @@ export interface GhostPost {
 
 // Fetch options based on environment
 interface NextFetchOptions {
-    next?: {
+    next: {
         revalidate: number;
     };
 }
 
-const getFetchOptions = (): RequestInit & NextFetchOptions => {
+const getFetchOptions = (): RequestInit & { next: { revalidate: number } } => {
     const baseOptions: RequestInit = {
         headers: {
             'Accept': 'application/json',
@@ -97,7 +97,10 @@ const getFetchOptions = (): RequestInit & NextFetchOptions => {
 
     if (typeof window === 'undefined' && process.env.NODE_ENV === 'development') {
         // Node.js environment (scripts)
-        return baseOptions;
+        return {
+            ...baseOptions,
+            next: { revalidate: 3600 }
+        };
     } else {
         // Next.js environment
         return {
