@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { getPosts, getPostsByCategory, GhostPost } from '@/utils/ghost';
 import { tradesData } from '@/lib/trades-data';
 import { getCategoryIcon } from '@/components/trade-icons';
-import { MdHome } from 'react-icons/md';
 
 interface Props {
     searchParams: { 
@@ -43,8 +42,8 @@ export default async function BlogPage({ searchParams }: Props) {
     }
 
     // Get all available categories
-    const categories = Object.entries(tradesData).map(([id, data]) => ({
-        id,
+    const categories = Object.entries(tradesData).map(([categoryId, data]) => ({
+        id: categoryId,
         ...data
     }));
 
