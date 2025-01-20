@@ -1,10 +1,24 @@
 import { notifySearchEngines } from './indexing';
+import { tradesData } from '../lib/trades-data';
 
 // Ghost Configuration
-const NEW_GHOST_URL = process.env.NEXT_PUBLIC_GHOST_URL;
-const NEW_GHOST_KEY = process.env.NEXT_PUBLIC_GHOST_ORG_CONTENT_API_KEY;
-const OLD_GHOST_URL = process.env.NEXT_PUBLIC_OLD_GHOST_URL;
-const OLD_GHOST_KEY = process.env.NEXT_PUBLIC_OLD_GHOST_ORG_CONTENT_API_KEY;
+let NEW_GHOST_URL = process.env.NEXT_PUBLIC_GHOST_URL;
+let NEW_GHOST_KEY = process.env.NEXT_PUBLIC_GHOST_ORG_CONTENT_API_KEY;
+let OLD_GHOST_URL = process.env.NEXT_PUBLIC_OLD_GHOST_URL;
+let OLD_GHOST_KEY = process.env.NEXT_PUBLIC_OLD_GHOST_ORG_CONTENT_API_KEY;
+
+// Allow overriding Ghost configuration for scripts
+export function setGhostConfig(config: {
+    newGhostUrl?: string;
+    newGhostKey?: string;
+    oldGhostUrl?: string;
+    oldGhostKey?: string;
+}) {
+    if (config.newGhostUrl) NEW_GHOST_URL = config.newGhostUrl;
+    if (config.newGhostKey) NEW_GHOST_KEY = config.newGhostKey;
+    if (config.oldGhostUrl) OLD_GHOST_URL = config.oldGhostUrl;
+    if (config.oldGhostKey) OLD_GHOST_KEY = config.oldGhostKey;
+}
 
 // Debug environment variables and runtime context
 console.log('=== Ghost Configuration Debug ===');
@@ -66,6 +80,33 @@ export interface GhostPost {
     source?: string;
 }
 
+// Fetch options based on environment
+interface NextFetchOptions {
+    next?: {
+        revalidate: number;
+    };
+}
+
+const getFetchOptions = (): RequestInit & NextFetchOptions => {
+    const baseOptions: RequestInit = {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    };
+
+    if (typeof window === 'undefined' && process.env.NODE_ENV === 'development') {
+        // Node.js environment (scripts)
+        return baseOptions;
+    } else {
+        // Next.js environment
+        return {
+            ...baseOptions,
+            next: { revalidate: 3600 }
+        };
+    }
+};
+
 /**
  * Fetches all posts from a Ghost instance.
  * 
@@ -74,72 +115,45 @@ export interface GhostPost {
  * @returns A promise that resolves to an array of Ghost posts.
  */
 async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
-    const allPosts: GhostPost[] = [];
+    const posts: GhostPost[] = [];
     let currentPage = 1;
-    const limit = 100; // Maximum allowed by Ghost API
-    
-    console.log(`[${process.env.NODE_ENV}] Starting to fetch posts from ${url}`);
-    
-    while (true) {
+    const limit = 15;
+    let hasMore = true;
+
+    while (hasMore) {
         try {
             // Remove /ghost/api/content/posts from the URL if it's already included
             const baseUrl = url.replace(/\/ghost\/api\/content\/posts\/?$/, '');
-            const apiUrl = `${baseUrl}/ghost/api/content/posts/?key=${key}&limit=${limit}&page=${currentPage}&include=tags,authors`;
+            const apiUrl = `${baseUrl}/ghost/api/content/posts/?key=${key}&limit=${limit}&page=${currentPage}&include=tags,authors&formats=html`;
             
             console.log(`[${process.env.NODE_ENV}] Fetching page ${currentPage} from: ${url}`);
             
-            const response = await fetch(apiUrl, { 
-                next: { revalidate: 3600 },
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            });
+            const response = await fetch(apiUrl, getFetchOptions());
             
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error(`[${process.env.NODE_ENV}] Error fetching from ${url}:`, {
-                    status: response.status,
-                    statusText: response.statusText,
-                    error: errorText,
-                    headers: Object.fromEntries(response.headers.entries())
-                });
-                break;
+                throw new Error(`Failed to fetch posts from ${url}: ${response.status} ${response.statusText}\n${errorText}`);
             }
-            
+
             const data = await response.json();
-            console.log(`[${process.env.NODE_ENV}] Response from ${url}:`, {
-                hasPosts: !!data.posts,
-                postCount: data.posts?.length || 0,
-                meta: data.meta || {},
-                sampleTitles: data.posts?.slice(0, 3).map((p: any) => p.title) || []
-            });
             
-            if (!data.posts || data.posts.length === 0) {
-                console.log(`[${process.env.NODE_ENV}] No posts found for ${url} on page ${currentPage}`);
-                break;
+            if (!data.posts || !Array.isArray(data.posts)) {
+                throw new Error(`Invalid response from ${url}: Expected posts array`);
             }
-            
-            allPosts.push(...data.posts);
-            
-            if (data.posts.length < limit) {
-                break;
-            }
-            
+
+            posts.push(...data.posts);
+
+            // Check if there are more posts
+            hasMore = data.meta?.pagination?.pages > currentPage;
             currentPage++;
+
         } catch (error) {
-            console.error(`[${process.env.NODE_ENV}] Error fetching posts from ${url}:`, error);
-            break;
+            console.error(`Error fetching posts from ${url}:`, error);
+            throw error;
         }
     }
-    
-    console.log(`[${process.env.NODE_ENV}] Completed fetch from ${url}:`, {
-        totalPosts: allPosts.length,
-        firstPostTitle: allPosts[0]?.title || 'No posts',
-        lastPostTitle: allPosts[allPosts.length - 1]?.title || 'No posts'
-    });
-    
-    return allPosts;
+
+    return posts;
 }
 
 /**
@@ -151,61 +165,42 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
  */
 export async function getPosts(page = 1, limit = 10): Promise<PaginatedPosts> {
     try {
-        console.log('[getPosts] Starting to fetch posts with config:', {
-            NEW_GHOST_URL,
-            OLD_GHOST_URL,
-            NEW_KEY_PRESENT: !!NEW_GHOST_KEY,
-            OLD_KEY_PRESENT: !!OLD_GHOST_KEY
-        });
-
-        // Fetch all posts from both Ghost instances
-        const [newGhostPosts, oldGhostPosts] = await Promise.all([
-            (NEW_GHOST_URL && NEW_GHOST_KEY) ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
-            (OLD_GHOST_URL && OLD_GHOST_KEY) ? fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY) : Promise.resolve([])
+        // Get posts from both Ghost instances
+        const [newPosts, oldPosts] = await Promise.all([
+            fetchAllPosts(NEW_GHOST_URL!, NEW_GHOST_KEY!),
+            fetchAllPosts(OLD_GHOST_URL!, OLD_GHOST_KEY!)
         ]);
 
-        console.log('[getPosts] Fetched posts count:', {
-            newGhostPosts: newGhostPosts.length,
-            oldGhostPosts: oldGhostPosts.length
-        });
-
-        // Create a Map to store unique posts by slug
-        const uniquePosts = new Map<string, GhostPost>();
-        
-        // Process new posts first (they take precedence)
-        if (newGhostPosts.length > 0) {
-            newGhostPosts.forEach((post: GhostPost) => {
-                uniquePosts.set(post.slug, {
-                    ...post,
-                    source: 'new'
-                });
-            });
-        }
-        
-        // Add old posts only if they don't exist in new posts
-        if (oldGhostPosts.length > 0) {
-            oldGhostPosts.forEach((post: GhostPost) => {
-                if (!uniquePosts.has(post.slug)) {
-                    uniquePosts.set(post.slug, {
-                        ...post,
-                        source: 'old'
-                    });
-                }
-            });
-        }
-
-        // Convert Map to array and sort by date
-        const allPosts = Array.from(uniquePosts.values())
-            .sort((a, b) => {
-                const dateA = new Date(a.published_at).getTime();
-                const dateB = new Date(b.published_at).getTime();
-                return dateB - dateA;
-            });
+        // Combine and sort posts
+        const allPosts = [...newPosts, ...oldPosts].sort((a, b) => 
+            new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
+        );
 
         // Calculate pagination
         const startIndex = (page - 1) * limit;
-        const paginatedPosts = allPosts.slice(startIndex, startIndex + limit);
+        const endIndex = startIndex + limit;
         const totalPages = Math.ceil(allPosts.length / limit);
+
+        // Get posts for current page
+        const paginatedPosts = allPosts.slice(startIndex, endIndex);
+
+        // Check for new posts
+        const newPostsFound = paginatedPosts.some(post => {
+            const isNew = !postCache[post.id];
+            if (isNew) {
+                postCache[post.id] = post.updated_at || post.published_at;
+                return true;
+            }
+            return false;
+        });
+
+        // Notify search engines if new posts are found
+        if (newPostsFound) {
+            const urls = paginatedPosts
+                .filter(post => !postCache[post.id])
+                .map(post => `https://topcontractorsdenver.com/blog/${post.slug}`);
+            await notifySearchEngines(urls);
+        }
 
         return {
             posts: paginatedPosts,
@@ -216,13 +211,7 @@ export async function getPosts(page = 1, limit = 10): Promise<PaginatedPosts> {
         };
     } catch (error) {
         console.error('Error fetching posts:', error);
-        return {
-            posts: [],
-            totalPages: 0,
-            currentPage: 1,
-            hasNextPage: false,
-            hasPrevPage: false
-        };
+        throw error;
     }
 }
 
@@ -233,32 +222,19 @@ export async function getPosts(page = 1, limit = 10): Promise<PaginatedPosts> {
  */
 export async function getAllPosts(): Promise<GhostPost[]> {
     try {
+        // Get posts from both Ghost instances
         const [newPosts, oldPosts] = await Promise.all([
-            (NEW_GHOST_URL && NEW_GHOST_KEY) ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
-            (OLD_GHOST_URL && OLD_GHOST_KEY) ? fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY) : Promise.resolve([])
+            fetchAllPosts(NEW_GHOST_URL!, NEW_GHOST_KEY!),
+            fetchAllPosts(OLD_GHOST_URL!, OLD_GHOST_KEY!)
         ]);
 
-        const combinedPosts = [...newPosts, ...oldPosts];
-        
-        // Check for new or updated posts
-        const newUrls: string[] = [];
-        combinedPosts.forEach(post => {
-            const cacheKey = `${post.id}-${post.updated_at || post.published_at}`;
-            if (!postCache[post.id] || postCache[post.id] !== cacheKey) {
-                postCache[post.id] = cacheKey;
-                newUrls.push(`https://topcontractorsdenver.com/blog/${post.slug}`);
-            }
-        });
-
-        // If we found new or updated posts, notify search engines
-        if (newUrls.length > 0) {
-            await notifySearchEngines(newUrls);
-        }
-
-        return combinedPosts;
+        // Combine and sort posts
+        return [...newPosts, ...oldPosts].sort((a, b) => 
+            new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
+        );
     } catch (error) {
         console.error('Error fetching all posts:', error);
-        return [];
+        throw error;
     }
 }
 
@@ -272,34 +248,30 @@ export async function getPostBySlug(slug: string): Promise<GhostPost | null> {
     try {
         // Try to fetch from new Ghost first
         const newResponse = await fetch(
-            `${NEW_GHOST_URL}/ghost/api/content/posts/slug/${slug}/?key=${NEW_GHOST_KEY}&include=tags,authors`,
-            { next: { revalidate: 3600 } }
+            `${NEW_GHOST_URL}/ghost/api/content/posts/slug/${slug}/?key=${NEW_GHOST_KEY}&include=tags,authors&formats=html`,
+            getFetchOptions()
         );
         
         if (newResponse.ok) {
             const data = await newResponse.json();
-            if (data.posts?.[0]) {
-                return { ...data.posts[0], source: 'new' };
-            }
+            return data.posts[0] || null;
         }
 
         // If not found in new Ghost, try old Ghost
         const oldResponse = await fetch(
-            `${OLD_GHOST_URL}/ghost/api/content/posts/slug/${slug}/?key=${OLD_GHOST_KEY}&include=tags,authors`,
-            { next: { revalidate: 3600 } }
+            `${OLD_GHOST_URL}/ghost/api/content/posts/slug/${slug}/?key=${OLD_GHOST_KEY}&include=tags,authors&formats=html`,
+            getFetchOptions()
         );
         
         if (oldResponse.ok) {
             const data = await oldResponse.json();
-            if (data.posts?.[0]) {
-                return { ...data.posts[0], source: 'old' };
-            }
+            return data.posts[0] || null;
         }
 
         return null;
     } catch (error) {
         console.error('Error fetching post by slug:', error);
-        return null;
+        throw error;
     }
 }
 
@@ -313,45 +285,21 @@ export async function getPostBySlug(slug: string): Promise<GhostPost | null> {
  */
 export async function getPostsByTag(tag: string, page = 1, limit = 10): Promise<PaginatedPosts> {
     try {
-        // Fetch all posts from both Ghost instances
-        const [newGhostPosts, oldGhostPosts] = await Promise.all([
-            (NEW_GHOST_URL && NEW_GHOST_KEY) ? fetchAllPosts(NEW_GHOST_URL, NEW_GHOST_KEY) : Promise.resolve([]),
-            (OLD_GHOST_URL && OLD_GHOST_KEY) ? fetchAllPosts(OLD_GHOST_URL, OLD_GHOST_KEY) : Promise.resolve([])
-        ]);
+        // Get all posts
+        const allPosts = await getAllPosts();
 
-        // Combine and process posts, filtering by tag
-        const allPosts: GhostPost[] = [];
-        
-        if (newGhostPosts.length > 0) {
-            const filteredPosts = newGhostPosts.filter(post => 
-                post.tags?.some(t => t.slug === tag || t.name.toLowerCase() === tag.toLowerCase())
-            );
-            allPosts.push(...filteredPosts.map(post => ({
-                ...post,
-                source: 'new'
-            })));
-        }
-        
-        if (oldGhostPosts.length > 0) {
-            const filteredPosts = oldGhostPosts.filter(post => 
-                post.tags?.some(t => t.slug === tag || t.name.toLowerCase() === tag.toLowerCase())
-            );
-            allPosts.push(...filteredPosts.map(post => ({
-                ...post,
-                source: 'old'
-            })));
-        }
-
-        // Sort posts by date
-        allPosts.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+        // Filter posts by tag
+        const taggedPosts = allPosts.filter(post => 
+            post.tags?.some(t => t.slug === tag || t.name.toLowerCase() === tag.toLowerCase())
+        );
 
         // Calculate pagination
         const startIndex = (page - 1) * limit;
-        const paginatedPosts = allPosts.slice(startIndex, startIndex + limit);
-        const totalPages = Math.ceil(allPosts.length / limit);
+        const endIndex = startIndex + limit;
+        const totalPages = Math.ceil(taggedPosts.length / limit);
 
         return {
-            posts: paginatedPosts,
+            posts: taggedPosts.slice(startIndex, endIndex),
             totalPages,
             currentPage: page,
             hasNextPage: page < totalPages,
@@ -359,13 +307,215 @@ export async function getPostsByTag(tag: string, page = 1, limit = 10): Promise<
         };
     } catch (error) {
         console.error('Error fetching posts by tag:', error);
+        throw error;
+    }
+}
+
+/**
+ * Extracts the category from a post's content based on the hyperlinked trade category.
+ * 
+ * @param post The Ghost post to extract the category from
+ * @returns The category ID or null if not found
+ */
+export function extractPostCategory(post: GhostPost): string | null {
+    if (!post.html) return null;
+
+    // Remove HTML tags and decode entities for text analysis
+    const cleanHtml = (html: string) => {
+        return html
+            .replace(/<[^>]+>/g, ' ') // Remove HTML tags
+            .replace(/&nbsp;/g, ' ')  // Replace &nbsp; with space
+            .replace(/&amp;/g, '&')   // Replace &amp; with &
+            .replace(/&lt;/g, '<')    // Replace &lt; with <
+            .replace(/&gt;/g, '>')    // Replace &gt; with >
+            .replace(/&quot;/g, '"')  // Replace &quot; with "
+            .replace(/&#39;/g, "'")   // Replace &#39; with '
+            .replace(/\s+/g, ' ')     // Replace multiple spaces with single space
+            .trim();
+    };
+
+    // Get clean text from title and content
+    const titleAndContent = `${post.title} ${cleanHtml(post.html)}`.toLowerCase();
+    
+    // Define specific phrases that strongly indicate a particular trade
+    const tradeIndicators: Record<string, string[]> = {
+        'plumber': [
+            'plumbing', 'plumber', 'drain', 'pipe', 'water heater', 'leak', 'faucet', 'toilet',
+            'water line', 'sewer', 'clog', 'plumbing service', 'plumbing repair'
+        ],
+        'electrician': [
+            'electrical', 'electrician', 'wiring', 'circuit', 'power', 'electrical service',
+            'electrical repair', 'electrical installation', 'lighting', 'outlet', 'breaker'
+        ],
+        'hvac': [
+            'hvac', 'heating', 'cooling', 'air conditioning', 'furnace', 'ac', 'heat',
+            'hvac service', 'hvac repair', 'hvac installation', 'air conditioner'
+        ],
+        'roofer': [
+            'roof', 'roofing', 'shingle', 'metal roof', 'tile roof', 'roofing service',
+            'roof repair', 'roof installation', 'roof replacement', 'roofing contractor'
+        ],
+        'painter': [
+            'paint', 'painting', 'interior paint', 'exterior paint', 'painting service',
+            'house painter', 'residential painting', 'commercial painting', 'paint job',
+            'painting contractor', 'professional painter', 'paint color'
+        ],
+        'landscaper': [
+            'landscape', 'landscaping', 'lawn', 'garden', 'yard', 'landscaping service',
+            'lawn care', 'lawn maintenance', 'landscaping design', 'outdoor', 'tree service',
+            'sprinkler', 'irrigation'
+        ],
+        'home-remodeling': [
+            'home remodel', 'renovation', 'home improvement', 'remodeling service',
+            'home renovation', 'house remodel', 'residential remodeling', 'custom home',
+            'home addition', 'basement finish', 'general contractor'
+        ],
+        'bathroom-remodeling': [
+            'bathroom remodel', 'bath renovation', 'bathroom upgrade', 'bathroom design',
+            'bathroom contractor', 'bathroom project', 'master bath', 'bathroom makeover',
+            'bathroom renovation service', 'bath remodel', 'bathroom specialist'
+        ],
+        'kitchen-remodeling': [
+            'kitchen remodel', 'kitchen renovation', 'kitchen upgrade', 'kitchen design',
+            'kitchen contractor', 'kitchen project', 'kitchen makeover', 'kitchen cabinet',
+            'kitchen countertop', 'kitchen renovation service', 'kitchen specialist'
+        ],
+        'siding-gutters': [
+            'siding', 'gutter', 'downspout', 'exterior', 'siding installation',
+            'gutter repair', 'gutter installation', 'gutter cleaning', 'vinyl siding',
+            'fiber cement siding', 'seamless gutter', 'gutter service'
+        ],
+        'masonry': [
+            'masonry', 'brick', 'stone', 'concrete', 'block', 'masonry service',
+            'brick work', 'stone work', 'concrete work', 'retaining wall',
+            'masonry contractor', 'brick repair', 'stone mason'
+        ],
+        'decks': [
+            'deck', 'patio deck', 'composite deck', 'wood deck', 'deck building',
+            'deck installation', 'deck repair', 'deck contractor', 'outdoor deck',
+            'custom deck', 'deck design', 'deck builder'
+        ],
+        'flooring': [
+            'floor', 'hardwood', 'tile floor', 'carpet', 'vinyl', 'flooring service',
+            'floor installation', 'floor repair', 'flooring contractor', 'laminate',
+            'wood floor', 'tile installation', 'floor covering'
+        ],
+        'windows': [
+            'window', 'window replacement', 'window installation', 'window repair',
+            'window contractor', 'window service', 'replacement window', 'new window',
+            'window upgrade', 'energy efficient window', 'window specialist'
+        ],
+        'fencing': [
+            'fence', 'fencing', 'privacy fence', 'yard fence', 'fence installation',
+            'fence repair', 'fence contractor', 'fence service', 'wood fence',
+            'vinyl fence', 'chain link fence', 'fence builder', 'security fence',
+            'residential fence', 'commercial fence', 'fence company', 'fence specialist',
+            'fencing service', 'fencing contractor', 'fence estimate'
+        ],
+        'epoxy-garage': [
+            'epoxy', 'garage floor', 'floor coating', 'epoxy coating', 'garage epoxy',
+            'epoxy floor', 'garage floor coating', 'concrete coating', 'garage makeover',
+            'epoxy specialist', 'garage flooring'
+        ]
+    };
+
+    // Define negative indicators that suggest the content is NOT about a particular trade
+    const negativeIndicators: Record<string, string[]> = {
+        'bathroom-remodeling': ['kitchen', 'outdoor', 'garage', 'landscape'],
+        'kitchen-remodeling': ['bathroom', 'outdoor', 'garage', 'landscape'],
+        'home-remodeling': ['specific trade', 'single trade'],
+        'siding-gutters': ['interior', 'indoor', 'inside'],
+        'windows': ['window shopping', 'window of opportunity', 'browser window'],
+        'painter': ['artist', 'painting class', 'art', 'gallery'],
+        'landscaper': ['indoor', 'interior', 'inside'],
+        'flooring': ['upper floor', 'next floor', 'floor plan', 'floor manager'],
+        'fencing': ['sword', 'sport', 'competition', 'olympic']
+    };
+
+    // Look for direct trade mentions in the title
+    const titleOnly = post.title.toLowerCase();
+    for (const [tradeId, indicators] of Object.entries(tradeIndicators)) {
+        // Skip if title contains negative indicators
+        if (negativeIndicators[tradeId]?.some(neg => titleOnly.includes(neg))) {
+            continue;
+        }
+
+        // Check for strong indicators in the title
+        const hasTitleIndicator = indicators.some(indicator => {
+            const indicatorRegex = new RegExp(`\\b${indicator}\\b`, 'i');
+            return indicatorRegex.test(titleOnly);
+        });
+
+        if (hasTitleIndicator) {
+            return tradeId;
+        }
+    }
+
+    // If no match in title, check full content
+    for (const [tradeId, indicators] of Object.entries(tradeIndicators)) {
+        // Skip if content contains negative indicators
+        if (negativeIndicators[tradeId]?.some(neg => titleAndContent.includes(neg))) {
+            continue;
+        }
+
+        // Look for strong indicators in the content
+        const hasStrongIndicator = indicators.some(indicator => {
+            const indicatorRegex = new RegExp(`\\b${indicator}\\b`, 'i');
+            return indicatorRegex.test(titleAndContent);
+        });
+
+        // Look for trade name in URL-like patterns
+        const urlPatterns = [
+            new RegExp(`\\b${tradeId.replace('-', '\\s*')}\\s+in\\s+denver\\b`, 'i'),
+            new RegExp(`\\b${tradeId.replace('-', '\\s*')}\\s+services\\b`, 'i'),
+            new RegExp(`\\bdenver\\s+${tradeId.replace('-', '\\s*')}\\b`, 'i'),
+            new RegExp(`\\b${tradeId.replace('-', '\\s*')}\\s+contractor`, 'i'),
+            new RegExp(`\\b${tradeId.replace('-', '\\s*')}\\s+specialist`, 'i'),
+            new RegExp(`\\b${tradeId.replace('-', '\\s*')}\\s+company`, 'i'),
+            new RegExp(`\\b${tradeId.replace('-', '\\s*')}\\s+expert`, 'i')
+        ];
+
+        const hasUrlPattern = urlPatterns.some(pattern => pattern.test(titleAndContent));
+
+        if (hasStrongIndicator || hasUrlPattern) {
+            return tradeId;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Gets posts by category.
+ * 
+ * @param category The category ID to filter by
+ * @param page The page number to fetch
+ * @param limit The number of posts to fetch per page
+ * @returns A promise that resolves to a paginated posts object
+ */
+export async function getPostsByCategory(category: string, page = 1, limit = 10): Promise<PaginatedPosts> {
+    try {
+        // Get all posts
+        const allPosts = await getAllPosts();
+
+        // Filter posts by category
+        const categoryPosts = allPosts.filter(post => extractPostCategory(post) === category);
+
+        // Calculate pagination
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const totalPages = Math.ceil(categoryPosts.length / limit);
+
         return {
-            posts: [],
-            totalPages: 0,
-            currentPage: 1,
-            hasNextPage: false,
-            hasPrevPage: false
+            posts: categoryPosts.slice(startIndex, endIndex),
+            totalPages,
+            currentPage: page,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1
         };
+    } catch (error) {
+        console.error('Error fetching posts by category:', error);
+        throw error;
     }
 }
 

@@ -1,4 +1,20 @@
-export const tradesData = {
+export interface Trade {
+    id: string;
+    title: string;
+    metaTitle: string;
+    metaDescription: string;
+    heading: string;
+    subheading: string;
+    description: string;
+    benefits: string[];
+    services: string[];
+    regionDescriptions: {
+        [key: string]: string;
+    };
+    keywords?: string[];
+}
+
+export const tradesData: Record<string, Trade> = {
   "plumber": {
     id: "plumber",
     title: "Plumber",
@@ -27,7 +43,8 @@ export const tradesData = {
       "Central Denver": "Expert plumbers serving downtown Denver and central neighborhoods with 24/7 availability.",
       "East Denver": "Reliable plumbing services in Park Hill and eastern Denver communities.",
       "Denver Suburbs": "Professional plumbing contractors serving the greater Denver metropolitan area."
-    }
+    },
+    keywords: ['plumbing', 'drain', 'sewer', 'water', 'leak', 'pipe', 'faucet', 'toilet', 'sink']
   },
   "electrician": {
     id: "electrician",
@@ -57,7 +74,8 @@ export const tradesData = {
       "Central Denver": "Expert electricians serving downtown Denver and central neighborhoods with 24/7 availability.",
       "East Denver": "Reliable electrical services in Park Hill and eastern Denver communities.",
       "Denver Suburbs": "Professional electrical contractors serving the greater Denver metropolitan area."
-    }
+    },
+    keywords: ['electrical', 'wiring', 'lighting', 'power', 'circuit', 'outlet', 'breaker', 'panel']
   },
   "hvac": {
     id: "hvac",
@@ -87,7 +105,8 @@ export const tradesData = {
       "Central Denver": "Experienced HVAC contractors serving downtown Denver with prompt service.",
       "East Denver": "Reliable heating and cooling services for eastern Denver neighborhoods.",
       "Denver Suburbs": "Comprehensive HVAC solutions throughout the Denver metro area."
-    }
+    },
+    keywords: ['heating', 'cooling', 'air conditioning', 'ventilation', 'furnace', 'ac', 'heat', 'duct']
   },
   "roofer": {
     id: "roofer",
@@ -117,7 +136,8 @@ export const tradesData = {
       "Central Denver": "Expert roofers serving downtown Denver and historic neighborhoods.",
       "East Denver": "Quality roofing services for eastern Denver communities.",
       "Denver Suburbs": "Comprehensive roofing solutions throughout the Denver metro area."
-    }
+    },
+    keywords: ['roofing', 'roof', 'shingle', 'metal roof', 'tile roof', 'flat roof', 'commercial roof']
   },
   "carpenter": {
     id: "carpenter",
@@ -147,7 +167,8 @@ export const tradesData = {
       "Central Denver": "Expert carpenters serving downtown Denver and historic homes.",
       "East Denver": "Quality carpentry services for eastern Denver neighborhoods.",
       "Denver Suburbs": "Professional carpentry solutions throughout the metro area."
-    }
+    },
+    keywords: ['carpentry', 'wood', 'framing', 'trim', 'cabinet', 'door', 'window frame']
   },
   "painter": {
     id: "painter",
@@ -177,7 +198,8 @@ export const tradesData = {
       "Central Denver": "Expert painters serving downtown Denver and historic homes.",
       "East Denver": "Quality painting services for eastern Denver communities.",
       "Denver Suburbs": "Professional painting solutions throughout the metro area."
-    }
+    },
+    keywords: ['painting', 'paint', 'interior paint', 'exterior paint', 'wall', 'texture']
   },
   "landscaper": {
     id: "landscaper",
@@ -207,7 +229,8 @@ export const tradesData = {
       "Central Denver": "Expert landscapers serving downtown Denver properties.",
       "East Denver": "Quality landscaping services for eastern Denver homes.",
       "Denver Suburbs": "Comprehensive landscape solutions for the metro area."
-    }
+    },
+    keywords: ['landscaping', 'lawn', 'garden', 'yard', 'outdoor', 'tree', 'shrub', 'grass']
   },
   "home-remodeling": {
     id: "home-remodeling",
@@ -237,7 +260,8 @@ export const tradesData = {
       "Central Denver": "Expert remodelers serving downtown Denver and historic homes.",
       "East Denver": "Quality renovation services for eastern Denver properties.",
       "Denver Suburbs": "Comprehensive remodeling solutions throughout the metro area."
-    }
+    },
+    keywords: ['remodel', 'renovation', 'home improvement', 'contractor', 'construction']
   },
   "bathroom-remodeling": {
     id: "bathroom-remodeling",
@@ -267,7 +291,8 @@ export const tradesData = {
       "Central Denver": "Expert bathroom remodelers serving downtown Denver.",
       "East Denver": "Quality bathroom renovation services for eastern Denver.",
       "Denver Suburbs": "Professional bathroom remodeling throughout the metro area."
-    }
+    },
+    keywords: ['bathroom', 'bath', 'shower', 'vanity', 'tile', 'bathroom renovation']
   },
   "kitchen-remodeling": {
     id: "kitchen-remodeling",
@@ -297,7 +322,8 @@ export const tradesData = {
       "Central Denver": "Expert kitchen remodelers serving downtown Denver.",
       "East Denver": "Quality kitchen renovation services for eastern Denver.",
       "Denver Suburbs": "Professional kitchen remodeling throughout the metro area."
-    }
+    },
+    keywords: ['kitchen', 'cabinets', 'countertop', 'appliance', 'kitchen renovation']
   },
   "siding-gutters": {
     id: "siding-gutters",
@@ -327,7 +353,8 @@ export const tradesData = {
       "Central Denver": "Expert siding and gutter services for downtown Denver.",
       "East Denver": "Quality installation services for eastern Denver.",
       "Denver Suburbs": "Comprehensive solutions throughout the metro area."
-    }
+    },
+    keywords: ['siding', 'gutter', 'vinyl siding', 'fiber cement', 'aluminum', 'downspout']
   },
   "masonry": {
     id: "masonry",
@@ -357,7 +384,8 @@ export const tradesData = {
       "Central Denver": "Expert masons serving downtown Denver and historic properties.",
       "East Denver": "Quality masonry services for eastern Denver.",
       "Denver Suburbs": "Professional masonry throughout the metro area."
-    }
+    },
+    keywords: ['masonry', 'brick', 'stone', 'concrete', 'block', 'patio', 'retaining wall']
   },
   "decks": {
     id: "decks",
@@ -387,7 +415,8 @@ export const tradesData = {
       "Central Denver": "Expert deck builders serving downtown Denver properties.",
       "East Denver": "Quality deck services for eastern Denver homes.",
       "Denver Suburbs": "Professional deck construction throughout the metro area."
-    }
+    },
+    keywords: ['deck', 'patio', 'composite deck', 'wood deck', 'outdoor living']
   },
   "flooring": {
     id: "flooring",
@@ -417,7 +446,8 @@ export const tradesData = {
       "Central Denver": "Expert flooring services for downtown Denver properties.",
       "East Denver": "Quality flooring installation for eastern Denver.",
       "Denver Suburbs": "Professional flooring throughout the metro area."
-    }
+    },
+    keywords: ['floor', 'hardwood', 'tile', 'carpet', 'vinyl', 'laminate', 'luxury vinyl']
   },
   "windows": {
     id: "windows",
@@ -447,7 +477,8 @@ export const tradesData = {
       "Central Denver": "Expert window services for downtown Denver properties.",
       "East Denver": "Quality window installation for eastern Denver.",
       "Denver Suburbs": "Professional window services throughout the metro area."
-    }
+    },
+    keywords: ['window', 'replacement window', 'energy efficient', 'double pane', 'triple pane']
   },
   "fencing": {
     id: "fencing",
@@ -477,7 +508,8 @@ export const tradesData = {
       "Central Denver": "Expert fence services for downtown Denver properties.",
       "East Denver": "Quality fence installation for eastern Denver.",
       "Denver Suburbs": "Professional fencing throughout the metro area."
-    }
+    },
+    keywords: ['fence', 'privacy fence', 'wood fence', 'vinyl fence', 'chain link', 'metal fence']
   },
   "epoxy-garage": {
     id: "epoxy-garage",
@@ -507,6 +539,7 @@ export const tradesData = {
       "Central Denver": "Expert epoxy services for downtown Denver properties.",
       "East Denver": "Quality garage floor coating for eastern Denver.",
       "Denver Suburbs": "Professional epoxy throughout the metro area."
-    }
+    },
+    keywords: ['epoxy', 'garage floor', 'floor coating', 'concrete coating', 'metallic epoxy']
   }
 };
