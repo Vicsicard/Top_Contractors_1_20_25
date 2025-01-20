@@ -150,9 +150,9 @@ export default async function BlogPage({ searchParams }: Props) {
                                                 <Image
                                                     src={data.icon}
                                                     alt={data.title}
-                                                    width={32}
-                                                    height={32}
-                                                    className={`${category === id ? 'text-white' : 'text-blue-600'} group-hover:text-white transition-colors duration-300`}
+                                                    width={24}
+                                                    height={24}
+                                                    className={`${category === id ? 'brightness-0 invert' : 'text-blue-600'} group-hover:brightness-0 group-hover:invert transition-all duration-300`}
                                                 />
                                             </div>
                                         ) : (

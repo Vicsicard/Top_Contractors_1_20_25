@@ -24,9 +24,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             robots: 'noindex, nofollow'
         };
     }
-
-    // Extract category
-    const category = extractPostCategory(post);
     
     return {
         title: post.title + ' | Top Contractors Denver Blog',

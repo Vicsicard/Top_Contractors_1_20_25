@@ -51,7 +51,7 @@ export const tradesData: Record<string, Trade> = {
       "thornton": "Our Thornton plumbers deliver professional plumbing services with a focus on quality and customer satisfaction.",
       "highlands-ranch": "Need a plumber in Highlands Ranch? Our team provides comprehensive plumbing services throughout the area."
     },
-    icon: "/icons/plumbing.svg"
+    icon: "/icons/plumbing-new.svg"
   },
   "electrician": {
     id: "electrician",
@@ -83,7 +83,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Professional electrical contractors serving the greater Denver metropolitan area."
     },
     keywords: ['electrical', 'wiring', 'lighting', 'power', 'circuit', 'outlet', 'breaker', 'panel'],
-    icon: "/icons/electrician.svg"
+    icon: "/icons/electrician-new.svg"
   },
   "hvac": {
     id: "hvac",
@@ -115,7 +115,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Comprehensive HVAC solutions throughout the Denver metro area."
     },
     keywords: ['heating', 'cooling', 'air conditioning', 'ventilation', 'furnace', 'ac', 'heat', 'duct'],
-    icon: "/icons/hvac.svg"
+    icon: "/icons/hvac-new.svg"
   },
   "roofer": {
     id: "roofer",
@@ -147,7 +147,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Comprehensive roofing solutions throughout the Denver metro area."
     },
     keywords: ['roofing', 'roof', 'shingle', 'metal roof', 'tile roof', 'flat roof', 'commercial roof'],
-    icon: "/icons/roofer.svg"
+    icon: "/icons/roofer-new.svg"
   },
   "carpenter": {
     id: "carpenter",
@@ -179,7 +179,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Professional carpentry solutions throughout the metro area."
     },
     keywords: ['carpentry', 'wood', 'framing', 'trim', 'cabinet', 'door', 'window frame'],
-    icon: "/icons/carpenter.svg"
+    icon: "/icons/carpenter-new.svg"
   },
   "painter": {
     id: "painter",
@@ -211,7 +211,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Professional painting solutions throughout the metro area."
     },
     keywords: ['painting', 'paint', 'interior paint', 'exterior paint', 'wall', 'texture'],
-    icon: "/icons/painter.svg"
+    icon: "/icons/painter-new.svg"
   },
   "landscaper": {
     id: "landscaper",
@@ -243,7 +243,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Comprehensive landscape solutions for the metro area."
     },
     keywords: ['landscaping', 'lawn', 'garden', 'yard', 'outdoor', 'tree', 'shrub', 'grass'],
-    icon: "/icons/landscaper.svg"
+    icon: "/icons/landscaper-new.svg"
   },
   "home-remodeling": {
     id: "home-remodeling",
@@ -275,7 +275,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Comprehensive remodeling solutions throughout the metro area."
     },
     keywords: ['remodel', 'renovation', 'home improvement', 'contractor', 'construction'],
-    icon: "/icons/home-remodeling.svg"
+    icon: "/icons/home-remodeling-new.svg"
   },
   "bathroom-remodeling": {
     id: "bathroom-remodeling",
@@ -307,7 +307,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Professional bathroom remodeling throughout the metro area."
     },
     keywords: ['bathroom', 'bath', 'shower', 'vanity', 'tile', 'bathroom renovation'],
-    icon: "/icons/bathroom-remodeling.svg"
+    icon: "/icons/bathroom-remodeling-new.svg"
   },
   "kitchen-remodeling": {
     id: "kitchen-remodeling",
@@ -339,7 +339,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Professional kitchen remodeling throughout the metro area."
     },
     keywords: ['kitchen', 'cabinets', 'countertop', 'appliance', 'kitchen renovation'],
-    icon: "/icons/kitchen-remodeling.svg"
+    icon: "/icons/kitchen-remodeling-new.svg"
   },
   "siding-gutters": {
     id: "siding-gutters",
@@ -371,7 +371,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Comprehensive solutions throughout the metro area."
     },
     keywords: ['siding', 'gutter', 'vinyl siding', 'fiber cement', 'aluminum', 'downspout'],
-    icon: "/icons/siding-gutters.svg"
+    icon: "/icons/siding-gutters-new.svg"
   },
   "masonry": {
     id: "masonry",
@@ -403,7 +403,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Professional masonry throughout the metro area."
     },
     keywords: ['masonry', 'brick', 'stone', 'concrete', 'block', 'patio', 'retaining wall'],
-    icon: "/icons/masonry.svg"
+    icon: "/icons/masonry-new.svg"
   },
   "decks": {
     id: "decks",
@@ -435,7 +435,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Professional deck construction throughout the metro area."
     },
     keywords: ['deck', 'patio', 'composite deck', 'wood deck', 'outdoor living'],
-    icon: "/icons/decks.svg"
+    icon: "/icons/decks-new.svg"
   },
   "flooring": {
     id: "flooring",
@@ -467,7 +467,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Professional flooring throughout the metro area."
     },
     keywords: ['floor', 'hardwood', 'tile', 'carpet', 'vinyl', 'laminate', 'luxury vinyl'],
-    icon: "/icons/flooring.svg"
+    icon: "/icons/flooring-new.svg"
   },
   "windows": {
     id: "windows",
@@ -499,7 +499,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Professional window services throughout the metro area."
     },
     keywords: ['window', 'replacement window', 'energy efficient', 'double pane', 'triple pane'],
-    icon: "/icons/windows.svg"
+    icon: "/icons/windows-new.svg"
   },
   "fencing": {
     id: "fencing",
@@ -531,7 +531,7 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Professional fencing throughout the metro area."
     },
     keywords: ['fence', 'privacy fence', 'wood fence', 'vinyl fence', 'chain link', 'metal fence'],
-    icon: "/icons/fencing.svg"
+    icon: "/icons/fencing-new.svg"
   },
   "epoxy-garage": {
     id: "epoxy-garage",
@@ -563,6 +563,6 @@ export const tradesData: Record<string, Trade> = {
       "Denver Suburbs": "Professional epoxy throughout the metro area."
     },
     keywords: ['epoxy', 'garage floor', 'floor coating', 'concrete coating', 'metallic epoxy'],
-    icon: "/icons/epoxy-garage.svg"
+    icon: "/icons/epoxy-garage-new.svg"
   }
 };

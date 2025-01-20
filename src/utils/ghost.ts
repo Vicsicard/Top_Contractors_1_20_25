@@ -19,26 +19,9 @@ export function setGhostConfig(config: {
     if (config.oldGhostKey) OLD_GHOST_KEY = config.oldGhostKey;
 }
 
-// Debug environment variables and runtime context
-console.log('=== Ghost Configuration Debug ===');
-console.log('Environment:', {
-    NODE_ENV: process.env.NODE_ENV,
-    VERCEL_ENV: process.env.VERCEL_ENV,
-    IS_VERCEL: process.env.VERCEL === '1'
-});
-console.log('Ghost URLs:', {
-    NEW_GHOST_URL,
-    OLD_GHOST_URL
-});
-console.log('API Keys Status:', {
-    NEW_GHOST_KEY_LENGTH: NEW_GHOST_KEY ? NEW_GHOST_KEY.length : 0,
-    NEW_GHOST_KEY_PRESENT: !!NEW_GHOST_KEY,
-    OLD_GHOST_KEY_LENGTH: OLD_GHOST_KEY ? OLD_GHOST_KEY.length : 0,
-    OLD_GHOST_KEY_PRESENT: !!OLD_GHOST_KEY
-});
-
+// Validate Ghost configuration
 if (!NEW_GHOST_URL || NEW_GHOST_URL !== 'https://top-contractors-denver-2.ghost.io') {
-    console.error('Error: NEXT_PUBLIC_GHOST_URL is not set correctly. Expected: https://top-contractors-denver-2.ghost.io, Got:', NEW_GHOST_URL);
+    console.error('Error: NEXT_PUBLIC_GHOST_URL is not set correctly');
 }
 
 if (!NEW_GHOST_KEY || NEW_GHOST_KEY !== '6229b20c390c831641ea577093') {
@@ -46,7 +29,7 @@ if (!NEW_GHOST_KEY || NEW_GHOST_KEY !== '6229b20c390c831641ea577093') {
 }
 
 if (!OLD_GHOST_URL || OLD_GHOST_URL !== 'https://top-contractors-denver-1.ghost.io') {
-    console.error('Error: NEXT_PUBLIC_OLD_GHOST_URL is not set correctly. Expected: https://top-contractors-denver-1.ghost.io, Got:', OLD_GHOST_URL);
+    console.error('Error: NEXT_PUBLIC_OLD_GHOST_URL is not set correctly');
 }
 
 if (!OLD_GHOST_KEY || OLD_GHOST_KEY !== '130d98b20875066982b1a8314f') {
@@ -114,8 +97,6 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
             // Remove /ghost/api/content/posts from the URL if it's already included
             const baseUrl = url.replace(/\/ghost\/api\/content\/posts\/?$/, '');
             const apiUrl = `${baseUrl}/ghost/api/content/posts/?key=${key}&limit=${limit}&page=${currentPage}&include=tags,authors&formats=html`;
-            
-            console.log(`[${process.env.NODE_ENV}] Fetching page ${currentPage} from: ${url}`);
             
             const response = await fetch(apiUrl, getFetchOptions());
             
