@@ -2,7 +2,7 @@ import { getAllPosts } from '../src/utils/ghost';
 import fs from 'fs';
 import path from 'path';
 
-const SITE_URL = 'https://topcontractorsdenver.com';
+const SITE_URL = 'https://www.topcontractorsdenver.com';
 
 interface GhostPost {
     id: string;
