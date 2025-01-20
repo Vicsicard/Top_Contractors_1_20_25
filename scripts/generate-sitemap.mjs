@@ -1,118 +1,119 @@
+import { getAllPosts } from '../src/utils/ghost';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { getPosts } from '../src/utils/ghost.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const SITE_URL = 'https://topcontractorsdenver.com';
 
-const SITE_URL = 'https://www.topcontractorsdenver.com';
+interface GhostPost {
+    id: string;
+    slug: string;
+    title: string;
+    html: string;
+    feature_image?: string;
+    excerpt?: string;
+    published_at: string;
+    reading_time?: number;
+    tags?: Array<{ slug: string }>;
+}
 
-/**
- * @typedef {Object} SitemapURL
- * @property {string} loc
- * @property {'daily' | 'weekly' | 'monthly'} changefreq
- * @property {number} priority
- */
+interface SitemapURL {
+    loc: string;
+    lastmod?: string;
+    changefreq: 'daily' | 'weekly' | 'monthly';
+    priority: number;
+}
 
 async function generateSitemap() {
-    /** @type {SitemapURL[]} */
-    const urls = [];
-
-    // Add main pages
-    urls.push(
-        {
-            loc: SITE_URL,
-            changefreq: 'daily',
-            priority: 1.0
-        },
-        {
-            loc: `${SITE_URL}/services`,
-            changefreq: 'weekly',
-            priority: 0.9
-        }
-    );
-
-    // Add service pages
-    const services = [
-        'plumbers', 'electricians', 'hvac', 'roofers', 'painters', 'landscapers',
-        'home-remodelers', 'bathroom-remodelers', 'kitchen-remodelers',
-        'siding-and-gutters', 'masonry', 'decks', 'flooring', 'windows',
-        'fencing', 'epoxy-garage'
+    const urls: SitemapURL[] = [];
+    
+    // Add static pages
+    const staticPages = [
+        { path: '', priority: 1.0 },
+        { path: 'about', priority: 0.8 },
+        { path: 'contact', priority: 0.8 },
+        { path: 'blog', priority: 0.9 },
+        { path: 'services', priority: 0.9 },
+        { path: 'privacy-policy', priority: 0.5 },
+        { path: 'terms-of-service', priority: 0.5 },
     ];
 
-    // Add main service pages
-    services.forEach(service => {
+    // Add blog categories
+    const categories = [
+        'home_remodeler',
+        'bathroom_remodeler',
+        'kitchen_remodeler',
+        'siding_and_gutters',
+        'plumber',
+        'electrician',
+        'hvac',
+        'roofer',
+        'painter',
+        'landscaper',
+        'masonry',
+        'decks',
+        'flooring',
+        'windows',
+        'fencing',
+        'epoxy_garage'
+    ];
+
+    // Add static pages to sitemap
+    staticPages.forEach(({ path, priority }) => {
         urls.push({
-            loc: `${SITE_URL}/services/${service}`,
+            loc: `${SITE_URL}${path ? `/${path}` : ''}`,
+            changefreq: 'monthly',
+            priority
+        });
+    });
+
+    // Add category pages to sitemap
+    categories.forEach(category => {
+        urls.push({
+            loc: `${SITE_URL}/blog?category=${category}`,
             changefreq: 'weekly',
             priority: 0.8
         });
     });
 
-    // Add location-specific service pages
-    const locations = [
-        'downtown-denver', 'aurora', 'lakewood', 'arvada', 'westminster',
-        'thornton', 'centennial', 'littleton', 'parker', 'brighton',
-        'northglenn', 'broomfield', 'denver-tech-center', 'cherry-creek',
-        'park-hill'
-    ];
+    try {
+        // Fetch all blog posts
+        console.log('Fetching blog posts...');
+        const posts = await getAllPosts();
+        console.log(`Found ${posts.length} blog posts`);
 
-    services.forEach(service => {
-        locations.forEach(location => {
+        // Add blog posts to sitemap
+        posts.forEach(post => {
             urls.push({
-                loc: `${SITE_URL}/services/${service}/${location}`,
+                loc: `${SITE_URL}/blog/${post.slug}`,
+                lastmod: new Date(post.published_at).toISOString(),
                 changefreq: 'weekly',
                 priority: 0.7
             });
         });
-    });
 
-    // Add blog pages
-    const { posts, totalPages } = await getPosts(1, 100); // Get first 100 posts
-    posts.forEach(post => {
-        urls.push({
-            loc: `${SITE_URL}/blog/${post.slug}`,
-            changefreq: 'monthly',
-            priority: 0.6
-        });
-    });
-
-    // Add blog tag pages
-    const uniqueTags = new Set();
-    posts.forEach(post => {
-        post.tags?.forEach(tag => {
-            if (tag.slug) {
-                uniqueTags.add(tag.slug);
-            }
-        });
-    });
-
-    uniqueTags.forEach(tag => {
-        urls.push({
-            loc: `${SITE_URL}/blog/tag/${encodeURIComponent(tag)}`,
-            changefreq: 'weekly',
-            priority: 0.5
-        });
-    });
-
-    // Generate sitemap XML
-    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+        // Generate sitemap XML
+        const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map(url => `  <url>
-    <loc>${url.loc}</loc>
-    <changefreq>${url.changefreq}</changefreq>
-    <priority>${url.priority}</priority>
-  </url>`).join('\n')}
+    ${urls.map(url => `
+    <url>
+        <loc>${url.loc}</loc>
+        ${url.lastmod ? `<lastmod>${url.lastmod}</lastmod>` : ''}
+        <changefreq>${url.changefreq}</changefreq>
+        <priority>${url.priority}</priority>
+    </url>`).join('')}
 </urlset>`;
 
-    // Write sitemap to file
-    fs.writeFileSync(
-        path.join(process.cwd(), 'public', 'sitemap.xml'),
-        sitemap
-    );
-
-    console.log(`Generated sitemap with ${urls.length} URLs`);
+        // Write sitemap to public directory
+        const publicDir = path.join(process.cwd(), 'public');
+        fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemap);
+        console.log('Sitemap generated successfully!');
+        
+        // Also write a copy for verification
+        fs.writeFileSync(path.join(publicDir, 'sitemap_new.xml'), sitemap);
+        console.log('Sitemap verification copy created as sitemap_new.xml');
+    } catch (error) {
+        console.error('Error generating sitemap:', error);
+    }
 }
 
 generateSitemap().catch(console.error);
