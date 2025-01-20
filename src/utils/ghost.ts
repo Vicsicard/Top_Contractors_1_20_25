@@ -79,6 +79,28 @@ const getFetchOptions = (): RequestInit & { next: { revalidate: number } } => {
     };
 };
 
+// Helper function to ensure image URLs are absolute
+function ensureAbsoluteUrl(url: string | undefined, baseUrl: string): string | undefined {
+    if (!url) return undefined;
+    
+    // If URL is already absolute, return it
+    try {
+        new URL(url);
+        return url;
+    } catch {
+        // If URL is relative, make it absolute using baseUrl
+        if (!url.startsWith('/')) {
+            url = `/${url}`;
+        }
+        
+        // Remove trailing slash from baseUrl
+        const base = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+        
+        // Combine base URL with path
+        return `${base}${url}`;
+    }
+}
+
 /**
  * Fetches all posts from a Ghost instance.
  * 
@@ -87,43 +109,46 @@ const getFetchOptions = (): RequestInit & { next: { revalidate: number } } => {
  * @returns A promise that resolves to an array of Ghost posts.
  */
 async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
-    const posts: GhostPost[] = [];
-    let currentPage = 1;
-    const limit = 15;
-    let hasMore = true;
+    try {
+        const posts: GhostPost[] = [];
+        let currentPage = 1;
+        let hasMore = true;
 
-    while (hasMore) {
-        try {
-            // Remove /ghost/api/content/posts from the URL if it's already included
-            const baseUrl = url.replace(/\/ghost\/api\/content\/posts\/?$/, '');
-            const apiUrl = `${baseUrl}/ghost/api/content/posts/?key=${key}&limit=${limit}&page=${currentPage}&include=tags,authors&formats=html`;
-            
-            const response = await fetch(apiUrl, getFetchOptions());
-            
+        while (hasMore) {
+            const response = await fetch(
+                `${url}/ghost/api/content/posts/?key=${key}&include=authors,tags&page=${currentPage}&limit=15`,
+                getFetchOptions()
+            );
+
             if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Failed to fetch posts from ${url}: ${response.status} ${response.statusText}\n${errorText}`);
+                throw new Error(`Failed to fetch posts: ${response.statusText}`);
             }
 
             const data = await response.json();
-            
-            if (!data.posts || !Array.isArray(data.posts)) {
+
+            if (!Array.isArray(data.posts)) {
                 throw new Error(`Invalid response from ${url}: Expected posts array`);
             }
 
-            posts.push(...data.posts);
+            // Process each post to ensure image URLs are absolute
+            const processedPosts = data.posts.map((post: GhostPost) => ({
+                ...post,
+                feature_image: post.feature_image ? ensureAbsoluteUrl(post.feature_image, url) : undefined,
+                source: url
+            }));
+
+            posts.push(...processedPosts);
 
             // Check if there are more posts
             hasMore = data.meta?.pagination?.pages > currentPage;
             currentPage++;
-
-        } catch (error) {
-            console.error(`Error fetching posts from ${url}:`, error);
-            throw error;
         }
-    }
 
-    return posts;
+        return posts;
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+        return [];
+    }
 }
 
 /**
