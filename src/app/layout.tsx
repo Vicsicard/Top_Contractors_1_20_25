@@ -48,14 +48,14 @@ export const metadata: Metadata = {
     images: ['/images/denver sky 666.jpg']
   },
   verification: {
-    google: 'your-google-verification-code', // Add your Google verification code
+    google: 'Uc0OPZIJKQg-K8pxzJAKqYGANtZvY_IzDMqhN9vQwpI',
+    other: {
+      'facebook-domain-verification': ['7n22l22v4th5rqv1eoxa3knlb19ptr']
+    }
   },
   robots: {
     index: true,
     follow: true,
-  },
-  other: {
-    'google-site-verification': 'your-verification-code'
   },
   manifest: '/manifest.json',
   icons: {
@@ -87,7 +87,7 @@ export default function RootLayout({
             __html: JSON.stringify(generateOrganizationSchema())
           }}
         />
-        <meta name="google-site-verification" content="vCjZeZRa8ZXOrXKi2vGCF4pJr454IEI_A30mEG92-co" />
+        <meta name="google-site-verification" content="Uc0OPZIJKQg-K8pxzJAKqYGANtZvY_IzDMqhN9vQwpI" />
         {/* Resource hints */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
