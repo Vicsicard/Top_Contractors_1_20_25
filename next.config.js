@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   images: {
     domains: [
       'maps.googleapis.com',

@@ -275,80 +275,80 @@ export const tradesData: Record<string, TradeData> = {
   "home-remodeling": {
     name: "home-remodeling",
     title: "Home Remodeling",
-    metaTitle: "Professional Home Remodeling in Denver | Full-Service Renovation",
-    metaDescription: "Find expert home remodeling contractors in Denver, CO. Complete home renovation services, from design to completion. Free consultations available.",
-    heading: "Professional Home Remodeling in Denver, CO",
-    subheading: "Comprehensive home renovation and remodeling services",
-    description: "Connect with experienced remodeling contractors who can transform your home. Our verified professionals handle complete home renovations with quality craftsmanship.",
-    shortDescription: "Expert home remodeling services for residential properties in Denver.",
-    icon: "🏠",
+    metaTitle: "Professional Home Remodeling in Denver | Expert Renovation",
+    metaDescription: "Find specialized home remodeling contractors in Denver, CO. Expert home renovation services from design to completion. Free estimates available.",
+    heading: "Denver Home Remodeling Contractors",
+    subheading: "Transform your home with Denver's top remodeling experts",
+    description: "Connect with experienced home remodeling contractors in Denver who can turn your vision into reality. Our verified professionals specialize in full home renovations, kitchen remodels, bathroom updates, and more.",
+    shortDescription: "Professional home remodeling and renovation services in Denver.",
+    icon: "/icons/home-remodeling.svg",
     benefits: [
-      "Licensed and insured contractors",
-      "Project management expertise",
-      "Design services available",
-      "Quality materials and finishes",
-      "Detailed project planning"
+      "Licensed & Insured Contractors",
+      "Custom Design Services",
+      "Project Management",
+      "Quality Craftsmanship",
+      "Transparent Pricing"
     ],
     services: [
-      "Full home renovations",
-      "Kitchen remodeling",
-      "Bathroom remodeling",
-      "Basement finishing",
-      "Room additions",
-      "Interior redesign",
-      "Permit handling"
+      "Full Home Renovations",
+      "Kitchen Remodeling",
+      "Bathroom Remodeling",
+      "Basement Finishing",
+      "Room Additions",
+      "Interior Upgrades"
     ],
     faqQuestions: [
       {
-        question: "What types of home remodeling services do you offer?",
-        answer: "We offer a wide range of home remodeling services, including full home renovations, kitchen remodeling, bathroom remodeling, and more."
+        question: "How long does a typical home remodeling project take?",
+        answer: "Project timelines vary based on scope, but most whole-home renovations take 2-4 months. Smaller projects may be completed in 2-6 weeks."
       },
       {
-        question: "Do you provide free consultations for home remodeling services?",
-        answer: "Yes, we provide free consultations for all home remodeling services."
+        question: "Do you provide free estimates?",
+        answer: "Yes, our contractors provide detailed, free estimates for all home remodeling projects."
       }
     ],
-    keywords: ["home remodeling", "remodel", "renovation", "contractor", "construction"],
-    category: "home remodeling"
+    keywords: ["home remodeling", "renovation", "home improvement", "remodel", "contractor", "denver"],
+    category: "remodeling",
+    videoUrl: "https://youtu.be/pTKgEtJpGjE"
   },
   "bathroom-remodeling": {
     name: "bathroom-remodeling",
     title: "Bathroom Remodeling",
     metaTitle: "Professional Bathroom Remodeling in Denver | Expert Renovation",
     metaDescription: "Find specialized bathroom remodeling contractors in Denver, CO. Expert bathroom renovation services from design to completion. Free estimates available.",
-    heading: "Professional Bathroom Remodeling in Denver, CO",
-    subheading: "Expert bathroom renovation and design services",
-    description: "Connect with specialized bathroom remodeling contractors who can create your perfect space. Our verified professionals handle complete bathroom renovations with attention to detail.",
-    shortDescription: "Expert bathroom remodeling services for residential properties in Denver.",
-    icon: "🚿",
+    heading: "Denver Bathroom Remodeling Contractors",
+    subheading: "Transform your bathroom with Denver's top remodeling experts",
+    description: "Connect with experienced bathroom remodeling contractors in Denver who can turn your vision into reality. Our verified professionals specialize in complete bathroom renovations with attention to detail.",
+    shortDescription: "Professional bathroom remodeling and renovation services in Denver.",
+    icon: "/icons/bathroom-remodeling.svg",
     benefits: [
-      "Specialized bathroom designers",
-      "Quality fixtures and materials",
-      "Waterproofing expertise",
-      "Project management",
-      "Clean and efficient work"
+      "Licensed & Insured Contractors",
+      "Custom Design Services",
+      "Project Management",
+      "Quality Craftsmanship",
+      "Transparent Pricing"
     ],
     services: [
-      "Full bathroom renovations",
-      "Shower and tub installation",
-      "Tile installation",
-      "Vanity and cabinet installation",
-      "Plumbing updates",
-      "Lighting installation",
-      "Accessibility modifications"
+      "Complete Bathroom Remodels",
+      "Shower & Tub Installation",
+      "Tile Installation",
+      "Vanity & Cabinet Updates",
+      "Plumbing Fixtures",
+      "Lighting Upgrades"
     ],
     faqQuestions: [
       {
-        question: "What types of bathroom remodeling services do you offer?",
-        answer: "We offer a wide range of bathroom remodeling services, including full bathroom renovations, shower and tub installation, tile installation, and more."
+        question: "How long does a bathroom remodel typically take?",
+        answer: "A typical bathroom remodel takes 2-3 weeks, depending on the scope of work and materials selected."
       },
       {
-        question: "Do you provide free estimates for bathroom remodeling services?",
-        answer: "Yes, we provide free estimates for all bathroom remodeling services."
+        question: "Do you provide free estimates?",
+        answer: "Yes, our contractors provide detailed, free estimates for all bathroom remodeling projects."
       }
     ],
-    keywords: ["bathroom remodeling", "bath", "shower", "vanity", "tile", "bathroom renovation"],
-    category: "bathroom remodeling"
+    keywords: ["bathroom remodeling", "bathroom renovation", "bathroom remodel", "bathroom contractor", "denver"],
+    category: "remodeling",
+    videoUrl: "https://youtu.be/mTOqRT0unsY"
   },
   "kitchen-remodeling": {
     name: "kitchen-remodeling",
