@@ -16,4 +16,5 @@ export interface TradeData {
   }[];
   keywords: string[];
   category: string;
+  videoUrl?: string;
 }

@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
-export default async function BathroomRemodelingPage({ searchParams }: Props) {
+export default async function BathroomRemodelingPage({ params, searchParams }: Props) {
     const trade = 'bathroom-remodeling';
     const tradeData = tradesData[trade];
     const currentPage = parseInt(searchParams.page || '1');
