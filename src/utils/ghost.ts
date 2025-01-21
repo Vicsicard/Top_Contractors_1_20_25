@@ -91,23 +91,6 @@ const tradeIndicators: Record<string, string[]> = {
     ]
 };
 
-// Define negative indicators that suggest the content is NOT about a particular trade
-const negativeIndicators: Record<string, string[]> = {
-    'bathroom-remodeling': ['kitchen', 'outdoor', 'garage', 'landscape'],
-    'kitchen-remodeling': ['bathroom', 'outdoor', 'garage', 'landscape'],
-    'home-remodeling': ['specific trade', 'single trade'],
-    'siding-gutters': ['interior', 'indoor', 'inside'],
-    'windows': ['window shopping', 'window of opportunity', 'browser window'],
-    'painter': ['artist', 'painting class', 'art', 'gallery'],
-    'landscaper': ['indoor', 'interior', 'inside'],
-    'flooring': ['upper floor', 'next floor', 'floor plan', 'floor manager'],
-    'fencing': ['sword', 'sport', 'competition', 'olympic'],
-    'electrician': ['kitchen remodel', 'bathroom remodel', 'home remodel', 'remodeling', 'renovation'],
-    'plumber': ['kitchen remodel', 'bathroom remodel', 'home remodel', 'remodeling', 'renovation'],
-    'hvac': ['kitchen remodel', 'bathroom remodel', 'home remodel', 'remodeling', 'renovation'],
-    'roofer': ['kitchen remodel', 'bathroom remodel', 'home remodel', 'remodeling', 'renovation']
-};
-
 // Ghost Configuration
 let NEW_GHOST_URL = process.env.NEXT_PUBLIC_GHOST_URL;
 let NEW_GHOST_KEY = process.env.NEXT_PUBLIC_GHOST_ORG_CONTENT_API_KEY;

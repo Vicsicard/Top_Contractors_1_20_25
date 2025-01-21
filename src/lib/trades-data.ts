@@ -15,6 +15,8 @@ export interface Trade {
     icon?: string;
 }
 
+import { TradeData } from '../types/trade.js';
+
 export const tradesData: Record<string, Trade> = {
   "plumber": {
     id: "plumber",
