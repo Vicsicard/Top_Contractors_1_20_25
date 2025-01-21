@@ -1,28 +1,19 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(): Promise<Response> {
+export async function GET() {
+  const supabase = await createClient();
+  
   try {
-    const supabase = await createClient()
-    
-    const { data: categories, error: dbError } = await supabase
+    const { data: categories } = await supabase
       .from('categories')
       .select('*')
-      .order('category_name')
-      
-    if (dbError) {
-      return Response.json({ error: dbError.message }, { status: 500 })
-    }
-    
-    return Response.json({ categories })
-    
+      .order('name');
+
+    return Response.json(categories);
   } catch (error) {
-    // Log the error for debugging purposes
-    console.error('Error in categories API:', error);
-    return Response.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    )
+    console.error('Error fetching categories:', error);
+    return Response.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

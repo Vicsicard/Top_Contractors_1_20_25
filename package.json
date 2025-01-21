@@ -2,16 +2,15 @@
   "name": "contractor-directory",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "clean": "rimraf .next node_modules",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs",
-    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch --config jest.config.cjs",
-    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --config jest.config.cjs",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "generate-sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {

@@ -1,4 +1,4 @@
-import { getAllPosts, extractPostCategory } from '../src/utils/ghost.ts';
+import { getAllPosts, extractPostCategory } from '../src/utils/ghost.js';
 
 async function analyzeCategories() {
     console.log('Starting category analysis of all posts...');
@@ -8,7 +8,7 @@ async function analyzeCategories() {
         const categories = new Map<string, number>();
         
         for (const post of posts) {
-            const category = extractPostCategory(post);
+            const category = extractPostCategory(post) || 'uncategorized';
             const count = categories.get(category) || 0;
             categories.set(category, count + 1);
         }

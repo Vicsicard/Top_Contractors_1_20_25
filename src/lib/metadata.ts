@@ -1,46 +1,10 @@
 import { Metadata } from 'next';
-import { TradeData } from '../types/trade.js';
 import { tradesData } from './trades-data';
-
-interface LocationData {
-  contractors: Array<{
-    id: string;
-    name: string;
-    rating: number;
-  }>;
-}
-
-interface RegionData {
-  areas: Array<{
-    id: string;
-    name: string;
-    contractorCount: number;
-  }>;
-}
 
 interface LocationMetadataParams {
   trade: string;
   region: string;
-  area: string;
-  data?: LocationData;
-}
-
-interface TradeRegionMetadataParams {
-  trade: string;
-  region: string;
-  data?: RegionData;
-}
-
-interface TradeMetadataParams {
-  trade: string;
-  data?: TradeData;
-}
-
-interface MetaData {
-  title: string;
-  description: string;
-  keywords?: string[];
-  data?: TradeData;
+  area?: string;
 }
 
 export function getMetadataByLocation({ trade, region, area }: LocationMetadataParams): Metadata {
@@ -65,7 +29,7 @@ export function getMetadataByLocation({ trade, region, area }: LocationMetadataP
   };
 }
 
-export function getMetadataForTradeRegion({ trade, region }: TradeRegionMetadataParams): Metadata {
+export function getMetadataForTradeRegion({ trade, region }: { trade: string; region: string }): Metadata {
   const tradeData = tradesData[trade.toLowerCase() as keyof typeof tradesData];
   
   if (!tradeData) {
@@ -87,7 +51,7 @@ export function getMetadataForTradeRegion({ trade, region }: TradeRegionMetadata
   };
 }
 
-export function getMetadataForTrade({ trade }: TradeMetadataParams): Metadata {
+export function getMetadataForTrade({ trade }: { trade: string }): Metadata {
   const tradeData = tradesData[trade.toLowerCase() as keyof typeof tradesData];
   
   if (!tradeData) {

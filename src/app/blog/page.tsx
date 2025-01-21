@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getPosts, getPostsByCategory, GhostPost } from '@/utils/ghost';
+import { GhostPost } from '@/utils/ghost';
 import { tradesData } from '@/lib/trades-data';
 import { formatDate } from '@/utils/date';
 import { JsonLd } from '@/components/json-ld';
