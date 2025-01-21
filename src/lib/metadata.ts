@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { TradeData } from '../types/trade.js';
 import { tradesData } from './trades-data';
 
 interface LocationData {
@@ -17,13 +18,6 @@ interface RegionData {
   }>;
 }
 
-interface TradeData {
-  regions: Array<{
-    id: string;
-    name: string;
-  }>;
-}
-
 interface LocationMetadataParams {
   trade: string;
   region: string;
@@ -39,6 +33,13 @@ interface TradeRegionMetadataParams {
 
 interface TradeMetadataParams {
   trade: string;
+  data?: TradeData;
+}
+
+interface MetaData {
+  title: string;
+  description: string;
+  keywords?: string[];
   data?: TradeData;
 }
 

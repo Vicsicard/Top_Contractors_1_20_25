@@ -1,23 +1,6 @@
-export interface Trade {
-    id: string;
-    title: string;
-    metaTitle: string;
-    metaDescription: string;
-    heading: string;
-    subheading: string;
-    description: string;
-    benefits: string[];
-    services: string[];
-    regionDescriptions: {
-        [key: string]: string;
-    };
-    keywords?: string[];
-    icon?: string;
-}
-
 import { TradeData } from '../types/trade.js';
 
-export const tradesData: Record<string, Trade> = {
+export const tradesData: Record<string, TradeData> = {
   "plumber": {
     id: "plumber",
     title: "Plumber",
