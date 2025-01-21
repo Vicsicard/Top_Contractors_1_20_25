@@ -51,6 +51,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
 export default async function BlogPage({ searchParams }: Props) {
     const currentPage = parseInt(searchParams.page || '1');
+    console.log('[DEBUG Page] Blog page params:', searchParams);
     
     let posts: GhostPost[] = [];
     let totalPages = 1;
@@ -58,9 +59,19 @@ export default async function BlogPage({ searchParams }: Props) {
     let hasPrevPage = false;
 
     try {
-        // Get all posts without category filtering
-        const result = await getPosts(currentPage, 12);
-            
+        const apiUrl = `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/ghost/posts${searchParams.category ? `?category=${searchParams.category}` : ''}${currentPage > 1 ? `${searchParams.category ? '&' : '?'}page=${currentPage}` : ''}`;
+        console.log('[DEBUG Page] Fetching from API URL:', apiUrl);
+        
+        const response = await fetch(apiUrl);
+        
+        if (!response.ok) {
+            console.error('[DEBUG Page] API error:', response.status, response.statusText);
+            throw new Error(`Failed to fetch posts: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        console.log(`[DEBUG Page] Got ${result.posts?.length || 0} posts from API`);
+        
         posts = result.posts;
         totalPages = result.totalPages;
         hasNextPage = result.hasNextPage;

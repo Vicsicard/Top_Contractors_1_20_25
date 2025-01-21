@@ -1,5 +1,113 @@
 import { notifySearchEngines } from './indexing';
 
+// Define specific phrases that strongly indicate a particular trade
+const tradeIndicators: Record<string, string[]> = {
+    'plumber': [
+        'plumbing', 'plumber', 'drain', 'pipe', 'water heater', 'leak', 'faucet', 'toilet',
+        'water line', 'sewer', 'clog', 'plumbing service', 'plumbing repair'
+    ],
+    'electrician': [
+        'electrical', 'electrician', 'wiring', 'circuit', 'power', 'electrical service',
+        'electrical repair', 'electrical installation', 'lighting', 'outlet', 'breaker',
+        'electrical panel', 'electrical safety', 'electrical code', 'electrical permit',
+        'electrical inspection', 'electrical contractor', 'licensed electrician',
+        'residential electrician', 'commercial electrician', 'emergency electrician',
+        'electrical upgrade', 'electrical maintenance', 'electrical troubleshooting',
+        'electrical emergency', 'electrical problem', 'electrical work', 'electric',
+        'voltage', 'amp', 'electrical system', 'electrical wiring', 'electrical expert',
+        'master electrician', 'certified electrician', 'professional electrician',
+        'electrical specialist', 'electrical services denver', 'denver electrician',
+        'electrical company denver', 'electrical contractor denver'
+    ],
+    'hvac': [
+        'hvac', 'heating', 'cooling', 'air conditioning', 'furnace', 'ac', 'heat',
+        'hvac service', 'hvac repair', 'hvac installation', 'air conditioner'
+    ],
+    'roofer': [
+        'roof', 'roofing', 'shingle', 'metal roof', 'tile roof', 'roofing service',
+        'roof repair', 'roof installation', 'roof replacement', 'roofing contractor'
+    ],
+    'painter': [
+        'paint', 'painting', 'interior paint', 'exterior paint', 'painting service',
+        'house painter', 'residential painting', 'commercial painting', 'paint job',
+        'painting contractor', 'professional painter', 'paint color'
+    ],
+    'landscaper': [
+        'landscape', 'landscaping', 'lawn', 'garden', 'yard', 'landscaping service',
+        'lawn care', 'lawn maintenance', 'landscaping design', 'outdoor', 'tree service',
+        'sprinkler', 'irrigation'
+    ],
+    'home-remodeling': [
+        'home remodel', 'renovation', 'home improvement', 'remodeling service',
+        'home renovation', 'house remodel', 'residential remodeling', 'custom home',
+        'home addition', 'basement finish', 'general contractor'
+    ],
+    'bathroom-remodeling': [
+        'bathroom remodel', 'bath renovation', 'bathroom upgrade', 'bathroom design',
+        'bathroom contractor', 'bathroom project', 'master bath', 'bathroom makeover',
+        'bathroom renovation service', 'bath remodel', 'bathroom specialist'
+    ],
+    'kitchen-remodeling': [
+        'kitchen remodel', 'kitchen renovation', 'kitchen upgrade', 'kitchen design',
+        'kitchen contractor', 'kitchen project', 'kitchen makeover', 'kitchen cabinet',
+        'kitchen countertop', 'kitchen renovation service', 'kitchen specialist'
+    ],
+    'siding-gutters': [
+        'siding', 'gutter', 'downspout', 'exterior', 'siding installation',
+        'gutter repair', 'gutter installation', 'gutter cleaning', 'vinyl siding',
+        'fiber cement siding', 'seamless gutter', 'gutter service'
+    ],
+    'masonry': [
+        'masonry', 'brick', 'stone', 'concrete', 'block', 'masonry service',
+        'brick work', 'stone work', 'concrete work', 'retaining wall',
+        'masonry contractor', 'brick repair', 'stone mason'
+    ],
+    'decks': [
+        'deck', 'patio deck', 'composite deck', 'wood deck', 'deck building',
+        'deck installation', 'deck repair', 'deck contractor', 'outdoor deck',
+        'custom deck', 'deck design', 'deck builder'
+    ],
+    'flooring': [
+        'floor', 'hardwood', 'tile floor', 'carpet', 'vinyl', 'flooring service',
+        'floor installation', 'floor repair', 'flooring contractor', 'laminate',
+        'wood floor', 'tile installation', 'floor covering'
+    ],
+    'windows': [
+        'window', 'window replacement', 'window installation', 'window repair',
+        'window contractor', 'window service', 'replacement window', 'new window',
+        'window upgrade', 'energy efficient window', 'window specialist'
+    ],
+    'fencing': [
+        'fence', 'fencing', 'privacy fence', 'yard fence', 'fence installation',
+        'fence repair', 'fence contractor', 'fence service', 'wood fence',
+        'vinyl fence', 'chain link fence', 'fence builder', 'security fence',
+        'residential fence', 'commercial fence', 'fence company', 'fence specialist',
+        'fencing service', 'fencing contractor', 'fence estimate'
+    ],
+    'epoxy-garage': [
+        'epoxy', 'garage floor', 'floor coating', 'epoxy coating', 'garage epoxy',
+        'epoxy floor', 'garage floor coating', 'concrete coating', 'garage makeover',
+        'epoxy specialist', 'garage flooring'
+    ]
+};
+
+// Define negative indicators that suggest the content is NOT about a particular trade
+const negativeIndicators: Record<string, string[]> = {
+    'bathroom-remodeling': ['kitchen', 'outdoor', 'garage', 'landscape'],
+    'kitchen-remodeling': ['bathroom', 'outdoor', 'garage', 'landscape'],
+    'home-remodeling': ['specific trade', 'single trade'],
+    'siding-gutters': ['interior', 'indoor', 'inside'],
+    'windows': ['window shopping', 'window of opportunity', 'browser window'],
+    'painter': ['artist', 'painting class', 'art', 'gallery'],
+    'landscaper': ['indoor', 'interior', 'inside'],
+    'flooring': ['upper floor', 'next floor', 'floor plan', 'floor manager'],
+    'fencing': ['sword', 'sport', 'competition', 'olympic'],
+    'electrician': ['kitchen remodel', 'bathroom remodel', 'home remodel', 'remodeling', 'renovation'],
+    'plumber': ['kitchen remodel', 'bathroom remodel', 'home remodel', 'remodeling', 'renovation'],
+    'hvac': ['kitchen remodel', 'bathroom remodel', 'home remodel', 'remodeling', 'renovation'],
+    'roofer': ['kitchen remodel', 'bathroom remodel', 'home remodel', 'remodeling', 'renovation']
+};
+
 // Ghost Configuration
 let NEW_GHOST_URL = process.env.NEXT_PUBLIC_GHOST_URL;
 let NEW_GHOST_KEY = process.env.NEXT_PUBLIC_GHOST_ORG_CONTENT_API_KEY;
@@ -113,41 +221,63 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
         const posts: GhostPost[] = [];
         let currentPage = 1;
         let hasMore = true;
+        console.log(`[DEBUG] Fetching posts from Ghost URL: ${url}`);
 
         while (hasMore) {
-            const response = await fetch(
-                `${url}/ghost/api/content/posts/?key=${key}&include=authors,tags&page=${currentPage}&limit=15`,
-                getFetchOptions()
-            );
-
+            const apiUrl = `${url}/ghost/api/content/posts/?key=${key}&page=${currentPage}&limit=10&include=authors`;
+            console.log(`[DEBUG] Fetching page ${currentPage} from Ghost API`);
+            
+            const response = await fetch(apiUrl, getFetchOptions());
             if (!response.ok) {
-                throw new Error(`Failed to fetch posts: ${response.statusText}`);
+                console.error(`[DEBUG] Ghost API error: ${response.status} ${response.statusText}`);
+                throw new Error(`Ghost API error: ${response.status} ${response.statusText}`);
             }
 
             const data = await response.json();
-
-            if (!Array.isArray(data.posts)) {
-                throw new Error(`Invalid response from ${url}: Expected posts array`);
+            console.log(`[DEBUG] Got ${data.posts?.length || 0} posts from page ${currentPage}`);
+            
+            if (data.posts && data.posts.length > 0) {
+                posts.push(...data.posts);
+                currentPage++;
+            } else {
+                hasMore = false;
             }
-
-            // Process each post to ensure image URLs are absolute
-            const processedPosts = data.posts.map((post: GhostPost) => ({
-                ...post,
-                feature_image: post.feature_image ? ensureAbsoluteUrl(post.feature_image, url) : undefined,
-                source: url
-            }));
-
-            posts.push(...processedPosts);
-
-            // Check if there are more posts
-            hasMore = data.meta?.pagination?.pages > currentPage;
-            currentPage++;
         }
 
+        console.log(`[DEBUG] Total posts fetched: ${posts.length}`);
         return posts;
     } catch (error) {
-        console.error('Error fetching posts:', error);
-        return [];
+        console.error('[DEBUG] Error fetching posts from Ghost:', error);
+        throw error;
+    }
+}
+
+/**
+ * Gets all posts.
+ * 
+ * @returns A promise that resolves to an array of Ghost posts.
+ */
+export async function getAllPosts(): Promise<GhostPost[]> {
+    try {
+        console.log('[DEBUG] Getting all posts from both Ghost instances');
+        const [newPosts, oldPosts] = await Promise.all([
+            fetchAllPosts(NEW_GHOST_URL!, NEW_GHOST_KEY!),
+            fetchAllPosts(OLD_GHOST_URL!, OLD_GHOST_KEY!)
+        ]);
+
+        console.log(`[DEBUG] Got ${newPosts.length} new posts and ${oldPosts.length} old posts`);
+        
+        // Add source identifier to each post
+        const postsWithSource = [
+            ...newPosts.map(post => ({ ...post, source: 'new' })),
+            ...oldPosts.map(post => ({ ...post, source: 'old' }))
+        ];
+
+        console.log(`[DEBUG] Total combined posts: ${postsWithSource.length}`);
+        return postsWithSource;
+    } catch (error) {
+        console.error('[DEBUG] Error in getAllPosts:', error);
+        throw error;
     }
 }
 
@@ -206,29 +336,6 @@ export async function getPosts(page = 1, limit = 10): Promise<PaginatedPosts> {
         };
     } catch (error) {
         console.error('Error fetching posts:', error);
-        throw error;
-    }
-}
-
-/**
- * Gets all posts.
- * 
- * @returns A promise that resolves to an array of Ghost posts.
- */
-export async function getAllPosts(): Promise<GhostPost[]> {
-    try {
-        // Get posts from both Ghost instances
-        const [newPosts, oldPosts] = await Promise.all([
-            fetchAllPosts(NEW_GHOST_URL!, NEW_GHOST_KEY!),
-            fetchAllPosts(OLD_GHOST_URL!, OLD_GHOST_KEY!)
-        ]);
-
-        // Combine and sort posts
-        return [...newPosts, ...oldPosts].sort((a, b) => 
-            new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
-        );
-    } catch (error) {
-        console.error('Error fetching all posts:', error);
         throw error;
     }
 }
@@ -306,177 +413,476 @@ export async function getPostsByTag(tag: string, page = 1, limit = 10): Promise<
     }
 }
 
-/**
- * Extracts the category from a post's content based on the hyperlinked trade category.
- * 
- * @param post The Ghost post to extract the category from
- * @returns The category ID or null if not found
- */
 export function extractPostCategory(post: GhostPost): string | null {
-    if (!post.html) return null;
-
-    // Remove HTML tags and decode entities for text analysis
-    const cleanHtml = (html: string) => {
-        return html
-            .replace(/<[^>]+>/g, ' ') // Remove HTML tags
-            .replace(/&nbsp;/g, ' ')  // Replace &nbsp; with space
-            .replace(/&amp;/g, '&')   // Replace &amp; with &
-            .replace(/&lt;/g, '<')    // Replace &lt; with <
-            .replace(/&gt;/g, '>')    // Replace &gt; with >
-            .replace(/&quot;/g, '"')  // Replace &quot; with "
-            .replace(/&#39;/g, "'")   // Replace &#39; with '
-            .replace(/\s+/g, ' ')     // Replace multiple spaces with single space
-            .trim();
-    };
-
-    // Get clean text from title and content
-    const titleAndContent = `${post.title} ${cleanHtml(post.html)}`.toLowerCase();
+    console.log(`[DEBUG Category] Analyzing category for post: "${post.title}" with slug: "${post.slug}"`);
     
-    // Define specific phrases that strongly indicate a particular trade
-    const tradeIndicators: Record<string, string[]> = {
+    if (!post.slug) {
+        console.log(`[DEBUG Category] No slug found for post: "${post.title}"`);
+        return null;
+    }
+
+    // Convert slug to a standardized format for matching
+    const normalizedSlug = post.slug.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+
+    // First, check for base category words that are always in the URL
+    const baseCategories: Record<string, string[]> = {
+        // 1. Plumber - plumbing services, repairs, installations
         'plumber': [
-            'plumbing', 'plumber', 'drain', 'pipe', 'water heater', 'leak', 'faucet', 'toilet',
-            'water line', 'sewer', 'clog', 'plumbing service', 'plumbing repair'
+            'plumb', 'drain', 'pipe', 'water-heater', 'leak', 'faucet', 'toilet', 
+            'water-line', 'sewer', 'clog', 'plumbing-repair', 'water-damage', 
+            'water-system', 'backflow', 'hydro-jetting', 'repiping', 'water-pressure'
         ],
+        
+        // 2. Electrical
         'electrician': [
-            'electrical', 'electrician', 'wiring', 'circuit', 'power', 'electrical service',
-            'electrical repair', 'electrical installation', 'lighting', 'outlet', 'breaker'
+            'electric', 'wiring', 'circuit', 'power', 'lighting', 'outlet', 'breaker', 
+            'panel', 'surge-protection', 'generator', 'electrical-repair', 'electrical-upgrade',
+            'electrical-installation', 'electrical-safety', 'electrical-code', 'electrical-permit',
+            'electrical-inspection'
         ],
+        
+        // 3. HVAC
         'hvac': [
-            'hvac', 'heating', 'cooling', 'air conditioning', 'furnace', 'ac', 'heat',
-            'hvac service', 'hvac repair', 'hvac installation', 'air conditioner'
+            'hvac', 'heating', 'cooling', 'air-condition', 'furnace', 'ac', 'heat',
+            'ventilation', 'air-quality', 'thermostat', 'ductwork', 'heat-pump',
+            'air-handler', 'refrigerant', 'temperature-control'
         ],
+        
+        // 4. Roofing
         'roofer': [
-            'roof', 'roofing', 'shingle', 'metal roof', 'tile roof', 'roofing service',
-            'roof repair', 'roof installation', 'roof replacement', 'roofing contractor'
+            'roof', 'shingle', 'metal-roof', 'tile-roof', 'flat-roof', 'roof-repair',
+            'roof-replacement', 'roof-maintenance', 'roof-inspection', 'roofing-material',
+            'roof-leak', 'roof-ventilation', 'roof-installation'
         ],
+        
+        // 5. Painting
         'painter': [
-            'paint', 'painting', 'interior paint', 'exterior paint', 'painting service',
-            'house painter', 'residential painting', 'commercial painting', 'paint job',
-            'painting contractor', 'professional painter', 'paint color'
+            'paint', 'painting', 'interior-paint', 'exterior-paint', 'wall-covering',
+            'paint-color', 'paint-finish', 'paint-type', 'painting-service', 'stain',
+            'wallpaper', 'paint-removal', 'paint-preparation'
         ],
+        
+        // 6. Landscaping - Updated
         'landscaper': [
-            'landscape', 'landscaping', 'lawn', 'garden', 'yard', 'landscaping service',
-            'lawn care', 'lawn maintenance', 'landscaping design', 'outdoor', 'tree service',
-            'sprinkler', 'irrigation'
+            'landscap', // This will catch both 'landscape' and 'landscaping'
+            'lawn-care',
+            'garden',
+            'yard-work',
+            'sprinkler',
+            'irrigation',
+            'outdoor-design',
+            'plant-selection',
+            'tree-service',
+            'shrub',
+            'mulch',
+            'hardscape',
+            'soil',
+            'grass',
+            'weed-control',
+            'lawn-maintenance',
+            'outdoor-lighting',
+            'xeriscap', // For xeriscaping
+            'water-feature',
+            'rock-garden',
+            'flower-bed',
+            'yard-maintenance'
         ],
+        
+        // 7. Home Remodeling
         'home-remodeling': [
-            'home remodel', 'renovation', 'home improvement', 'remodeling service',
-            'home renovation', 'house remodel', 'residential remodeling', 'custom home',
-            'home addition', 'basement finish', 'general contractor'
+            'home-remodeling',
+            'home-remodel',
+            'house-remodeling',
+            'home-renovation',
+            'house-renovation',
+            'home-improvement',
+            'remodeling-contractor',
+            'remodeling-company',
+            'remodeling-service',
+            'whole-house-remodel',
+            'complete-home-remodel',
+            'general-contractor',
+            'general-remodeling',
+            'residential-remodeling',
+            'home-construction',
+            'house-remodel',
+            // Avoid terms that might belong to specific room remodeling
+            'remodeling-denver',
+            'remodeling-service',
+            'renovation-contractor',
+            'renovation-company'
         ],
+        
+        // 8. Bathroom Remodeling
         'bathroom-remodeling': [
-            'bathroom remodel', 'bath renovation', 'bathroom upgrade', 'bathroom design',
-            'bathroom contractor', 'bathroom project', 'master bath', 'bathroom makeover',
-            'bathroom renovation service', 'bath remodel', 'bathroom specialist'
+            'bathroom-remodel', 'bath-renovation', 'bathroom', 'bath-remodel', 'shower',
+            'bathtub', 'toilet', 'vanity', 'bathroom-design', 'bathroom-fixture',
+            'bathroom-tile', 'bathroom-plumbing', 'bathroom-cabinet'
         ],
+        
+        // 9. Kitchen Remodeling
         'kitchen-remodeling': [
-            'kitchen remodel', 'kitchen renovation', 'kitchen upgrade', 'kitchen design',
-            'kitchen contractor', 'kitchen project', 'kitchen makeover', 'kitchen cabinet',
-            'kitchen countertop', 'kitchen renovation service', 'kitchen specialist'
+            'kitchen-remodel', 'kitchen-renovation', 'kitchen', 'cabinet', 'countertop',
+            'kitchen-design', 'kitchen-appliance', 'kitchen-island', 'kitchen-storage',
+            'kitchen-sink', 'kitchen-backsplash', 'kitchen-lighting'
         ],
+        
+        // 10. Siding and Gutters - Updated
         'siding-gutters': [
-            'siding', 'gutter', 'downspout', 'exterior', 'siding installation',
-            'gutter repair', 'gutter installation', 'gutter cleaning', 'vinyl siding',
-            'fiber cement siding', 'seamless gutter', 'gutter service'
+            'siding-',   // Will catch siding-installation, siding-repair, etc.
+            '-siding',   // Will catch vinyl-siding, metal-siding, etc.
+            'gutter-',   // Will catch gutter-installation, gutter-repair, etc.
+            '-gutter',   // Will catch seamless-gutter, etc.
+            'rain-gutter',
+            'downspout',
+            'vinyl-siding',
+            'fiber-cement',
+            'hardie',    // For Hardie board siding
+            'aluminum-siding',
+            'metal-siding',
+            'wood-siding',
+            'gutter-guard',
+            'gutter-screen',
+            'gutter-clean',
+            'gutter-maintenance',
+            'fascia',
+            'soffit',
+            'seamless-gutter',
+            'rain-chain',
+            'water-diversion',
+            'exterior-drainage'
         ],
+        
+        // 11. Masonry
         'masonry': [
             'masonry', 'brick', 'stone', 'concrete', 'block', 'masonry service',
             'brick work', 'stone work', 'concrete work', 'retaining wall',
             'masonry contractor', 'brick repair', 'stone mason'
         ],
+        
+        // 12. Decks - Updated
         'decks': [
-            'deck', 'patio deck', 'composite deck', 'wood deck', 'deck building',
-            'deck installation', 'deck repair', 'deck contractor', 'outdoor deck',
-            'custom deck', 'deck design', 'deck builder'
+            'deck-',     // Will catch deck-building, deck-repair, etc.
+            '-deck',     // Will catch patio-deck, wood-deck, etc.
+            'decking',
+            'porch',
+            'outdoor-living',
+            'composite-decking',
+            'wood-decking',
+            'deck-stain',
+            'deck-seal',
+            'deck-rail',
+            'deck-board',
+            'deck-design',
+            'deck-build',
+            'deck-construct',
+            'deck-install',
+            'deck-repair',
+            'deck-maintain'
         ],
+        
+        // 13. Flooring
         'flooring': [
-            'floor', 'hardwood', 'tile floor', 'carpet', 'vinyl', 'flooring service',
-            'floor installation', 'floor repair', 'flooring contractor', 'laminate',
-            'wood floor', 'tile installation', 'floor covering'
+            'flooring',
+            'floor',
+            'floors',
+            'flooring-installation',
+            'floor-installation',
+            'hardwood-flooring',
+            'hardwood-floors',
+            'tile-flooring',
+            'tile-floors',
+            'vinyl-flooring',
+            'vinyl-floors',
+            'laminate-flooring',
+            'laminate-floors',
+            'carpet-installation',
+            'carpeting',
+            'wood-floors',
+            'wood-flooring',
+            'floor-replacement',
+            'flooring-contractor',
+            'flooring-company',
+            'flooring-service',
+            'floor-repair',
+            'flooring-repair'
         ],
+        
+        // 14. Windows - Updated
         'windows': [
-            'window', 'window replacement', 'window installation', 'window repair',
-            'window contractor', 'window service', 'replacement window', 'new window',
-            'window upgrade', 'energy efficient window', 'window specialist'
+            'window-',   // Will catch window-replacement, window-installation, etc.
+            '-window',   // Will catch bay-window, picture-window, etc.
+            'double-hung',
+            'single-hung',
+            'casement',
+            'sliding-window',
+            'bay-window',
+            'bow-window',
+            'picture-window',
+            'window-frame',
+            'window-glass',
+            'window-seal',
+            'window-pane',
+            'energy-efficient-window',
+            'vinyl-window',
+            'window-screen',
+            'window-treatment'
         ],
+        
+        // 15. Fencing - Updated
         'fencing': [
-            'fence', 'fencing', 'privacy fence', 'yard fence', 'fence installation',
-            'fence repair', 'fence contractor', 'fence service', 'wood fence',
-            'vinyl fence', 'chain link fence', 'fence builder', 'security fence',
-            'residential fence', 'commercial fence', 'fence company', 'fence specialist',
-            'fencing service', 'fencing contractor', 'fence estimate'
+            'fence-',    // Will catch fence-installation, fence-repair, etc.
+            '-fence',    // Will catch privacy-fence, wood-fence, etc.
+            'fencing',
+            'privacy-screen',
+            'yard-enclosure',
+            'gate-',
+            'wood-fence',
+            'vinyl-fence',
+            'metal-fence',
+            'chain-link',
+            'wrought-iron',
+            'fence-post',
+            'fence-panel',
+            'fence-repair',
+            'fence-install',
+            'fence-maintain',
+            'security-fence',
+            'pool-fence',
+            'pet-fence'
         ],
+        
+        // 16. Epoxy Garage Floors
         'epoxy-garage': [
-            'epoxy', 'garage floor', 'floor coating', 'epoxy coating', 'garage epoxy',
-            'epoxy floor', 'garage floor coating', 'concrete coating', 'garage makeover',
-            'epoxy specialist', 'garage flooring'
+            'epoxy', 'garage-floor', 'floor-coating', 'epoxy-coating', 'garage-epoxy',
+            'epoxy-floor', 'garage-floor-coating', 'concrete-coating', 'garage-makeover',
+            'epoxy-specialist', 'garage-flooring'
         ]
     };
 
-    // Define negative indicators that suggest the content is NOT about a particular trade
-    const negativeIndicators: Record<string, string[]> = {
-        'bathroom-remodeling': ['kitchen', 'outdoor', 'garage', 'landscape'],
-        'kitchen-remodeling': ['bathroom', 'outdoor', 'garage', 'landscape'],
-        'home-remodeling': ['specific trade', 'single trade'],
-        'siding-gutters': ['interior', 'indoor', 'inside'],
-        'windows': ['window shopping', 'window of opportunity', 'browser window'],
-        'painter': ['artist', 'painting class', 'art', 'gallery'],
-        'landscaper': ['indoor', 'interior', 'inside'],
-        'flooring': ['upper floor', 'next floor', 'floor plan', 'floor manager'],
-        'fencing': ['sword', 'sport', 'competition', 'olympic']
+    // Check for base category words first
+    for (const [trade, baseWords] of Object.entries(baseCategories)) {
+        const matchedWord = baseWords.find(word => normalizedSlug.includes(word));
+        if (matchedWord) {
+            // Additional check for home remodeling to avoid bathroom/kitchen posts
+            if (trade === 'home-remodeling') {
+                if (normalizedSlug.includes('bathroom') || normalizedSlug.includes('kitchen')) {
+                    continue; // Skip this match and keep looking
+                }
+            }
+            console.log(`[DEBUG Category] Found trade "${trade}" from base word match in slug: ${matchedWord}`);
+            return trade;
+        }
+    }
+
+    // If no base category found, fall back to detailed keyword matching
+    const tradeKeywords: Record<string, string[]> = {
+        // 1. Plumbing
+        'plumber': [
+            'plumb', 'drain', 'pipe', 'water-heater', 'leak', 'faucet', 'toilet', 
+            'water-line', 'sewer', 'clog', 'plumbing-repair', 'water-damage', 
+            'water-system', 'backflow', 'hydro-jetting', 'repiping', 'water-pressure'
+        ],
+        
+        // 2. Electrical
+        'electrician': [
+            'electric', 'wiring', 'circuit', 'power', 'lighting', 'outlet', 'breaker', 
+            'panel', 'surge-protection', 'generator', 'electrical-repair', 'electrical-upgrade',
+            'electrical-installation', 'electrical-safety', 'electrical-code', 'electrical-permit',
+            'electrical-inspection'
+        ],
+        
+        // 3. HVAC
+        'hvac': [
+            'hvac', 'heating', 'cooling', 'air-condition', 'furnace', 'ac', 'heat',
+            'ventilation', 'air-quality', 'thermostat', 'ductwork', 'heat-pump',
+            'air-handler', 'refrigerant', 'temperature-control'
+        ],
+        
+        // 4. Roofing
+        'roofer': [
+            'roof', 'shingle', 'metal-roof', 'tile-roof', 'flat-roof', 'roof-repair',
+            'roof-replacement', 'roof-maintenance', 'roof-inspection', 'roofing-material',
+            'roof-leak', 'roof-ventilation', 'roof-installation'
+        ],
+        
+        // 5. Painting
+        'painter': [
+            'paint', 'painting', 'interior-paint', 'exterior-paint', 'wall-covering',
+            'paint-color', 'paint-finish', 'paint-type', 'painting-service', 'stain',
+            'wallpaper', 'paint-removal', 'paint-preparation'
+        ],
+        
+        // 6. Landscaping - Updated
+        'landscaper': [
+            'landscap', // This will catch both 'landscape' and 'landscaping'
+            'lawn-care',
+            'garden',
+            'yard-work',
+            'sprinkler',
+            'irrigation',
+            'outdoor-design',
+            'plant-selection',
+            'tree-service',
+            'shrub',
+            'mulch',
+            'hardscape',
+            'soil',
+            'grass',
+            'weed-control',
+            'lawn-maintenance',
+            'outdoor-lighting',
+            'xeriscap', // For xeriscaping
+            'water-feature',
+            'rock-garden',
+            'flower-bed',
+            'yard-maintenance'
+        ],
+        
+        // 7. Home Remodeling
+        'home-remodeling': [
+            'home-remodel', 'renovation', 'home-improvement', 'remodeling', 'home-addition',
+            'house-renovation', 'whole-house', 'living-space', 'basement-finish',
+            'room-addition', 'interior-remodel', 'home-upgrade'
+        ],
+        
+        // 8. Bathroom Remodeling
+        'bathroom-remodeling': [
+            'bathroom-remodel', 'bath-renovation', 'bathroom', 'bath-remodel', 'shower',
+            'bathtub', 'toilet', 'vanity', 'bathroom-design', 'bathroom-fixture',
+            'bathroom-tile', 'bathroom-plumbing', 'bathroom-cabinet'
+        ],
+        
+        // 9. Kitchen Remodeling
+        'kitchen-remodeling': [
+            'kitchen-remodel', 'kitchen-renovation', 'kitchen', 'cabinet', 'countertop',
+            'kitchen-design', 'kitchen-appliance', 'kitchen-island', 'kitchen-storage',
+            'kitchen-sink', 'kitchen-backsplash', 'kitchen-lighting'
+        ],
+        
+        // 10. Siding and Gutters - Updated
+        'siding-gutters': [
+            'siding-',   // Will catch siding-installation, siding-repair, etc.
+            '-siding',   // Will catch vinyl-siding, metal-siding, etc.
+            'gutter-',   // Will catch gutter-installation, gutter-repair, etc.
+            '-gutter',   // Will catch seamless-gutter, etc.
+            'rain-gutter',
+            'downspout',
+            'vinyl-siding',
+            'fiber-cement',
+            'hardie',    // For Hardie board siding
+            'aluminum-siding',
+            'metal-siding',
+            'wood-siding',
+            'gutter-guard',
+            'gutter-screen',
+            'gutter-clean',
+            'gutter-maintenance',
+            'fascia',
+            'soffit',
+            'seamless-gutter',
+            'rain-chain',
+            'water-diversion',
+            'exterior-drainage'
+        ],
+        
+        // 11. Masonry
+        'masonry': [
+            'masonry', 'brick', 'stone', 'concrete', 'block', 'masonry service',
+            'brick work', 'stone work', 'concrete work', 'retaining wall',
+            'masonry contractor', 'brick repair', 'stone mason'
+        ],
+        
+        // 12. Decks - Updated
+        'decks': [
+            'deck-',     // Will catch deck-building, deck-repair, etc.
+            '-deck',     // Will catch patio-deck, wood-deck, etc.
+            'decking',
+            'porch',
+            'outdoor-living',
+            'composite-decking',
+            'wood-decking',
+            'deck-stain',
+            'deck-seal',
+            'deck-rail',
+            'deck-board',
+            'deck-design',
+            'deck-build',
+            'deck-construct',
+            'deck-install',
+            'deck-repair',
+            'deck-maintain'
+        ],
+        
+        // 13. Flooring
+        'flooring': [
+            'floor', 'hardwood', 'tile-floor', 'carpet', 'vinyl', 'laminate',
+            'floor-installation', 'wood-floor', 'tile-installation', 'flooring-repair',
+            'floor-refinishing', 'floor-sanding', 'floor-staining'
+        ],
+        
+        // 14. Windows - Updated
+        'windows': [
+            'window-',   // Will catch window-replacement, window-installation, etc.
+            '-window',   // Will catch bay-window, picture-window, etc.
+            'double-hung',
+            'single-hung',
+            'casement',
+            'sliding-window',
+            'bay-window',
+            'bow-window',
+            'picture-window',
+            'window-frame',
+            'window-glass',
+            'window-seal',
+            'window-pane',
+            'energy-efficient-window',
+            'vinyl-window',
+            'window-screen',
+            'window-treatment'
+        ],
+        
+        // 15. Fencing - Updated
+        'fencing': [
+            'fence-',    // Will catch fence-installation, fence-repair, etc.
+            '-fence',    // Will catch privacy-fence, wood-fence, etc.
+            'fencing',
+            'privacy-screen',
+            'yard-enclosure',
+            'gate-',
+            'wood-fence',
+            'vinyl-fence',
+            'metal-fence',
+            'chain-link',
+            'wrought-iron',
+            'fence-post',
+            'fence-panel',
+            'fence-repair',
+            'fence-install',
+            'fence-maintain',
+            'security-fence',
+            'pool-fence',
+            'pet-fence'
+        ],
+        
+        // 16. Epoxy Garage Floors
+        'epoxy-garage': [
+            'epoxy', 'garage-floor', 'floor-coating', 'epoxy-coating', 'garage-epoxy',
+            'epoxy-floor', 'garage-floor-coating', 'concrete-coating', 'garage-makeover',
+            'epoxy-specialist', 'garage-flooring'
+        ]
     };
 
-    // Look for direct trade mentions in the title
-    const titleOnly = post.title.toLowerCase();
-    for (const [tradeId, indicators] of Object.entries(tradeIndicators)) {
-        // Skip if title contains negative indicators
-        if (negativeIndicators[tradeId]?.some(neg => titleOnly.includes(neg))) {
-            continue;
-        }
-
-        // Check for strong indicators in the title
-        const hasTitleIndicator = indicators.some(indicator => {
-            const indicatorRegex = new RegExp(`\\b${indicator}\\b`, 'i');
-            return indicatorRegex.test(titleOnly);
-        });
-
-        if (hasTitleIndicator) {
-            return tradeId;
+    // Look for trade keywords in the slug
+    for (const [trade, keywords] of Object.entries(tradeKeywords)) {
+        const matchedWord = keywords.find(keyword => normalizedSlug.includes(keyword));
+        if (matchedWord) {
+            console.log(`[DEBUG Category] Found trade "${trade}" from keyword match in slug: ${matchedWord}`);
+            return trade;
         }
     }
 
-    // If no match in title, check full content
-    for (const [tradeId, indicators] of Object.entries(tradeIndicators)) {
-        // Skip if content contains negative indicators
-        if (negativeIndicators[tradeId]?.some(neg => titleAndContent.includes(neg))) {
-            continue;
-        }
-
-        // Look for strong indicators in the content
-        const hasStrongIndicator = indicators.some(indicator => {
-            const indicatorRegex = new RegExp(`\\b${indicator}\\b`, 'i');
-            return indicatorRegex.test(titleAndContent);
-        });
-
-        // Look for trade name in URL-like patterns
-        const urlPatterns = [
-            new RegExp(`\\b${tradeId.replace('-', '\\s*')}\\s+in\\s+denver\\b`, 'i'),
-            new RegExp(`\\b${tradeId.replace('-', '\\s*')}\\s+services\\b`, 'i'),
-            new RegExp(`\\bdenver\\s+${tradeId.replace('-', '\\s*')}\\b`, 'i'),
-            new RegExp(`\\b${tradeId.replace('-', '\\s*')}\\s+contractor`, 'i'),
-            new RegExp(`\\b${tradeId.replace('-', '\\s*')}\\s+specialist`, 'i'),
-            new RegExp(`\\b${tradeId.replace('-', '\\s*')}\\s+company`, 'i'),
-            new RegExp(`\\b${tradeId.replace('-', '\\s*')}\\s+expert`, 'i')
-        ];
-
-        const hasUrlPattern = urlPatterns.some(pattern => pattern.test(titleAndContent));
-
-        if (hasStrongIndicator || hasUrlPattern) {
-            return tradeId;
-        }
-    }
-
+    console.log(`[DEBUG Category] No trade category found for post`);
     return null;
 }
 
@@ -492,9 +898,15 @@ export async function getPostsByCategory(category: string, page = 1, limit = 10)
     try {
         // Get all posts
         const allPosts = await getAllPosts();
+        console.log(`[DEBUG] Got ${allPosts.length} total posts`);
 
         // Filter posts by category
-        const categoryPosts = allPosts.filter(post => extractPostCategory(post) === category);
+        const categoryPosts = allPosts.filter(post => {
+            const postCategory = extractPostCategory(post);
+            console.log(`[DEBUG] Post "${post.title}" category: ${postCategory}`);
+            return postCategory === category;
+        });
+        console.log(`[DEBUG] Found ${categoryPosts.length} posts in category ${category}`);
 
         // Calculate pagination
         const startIndex = (page - 1) * limit;
