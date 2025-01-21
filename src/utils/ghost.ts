@@ -1,96 +1,5 @@
 import { notifySearchEngines } from './indexing';
 
-// Define specific phrases that strongly indicate a particular trade
-const tradeIndicators: Record<string, string[]> = {
-    'plumber': [
-        'plumbing', 'plumber', 'drain', 'pipe', 'water heater', 'leak', 'faucet', 'toilet',
-        'water line', 'sewer', 'clog', 'plumbing service', 'plumbing repair'
-    ],
-    'electrician': [
-        'electrical', 'electrician', 'wiring', 'circuit', 'power', 'electrical service',
-        'electrical repair', 'electrical installation', 'lighting', 'outlet', 'breaker',
-        'electrical panel', 'electrical safety', 'electrical code', 'electrical permit',
-        'electrical inspection', 'electrical contractor', 'licensed electrician',
-        'residential electrician', 'commercial electrician', 'emergency electrician',
-        'electrical upgrade', 'electrical maintenance', 'electrical troubleshooting',
-        'electrical emergency', 'electrical problem', 'electrical work', 'electric',
-        'voltage', 'amp', 'electrical system', 'electrical wiring', 'electrical expert',
-        'master electrician', 'certified electrician', 'professional electrician',
-        'electrical specialist', 'electrical services denver', 'denver electrician',
-        'electrical company denver', 'electrical contractor denver'
-    ],
-    'hvac': [
-        'hvac', 'heating', 'cooling', 'air conditioning', 'furnace', 'ac', 'heat',
-        'hvac service', 'hvac repair', 'hvac installation', 'air conditioner'
-    ],
-    'roofer': [
-        'roof', 'roofing', 'shingle', 'metal roof', 'tile roof', 'roofing service',
-        'roof repair', 'roof installation', 'roof replacement', 'roofing contractor'
-    ],
-    'painter': [
-        'paint', 'painting', 'interior paint', 'exterior paint', 'painting service',
-        'house painter', 'residential painting', 'commercial painting', 'paint job',
-        'painting contractor', 'professional painter', 'paint color'
-    ],
-    'landscaper': [
-        'landscape', 'landscaping', 'lawn', 'garden', 'yard', 'landscaping service',
-        'lawn care', 'lawn maintenance', 'landscaping design', 'outdoor', 'tree service',
-        'sprinkler', 'irrigation'
-    ],
-    'home-remodeling': [
-        'home remodel', 'renovation', 'home improvement', 'remodeling service',
-        'home renovation', 'house remodel', 'residential remodeling', 'custom home',
-        'home addition', 'basement finish', 'general contractor'
-    ],
-    'bathroom-remodeling': [
-        'bathroom remodel', 'bath renovation', 'bathroom upgrade', 'bathroom design',
-        'bathroom contractor', 'bathroom project', 'master bath', 'bathroom makeover',
-        'bathroom renovation service', 'bath remodel', 'bathroom specialist'
-    ],
-    'kitchen-remodeling': [
-        'kitchen remodel', 'kitchen renovation', 'kitchen upgrade', 'kitchen design',
-        'kitchen contractor', 'kitchen project', 'kitchen makeover', 'kitchen cabinet',
-        'kitchen countertop', 'kitchen renovation service', 'kitchen specialist'
-    ],
-    'siding-gutters': [
-        'siding', 'gutter', 'downspout', 'exterior', 'siding installation',
-        'gutter repair', 'gutter installation', 'gutter cleaning', 'vinyl siding',
-        'fiber cement siding', 'seamless gutter', 'gutter service'
-    ],
-    'masonry': [
-        'masonry', 'brick', 'stone', 'concrete', 'block', 'masonry service',
-        'brick work', 'stone work', 'concrete work', 'retaining wall',
-        'masonry contractor', 'brick repair', 'stone mason'
-    ],
-    'decks': [
-        'deck', 'patio deck', 'composite deck', 'wood deck', 'deck building',
-        'deck installation', 'deck repair', 'deck contractor', 'outdoor deck',
-        'custom deck', 'deck design', 'deck builder'
-    ],
-    'flooring': [
-        'floor', 'hardwood', 'tile floor', 'carpet', 'vinyl', 'flooring service',
-        'floor installation', 'floor repair', 'flooring contractor', 'laminate',
-        'wood floor', 'tile installation', 'floor covering'
-    ],
-    'windows': [
-        'window', 'window replacement', 'window installation', 'window repair',
-        'window contractor', 'window service', 'replacement window', 'new window',
-        'window upgrade', 'energy efficient window', 'window specialist'
-    ],
-    'fencing': [
-        'fence', 'fencing', 'privacy fence', 'yard fence', 'fence installation',
-        'fence repair', 'fence contractor', 'fence service', 'wood fence',
-        'vinyl fence', 'chain link fence', 'fence builder', 'security fence',
-        'residential fence', 'commercial fence', 'fence company', 'fence specialist',
-        'fencing service', 'fencing contractor', 'fence estimate'
-    ],
-    'epoxy-garage': [
-        'epoxy', 'garage floor', 'floor coating', 'epoxy coating', 'garage epoxy',
-        'epoxy floor', 'garage floor coating', 'concrete coating', 'garage makeover',
-        'epoxy specialist', 'garage flooring'
-    ]
-};
-
 // Ghost Configuration
 let NEW_GHOST_URL = process.env.NEXT_PUBLIC_GHOST_URL;
 let NEW_GHOST_KEY = process.env.NEXT_PUBLIC_GHOST_ORG_CONTENT_API_KEY;
@@ -451,27 +360,9 @@ export function extractPostCategory(post: GhostPost): string | null {
         
         // 7. Home Remodeling
         'home-remodeling': [
-            'home-remodeling',
-            'home-remodel',
-            'house-remodeling',
-            'home-renovation',
-            'house-renovation',
-            'home-improvement',
-            'remodeling-contractor',
-            'remodeling-company',
-            'remodeling-service',
-            'whole-house-remodel',
-            'complete-home-remodel',
-            'general-contractor',
-            'general-remodeling',
-            'residential-remodeling',
-            'home-construction',
-            'house-remodel',
-            // Avoid terms that might belong to specific room remodeling
-            'remodeling-denver',
-            'remodeling-service',
-            'renovation-contractor',
-            'renovation-company'
+            'home-remodel', 'renovation', 'home-improvement', 'remodeling', 'home-addition',
+            'house-renovation', 'whole-house', 'living-space', 'basement-finish',
+            'room-addition', 'interior-remodel', 'home-upgrade'
         ],
         
         // 8. Bathroom Remodeling

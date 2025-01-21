@@ -1,12 +1,12 @@
 import { getAllPosts, setGhostConfig, extractPostCategory } from '../src/utils/ghost.js';
 import { tradesData } from '../src/lib/trades-data.js';
-import * as fs from 'fs.js';
-import * as path from 'path.js';
-import yargs from 'yargs.js';
-import { hideBin } from 'yargs/helpers.js';
+import * as fs from 'fs';
+import * as path from 'path';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
 // Polyfill fetch for Node.js environment
-import fetch from 'node-fetch.js';
+import fetch from 'node-fetch';
 if (!globalThis.fetch) {
     (globalThis as any).fetch = fetch;
 }
