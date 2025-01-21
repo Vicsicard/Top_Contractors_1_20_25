@@ -22,34 +22,67 @@ interface Props {
 
 // This helps Next.js understand our dynamic routes
 export async function generateStaticParams() {
-  const trades = await getAllTrades();
-  const subregions = await getAllSubregions();
-  
-  const paths = [];
-  for (const trade of trades) {
-    for (const subregion of subregions) {
-      paths.push({
-        slug: trade.slug,
-        subregion: subregion.slug,
-      });
+  try {
+    console.log('[SERVER] Fetching trades and subregions for static paths...');
+    const [trades, subregions] = await Promise.all([
+      getAllTrades(),
+      getAllSubregions(),
+    ]);
+    
+    console.log('[SERVER] Found trades:', trades.length);
+    console.log('[SERVER] Found subregions:', subregions.length);
+    
+    const paths = [];
+    for (const trade of trades) {
+      for (const subregion of subregions) {
+        // Validate that both trade and subregion have required fields
+        if (!trade.slug || !subregion.slug) {
+          console.warn('[SERVER] Invalid trade or subregion data:', { trade, subregion });
+          continue;
+        }
+        
+        paths.push({
+          slug: trade.slug,
+          subregion: subregion.slug,
+        });
+      }
     }
+    
+    console.log('[SERVER] Generated paths count:', paths.length);
+    return paths;
+  } catch (error) {
+    console.error('[SERVER] Error generating static params:', error);
+    // Return empty array instead of throwing to allow build to continue
+    return [];
   }
-  
-  return paths;
 }
 
 async function getTradeAndSubregionNames({ slug, subregion }: Props['params']) {
-  const trade = await getTradeBySlug(slug);
-  const subregionData = await getSubregionBySlug(subregion);
+  try {
+    console.log('[SERVER] Fetching trade and subregion data:', { slug, subregion });
+    const [trade, subregionData] = await Promise.all([
+      getTradeBySlug(slug),
+      getSubregionBySlug(subregion)
+    ]);
 
-  if (!trade || !subregionData) {
-    throw new Error('Trade or subregion not found');
+    if (!trade || !subregionData) {
+      console.error('[SERVER] Trade or subregion not found:', { trade, subregionData });
+      throw new Error('Trade or subregion not found');
+    }
+
+    if (!trade.category_name || !subregionData.subregion_name) {
+      console.error('[SERVER] Invalid trade or subregion data:', { trade, subregionData });
+      throw new Error('Invalid trade or subregion data');
+    }
+
+    return {
+      tradeName: trade.category_name,
+      subregionName: subregionData.subregion_name,
+    };
+  } catch (error) {
+    console.error('[SERVER] Error in getTradeAndSubregionNames:', error);
+    throw error;
   }
-
-  return {
-    tradeName: trade.category_name,
-    subregionName: subregionData.subregion_name,
-  };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
