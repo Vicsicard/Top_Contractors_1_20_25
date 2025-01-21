@@ -122,6 +122,20 @@ export default async function TradeBlogPage({ params, searchParams }: Props) {
                 </div>
             )}
 
+            {trade === 'home-remodeling' && (
+                <div className="mb-8">
+                    <div className="aspect-w-16 aspect-h-9 mb-4">
+                        <iframe
+                            className="w-full rounded-lg shadow-lg"
+                            src="https://www.youtube.com/embed/pTKgEtJpGjE"
+                            title="Home Remodeling in Denver - Top Contractors Guide"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        ></iframe>
+                    </div>
+                </div>
+            )}
+
             <p className="text-xl text-gray-600 mb-8">
                 Connect with specialized {tradeData.title.toLowerCase()} contractors who can create your dream kitchen. 
                 Our verified professionals handle complete kitchen renovations with quality craftsmanship.
