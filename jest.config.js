@@ -19,6 +19,23 @@ const customJestConfig = {
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
   ],
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  transform: {
+    '^.+\\.(t|j)sx?$': ['@swc/jest', {
+      jsc: {
+        target: 'es2020',
+        parser: {
+          syntax: 'typescript',
+          tsx: true,
+          decorators: false,
+          dynamicImport: false
+        }
+      },
+      module: {
+        type: 'es6'
+      }
+    }]
+  }
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

@@ -1,12 +1,17 @@
 import { getAllPosts, setGhostConfig, extractPostCategory } from '../src/utils/ghost.js';
 import { tradesData } from '../src/lib/trades-data.js';
-import * as fs from 'fs';
-import * as path from 'path';
+import { promises as fs } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import fetch from 'node-fetch';
+
+// Get the current file's directory
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Polyfill fetch for Node.js environment
-import fetch from 'node-fetch';
 if (!globalThis.fetch) {
     (globalThis as any).fetch = fetch;
 }
@@ -135,9 +140,9 @@ async function analyzeCategories() {
         ].join('\n');
 
         // Save report
-        const reportPath = path.join(process.cwd(), 'reports', 'blog_category_analysis.md');
-        fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-        fs.writeFileSync(reportPath, report);
+        const reportPath = join(__dirname, 'reports', 'blog_category_analysis.md');
+        await fs.mkdir(join(__dirname, 'reports'), { recursive: true });
+        await fs.writeFile(reportPath, report);
 
         console.log(`\nAnalysis complete! Report saved to: ${reportPath}`);
         
