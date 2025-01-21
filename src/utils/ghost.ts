@@ -187,28 +187,6 @@ const getFetchOptions = (): RequestInit & { next: { revalidate: number } } => {
     };
 };
 
-// Helper function to ensure image URLs are absolute
-function ensureAbsoluteUrl(url: string | undefined, baseUrl: string): string | undefined {
-    if (!url) return undefined;
-    
-    // If URL is already absolute, return it
-    try {
-        new URL(url);
-        return url;
-    } catch {
-        // If URL is relative, make it absolute using baseUrl
-        if (!url.startsWith('/')) {
-            url = `/${url}`;
-        }
-        
-        // Remove trailing slash from baseUrl
-        const base = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-        
-        // Combine base URL with path
-        return `${base}${url}`;
-    }
-}
-
 /**
  * Fetches all posts from a Ghost instance.
  * 
@@ -583,29 +561,9 @@ export function extractPostCategory(post: GhostPost): string | null {
         
         // 13. Flooring
         'flooring': [
-            'flooring',
-            'floor',
-            'floors',
-            'flooring-installation',
-            'floor-installation',
-            'hardwood-flooring',
-            'hardwood-floors',
-            'tile-flooring',
-            'tile-floors',
-            'vinyl-flooring',
-            'vinyl-floors',
-            'laminate-flooring',
-            'laminate-floors',
-            'carpet-installation',
-            'carpeting',
-            'wood-floors',
-            'wood-flooring',
-            'floor-replacement',
-            'flooring-contractor',
-            'flooring-company',
-            'flooring-service',
-            'floor-repair',
-            'flooring-repair'
+            'floor', 'hardwood', 'tile-floor', 'carpet', 'vinyl', 'laminate',
+            'floor-installation', 'wood-floor', 'tile-installation', 'flooring-repair',
+            'floor-refinishing', 'floor-sanding', 'floor-staining'
         ],
         
         // 14. Windows - Updated
