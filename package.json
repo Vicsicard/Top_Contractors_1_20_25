@@ -9,9 +9,9 @@
     "start": "next start",
     "lint": "next lint",
     "clean": "rimraf .next node_modules",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch --config jest.config.cjs",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --config jest.config.cjs",
     "generate-sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {

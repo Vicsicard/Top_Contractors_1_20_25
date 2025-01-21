@@ -19,7 +19,7 @@ const customJestConfig = {
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
   ],
-  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  extensionsToTreatAsEsm: ['.ts', '.tsx', '.mjs'],
   transform: {
     '^.+\\.(t|j)sx?$': ['@swc/jest', {
       jsc: {
