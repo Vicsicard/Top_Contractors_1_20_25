@@ -104,6 +104,29 @@ export default async function TradeBlogPage({ params, searchParams }: Props) {
                 <p className="text-xl text-gray-600 max-w-3xl mx-auto">{tradeData.description}</p>
             </div>
 
+            {trade === 'kitchen-remodeling' && (
+                <div className="mb-8">
+                    <div className="aspect-w-16 aspect-h-9 mb-4">
+                        <iframe
+                            className="w-full rounded-lg shadow-lg"
+                            src="https://www.youtube.com/embed/Y7cjt8cyvqA"
+                            title="Build Your Dream Outdoor Kitchen in Denver"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        ></iframe>
+                    </div>
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-2">Build Your Dream Outdoor Kitchen in Denver</h2>
+                    <p className="text-gray-600 mb-4">
+                        Discover how to create the perfect outdoor kitchen for Denver&apos;s unique climate. Our expert contractors share their insights on materials, design, and essential features.
+                    </p>
+                </div>
+            )}
+
+            <p className="text-xl text-gray-600 mb-8">
+                Connect with specialized {tradeData.title.toLowerCase()} contractors who can create your dream kitchen. 
+                Our verified professionals handle complete kitchen renovations with quality craftsmanship.
+            </p>
+
             {/* Blog Posts Grid */}
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {blogPosts.map((post) => (
