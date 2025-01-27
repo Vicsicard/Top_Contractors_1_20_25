@@ -59,7 +59,7 @@ export default async function BlogPage({ searchParams }: Props) {
     let hasPrevPage = false;
 
     try {
-        const apiUrl = `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/ghost/posts${searchParams.category ? `?category=${searchParams.category}` : ''}${currentPage > 1 ? `${searchParams.category ? '&' : '?'}page=${currentPage}` : ''}`;
+        const apiUrl = `${process.env.NEXT_PUBLIC_GHOST_URL || ''}/api/ghost/posts${searchParams.category ? `?category=${searchParams.category}` : ''}${currentPage > 1 ? `${searchParams.category ? '&' : '?'}page=${currentPage}` : ''}`;
         console.log('[DEBUG Page] Fetching from API URL:', apiUrl);
         
         const response = await fetch(apiUrl);
