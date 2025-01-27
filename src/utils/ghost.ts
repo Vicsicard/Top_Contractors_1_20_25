@@ -20,82 +20,105 @@ export function setGhostConfig(config: {
 }
 
 // Validate Ghost configuration
-if (!NEW_GHOST_URL || NEW_GHOST_URL !== 'https://top-contractors-denver-2.ghost.io') {
-    console.error('Error: NEXT_PUBLIC_GHOST_URL is not set correctly');
+if (!NEW_GHOST_URL) {
+    console.error('Error: NEXT_PUBLIC_GHOST_URL is not set');
 }
 
-if (!NEW_GHOST_KEY || NEW_GHOST_KEY !== '6229b20c390c831641ea577093') {
-    console.error('Error: NEXT_PUBLIC_GHOST_ORG_CONTENT_API_KEY is not set correctly');
+if (!NEW_GHOST_KEY) {
+    console.error('Error: NEXT_PUBLIC_GHOST_ORG_CONTENT_API_KEY is not set');
 }
 
-if (!OLD_GHOST_URL || OLD_GHOST_URL !== 'https://top-contractors-denver-1.ghost.io') {
-    console.error('Error: NEXT_PUBLIC_OLD_GHOST_URL is not set correctly');
+if (!OLD_GHOST_URL) {
+    console.error('Error: NEXT_PUBLIC_OLD_GHOST_URL is not set');
 }
 
-if (!OLD_GHOST_KEY || OLD_GHOST_KEY !== '130d98b20875066982b1a8314f') {
-    console.error('Error: NEXT_PUBLIC_OLD_GHOST_ORG_CONTENT_API_KEY is not set correctly');
+if (!OLD_GHOST_KEY) {
+    console.error('Error: NEXT_PUBLIC_OLD_GHOST_ORG_CONTENT_API_KEY is not set');
+}
+
+// Ghost API Types
+export interface GhostAuthor {
+    id: string;
+    name: string;
+    slug: string;
+    profile_image?: string;
+    bio?: string;
+    website?: string;
+    url?: string;
+}
+
+export interface GhostTag {
+    id: string;
+    name: string;
+    slug: string;
+    description?: string;
+    feature_image?: string;
+    visibility?: string;
+    url?: string;
+}
+
+export interface GhostPost {
+    id: string;
+    uuid: string;
+    title: string;
+    slug: string;
+    html: string;
+    comment_id?: string;
+    feature_image?: string | null;
+    feature_image_alt?: string | null;
+    featured: boolean;
+    visibility: string;
+    created_at: string;
+    updated_at: string | null;
+    published_at: string;
+    custom_excerpt?: string;
+    excerpt?: string | null;
+    reading_time?: number | null;
+    tags?: GhostTag[];
+    authors?: GhostAuthor[];
+    primary_author?: GhostAuthor;
+    primary_tag?: GhostTag;
+    url: string;
+    canonical_url?: string;
+    meta_title?: string;
+    meta_description?: string;
+    og_image?: string;
+    og_title?: string;
+    og_description?: string;
+    twitter_image?: string;
+    twitter_title?: string;
+    twitter_description?: string;
+    source?: string;
 }
 
 // Cache for posts to detect new content
 const postCache: { [key: string]: string } = {};
 
-interface GhostAuthor {
-    id: string;
-    name: string;
-    slug: string;
-    profile_image?: string;
-}
-
-export interface GhostPost {
-    id: string;
-    slug: string;
-    title: string;
-    html: string;
-    feature_image?: string;
-    feature_image_alt?: string;
-    excerpt?: string;
-    published_at: string;
-    updated_at?: string;
-    reading_time?: number;
-    tags?: any[];
-    authors?: GhostAuthor[];
-    source?: string;
-}
-
-// Fetch options based on environment
-const getFetchOptions = (): RequestInit & { next: { revalidate: number } } => {
-    const baseOptions: RequestInit = {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    };
-
-    // Add revalidation based on environment
+/**
+ * Configure fetch options for Ghost API calls
+ */
+function getFetchOptions(): RequestInit {
     return {
-        ...baseOptions,
-        next: {
-            revalidate: process.env.NODE_ENV === 'development' ? 0 : 3600 // 1 hour in production
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
         }
     };
-};
+}
 
 /**
- * Fetches all posts from a Ghost instance.
- * 
- * @param url The URL of the Ghost instance.
- * @param key The API key for the Ghost instance.
- * @returns A promise that resolves to an array of Ghost posts.
+ * Fetches all posts from a Ghost instance with proper pagination.
  */
-async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
+export async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
     try {
         const posts: GhostPost[] = [];
-        let currentPage = 1;
+        let page = 1;
+        const limit = 100; // Increased from 15 to 100 for faster fetching
         let hasMore = true;
-        console.log(`[DEBUG] Fetching posts from Ghost URL: ${url}`);
 
         while (hasMore) {
-            const apiUrl = `${url}/ghost/api/content/posts/?key=${key}&page=${currentPage}&limit=10&include=authors`;
-            console.log(`[DEBUG] Fetching page ${currentPage} from Ghost API`);
+            console.log(`[DEBUG] Fetching page ${page} from Ghost URL: ${url}`);
+            const apiUrl = `${url}/ghost/api/v3/content/posts/?key=${key}&page=${page}&limit=${limit}&include=authors,tags&formats=html`;
             
             const response = await fetch(apiUrl, getFetchOptions());
             if (!response.ok) {
@@ -104,22 +127,47 @@ async function fetchAllPosts(url: string, key: string): Promise<GhostPost[]> {
             }
 
             const data = await response.json();
-            console.log(`[DEBUG] Got ${data.posts?.length || 0} posts from page ${currentPage}`);
-            
             if (data.posts && data.posts.length > 0) {
+                console.log(`[DEBUG] Got ${data.posts.length} posts from ${url} (page ${page})`);
                 posts.push(...data.posts);
-                currentPage++;
+                
+                // Check if we have more posts to fetch
+                if (data.posts.length < limit) {
+                    hasMore = false;
+                    console.log(`[DEBUG] No more posts to fetch from ${url}`);
+                } else {
+                    console.log(`[DEBUG] Moving to next page for ${url}`);
+                    page++;
+                    // Add a small delay to avoid rate limiting
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
             } else {
                 hasMore = false;
+                console.log(`[DEBUG] No posts found on page ${page} for ${url}`);
             }
         }
 
-        console.log(`[DEBUG] Total posts fetched: ${posts.length}`);
+        console.log(`[DEBUG] Total posts fetched from ${url}: ${posts.length}`);
         return posts;
     } catch (error) {
         console.error('[DEBUG] Error fetching posts from Ghost:', error);
-        throw error;
+        return [];
     }
+}
+
+/**
+ * Set Ghost configuration for API calls
+ */
+export function setGhostConfig(config: {
+    newGhostUrl?: string;
+    newGhostKey?: string;
+    oldGhostUrl?: string;
+    oldGhostKey?: string;
+}) {
+    if (config.newGhostUrl) process.env.NEXT_PUBLIC_GHOST_URL = config.newGhostUrl;
+    if (config.newGhostKey) process.env.NEXT_PUBLIC_GHOST_ORG_CONTENT_API_KEY = config.newGhostKey;
+    if (config.oldGhostUrl) process.env.NEXT_PUBLIC_OLD_GHOST_URL = config.oldGhostUrl;
+    if (config.oldGhostKey) process.env.NEXT_PUBLIC_OLD_GHOST_ORG_CONTENT_API_KEY = config.oldGhostKey;
 }
 
 /**
