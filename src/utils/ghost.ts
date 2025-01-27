@@ -13,10 +13,22 @@ export function setGhostConfig(config: {
     oldGhostUrl?: string;
     oldGhostKey?: string;
 }) {
-    if (config.newGhostUrl) NEW_GHOST_URL = config.newGhostUrl;
-    if (config.newGhostKey) NEW_GHOST_KEY = config.newGhostKey;
-    if (config.oldGhostUrl) OLD_GHOST_URL = config.oldGhostUrl;
-    if (config.oldGhostKey) OLD_GHOST_KEY = config.oldGhostKey;
+    if (config.newGhostUrl) {
+        NEW_GHOST_URL = config.newGhostUrl;
+        process.env.NEXT_PUBLIC_GHOST_URL = config.newGhostUrl;
+    }
+    if (config.newGhostKey) {
+        NEW_GHOST_KEY = config.newGhostKey;
+        process.env.NEXT_PUBLIC_GHOST_ORG_CONTENT_API_KEY = config.newGhostKey;
+    }
+    if (config.oldGhostUrl) {
+        OLD_GHOST_URL = config.oldGhostUrl;
+        process.env.NEXT_PUBLIC_OLD_GHOST_URL = config.oldGhostUrl;
+    }
+    if (config.oldGhostKey) {
+        OLD_GHOST_KEY = config.oldGhostKey;
+        process.env.NEXT_PUBLIC_OLD_GHOST_ORG_CONTENT_API_KEY = config.oldGhostKey;
+    }
 }
 
 // Validate Ghost configuration
@@ -153,21 +165,6 @@ export async function fetchAllPosts(url: string, key: string): Promise<GhostPost
         console.error('[DEBUG] Error fetching posts from Ghost:', error);
         return [];
     }
-}
-
-/**
- * Set Ghost configuration for API calls
- */
-export function setGhostConfig(config: {
-    newGhostUrl?: string;
-    newGhostKey?: string;
-    oldGhostUrl?: string;
-    oldGhostKey?: string;
-}) {
-    if (config.newGhostUrl) process.env.NEXT_PUBLIC_GHOST_URL = config.newGhostUrl;
-    if (config.newGhostKey) process.env.NEXT_PUBLIC_GHOST_ORG_CONTENT_API_KEY = config.newGhostKey;
-    if (config.oldGhostUrl) process.env.NEXT_PUBLIC_OLD_GHOST_URL = config.oldGhostUrl;
-    if (config.oldGhostKey) process.env.NEXT_PUBLIC_OLD_GHOST_ORG_CONTENT_API_KEY = config.oldGhostKey;
 }
 
 /**

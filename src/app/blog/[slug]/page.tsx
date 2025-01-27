@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getPostBySlug } from '@/utils/ghost';
+import { getPostBySlug } from '@/utils/supabase-blog';
 import { extractPostCategory } from '@/utils/ghost';
 import { formatDate } from '@/utils/date';
 import { tradesData } from '@/lib/trades-data';
@@ -50,106 +50,143 @@ export default async function BlogPost({ params }: Props) {
     const post = await getPostBySlug(params.slug);
     
     if (!post) {
-        notFound();
+        return notFound();
     }
 
-    // Extract category and get trade data if available
     const category = extractPostCategory(post);
-    const tradeData = category ? tradesData[category] : null;
-
-    // Generate schema for the blog post
-    const blogPostSchema = {
-        '@context': 'https://schema.org',
-        '@type': 'BlogPosting',
-        headline: post.title,
-        description: post.excerpt || post.title,
-        image: post.feature_image || undefined,
-        datePublished: post.published_at,
-        dateModified: post.updated_at || post.published_at,
-        author: post.authors?.map(author => ({
-            '@type': 'Person',
-            name: author.name,
-            image: author.profile_image
-        })) || [],
-        publisher: {
-            '@type': 'Organization',
-            name: 'Top Contractors Denver',
-            logo: {
-                '@type': 'ImageObject',
-                url: 'https://topcontractorsdenver.com/images/logo.png'
-            }
-        }
-    };
+    const categoryData = category ? tradesData[category] : null;
 
     return (
-        <article className="max-w-4xl mx-auto px-4 py-8">
-            <JsonLd data={blogPostSchema} />
-            
-            {/* Category Link */}
-            {category && tradeData && (
-                <Link 
-                    href={`/blog?category=${category}`}
-                    className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4"
-                >
-                    {tradeData.icon && (
-                        <Image
-                            src={tradeData.icon}
-                            alt={tradeData.title}
-                            width={24}
-                            height={24}
-                            className="mr-2"
-                        />
-                    )}
-                    <span>{tradeData.title}</span>
-                </Link>
-            )}
+        <main className="container mx-auto px-4 py-8">
+            <JsonLd
+                data={{
+                    '@context': 'https://schema.org',
+                    '@type': 'BlogPosting',
+                    headline: post.title,
+                    description: post.excerpt || post.title,
+                    image: post.feature_image ? [post.feature_image] : [],
+                    datePublished: post.published_at,
+                    dateModified: post.updated_at || post.published_at,
+                    author: post.authors?.map(author => ({
+                        '@type': 'Person',
+                        name: author.name,
+                    })) || [],
+                    publisher: {
+                        '@type': 'Organization',
+                        name: 'Top Contractors Denver',
+                        url: 'https://topcontractorsdenver.com',
+                    },
+                    mainEntityOfPage: {
+                        '@type': 'WebPage',
+                        '@id': `https://topcontractorsdenver.com/blog/${post.slug}`,
+                    },
+                }}
+            />
 
-            {/* Post Header */}
-            <header className="mb-8">
-                <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-                
-                {/* Meta Information */}
-                <div className="flex items-center text-gray-600 mb-4">
-                    {post.authors?.[0] && (
-                        <div className="flex items-center mr-6">
-                            {post.authors[0].profile_image && (
-                                <Image
-                                    src={post.authors[0].profile_image}
-                                    alt={post.authors[0].name}
-                                    width={24}
-                                    height={24}
-                                    className="rounded-full mr-2"
-                                />
-                            )}
-                            <span>{post.authors[0].name}</span>
-                        </div>
-                    )}
-                    <time dateTime={post.published_at}>{formatDate(post.published_at)}</time>
-                    {post.reading_time && (
-                        <span className="ml-6">{post.reading_time} min read</span>
+            {/* Navigation */}
+            <nav className="mb-8">
+                <div className="flex flex-wrap gap-4 items-center text-sm">
+                    <Link
+                        href="/blog"
+                        className="text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                        ← Back to Blog
+                    </Link>
+                    {category && (
+                        <>
+                            <span className="text-gray-400">|</span>
+                            <Link
+                                href={`/blog?category=${category}`}
+                                className="text-blue-600 hover:text-blue-800 transition-colors"
+                            >
+                                {categoryData?.title || category} Articles
+                            </Link>
+                        </>
                     )}
                 </div>
-                
-                {/* Feature Image */}
-                {post.feature_image && (
-                    <div className="relative aspect-video mb-8">
-                        <Image
-                            src={post.feature_image}
-                            alt={post.feature_image_alt || post.title}
-                            fill
-                            className="object-cover rounded-lg"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-                            priority
-                        />
+            </nav>
+
+            <article className="max-w-4xl mx-auto">
+                {/* Header */}
+                <header className="mb-8">
+                    <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+                    <div className="flex items-center gap-4 text-gray-600 mb-6">
+                        <time dateTime={post.published_at}>
+                            {formatDate(post.published_at)}
+                        </time>
+                        {post.reading_time && (
+                            <>
+                                <span>•</span>
+                                <span>{post.reading_time} min read</span>
+                            </>
+                        )}
+                    </div>
+                    {post.feature_image && (
+                        <div className="relative aspect-video w-full mb-8">
+                            <Image
+                                src={post.feature_image}
+                                alt={post.feature_image_alt || post.title}
+                                fill
+                                className="object-cover rounded-lg"
+                                priority
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            />
+                        </div>
+                    )}
+                </header>
+
+                {/* Content */}
+                <div
+                    className="prose prose-lg max-w-none"
+                    dangerouslySetInnerHTML={{ __html: post.html }}
+                />
+
+                {/* Tags */}
+                {post.tags && post.tags.length > 0 && (
+                    <div className="mt-8 pt-8 border-t">
+                        <h2 className="text-lg font-semibold mb-4">Related Topics:</h2>
+                        <div className="flex flex-wrap gap-2">
+                            {post.tags.map((tag) => (
+                                <Link
+                                    key={tag.id}
+                                    href={`/blog?tag=${tag.slug}`}
+                                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors"
+                                >
+                                    {tag.name}
+                                </Link>
+                            ))}
+                        </div>
                     </div>
                 )}
-            </header>
 
-            {/* Post Content */}
-            <div 
-                className="prose prose-lg max-w-none"
-                dangerouslySetInnerHTML={{ __html: post.html }}
-            />
-        </article>
+                {/* Authors */}
+                {post.authors && post.authors.length > 0 && (
+                    <div className="mt-8 pt-8 border-t">
+                        <h2 className="text-lg font-semibold mb-4">Written by:</h2>
+                        <div className="flex flex-wrap gap-4">
+                            {post.authors.map((author) => (
+                                <div key={author.id} className="flex items-center gap-3">
+                                    {author.profile_image && (
+                                        <Image
+                                            src={author.profile_image}
+                                            alt={author.name}
+                                            width={40}
+                                            height={40}
+                                            className="rounded-full"
+                                        />
+                                    )}
+                                    <div>
+                                        <div className="font-medium">{author.name}</div>
+                                        {author.bio && (
+                                            <p className="text-sm text-gray-600">{author.bio}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </article>
+        </main>
     );
 }

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { GhostPost } from '@/utils/ghost';
+import { getPosts, getPostsByCategory } from '@/utils/supabase-blog';
 import { tradesData } from '@/lib/trades-data';
 import { formatDate } from '@/utils/date';
 import { JsonLd } from '@/components/json-ld';
@@ -50,193 +50,149 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 }
 
 export default async function BlogPage({ searchParams }: Props) {
+    const category = searchParams.category;
     const currentPage = parseInt(searchParams.page || '1');
-    console.log('[DEBUG Page] Blog page params:', searchParams);
-    
-    let posts: GhostPost[] = [];
-    let totalPages = 1;
-    let hasNextPage = false;
-    let hasPrevPage = false;
+    const postsPerPage = 10;
 
     try {
-        const apiUrl = `${process.env.NEXT_PUBLIC_GHOST_URL || ''}/api/ghost/posts${searchParams.category ? `?category=${searchParams.category}` : ''}${currentPage > 1 ? `${searchParams.category ? '&' : '?'}page=${currentPage}` : ''}`;
-        console.log('[DEBUG Page] Fetching from API URL:', apiUrl);
-        
-        const response = await fetch(apiUrl);
-        
-        if (!response.ok) {
-            console.error('[DEBUG Page] API error:', response.status, response.statusText);
-            throw new Error(`Failed to fetch posts: ${response.statusText}`);
+        const { posts, totalPages, hasNextPage, hasPrevPage } = category
+            ? await getPostsByCategory(category, currentPage, postsPerPage)
+            : await getPosts(currentPage, postsPerPage);
+
+        if (posts.length === 0 && currentPage > 1) {
+            return notFound();
         }
 
-        const result = await response.json();
-        console.log(`[DEBUG Page] Got ${result.posts?.length || 0} posts from API`);
-        
-        posts = result.posts;
-        totalPages = result.totalPages;
-        hasNextPage = result.hasNextPage;
-        hasPrevPage = result.hasPrevPage;
-    } catch (error) {
-        console.error('Error fetching posts:', error);
-        // Don't throw the error, let's handle it gracefully in the UI
-    }
-
-    // Prepare structured data
-    const structuredData = {
-        '@context': 'https://schema.org',
-        '@type': 'Blog',
-        headline: 'Home Improvement Blog',
-        description: 'Expert home improvement tips and advice for Denver homeowners',
-        publisher: {
-            '@type': 'Organization',
-            name: 'Top Contractors Denver',
-            url: 'https://topcontractorsdenver.com'
-        },
-        url: `https://topcontractorsdenver.com/blog${currentPage > 1 ? `?page=${currentPage}` : ''}`,
-        mainEntityOfPage: {
-            '@type': 'WebPage',
-            '@id': 'https://topcontractorsdenver.com/blog'
-        },
-        blogPost: posts.map(post => ({
-            '@type': 'BlogPosting',
-            headline: post.title,
-            description: post.excerpt,
-            datePublished: post.published_at,
-            dateModified: post.updated_at || post.published_at,
-            image: post.feature_image,
-            author: post.authors?.map(author => ({
-                '@type': 'Person',
-                name: author.name
-            })) || [],
+        // Prepare structured data
+        const structuredData = {
+            '@context': 'https://schema.org',
+            '@type': 'Blog',
+            headline: category ? `${tradesData[category]?.title} Blog Posts` : 'Home Improvement Blog',
+            description: category
+                ? `Expert ${tradesData[category]?.title.toLowerCase()} tips and advice for Denver homeowners`
+                : 'Expert home improvement tips and advice for Denver homeowners',
             publisher: {
                 '@type': 'Organization',
                 name: 'Top Contractors Denver',
                 url: 'https://topcontractorsdenver.com'
-            }
-        }))
-    };
+            },
+            url: `https://topcontractorsdenver.com/blog${category ? `?category=${category}` : ''}`,
+            mainEntityOfPage: {
+                '@type': 'WebPage',
+                '@id': 'https://topcontractorsdenver.com/blog'
+            },
+            blogPost: posts.map(post => ({
+                '@type': 'BlogPosting',
+                headline: post.title,
+                description: post.excerpt,
+                datePublished: post.published_at,
+                dateModified: post.updated_at || post.published_at,
+                image: post.feature_image,
+                author: post.authors?.map(author => ({
+                    '@type': 'Person',
+                    name: author.name
+                })) || [],
+                publisher: {
+                    '@type': 'Organization',
+                    name: 'Top Contractors Denver',
+                    url: 'https://topcontractorsdenver.com'
+                }
+            }))
+        };
 
-    return (
-        <>
-            <JsonLd data={structuredData} />
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                {/* Category Navigation */}
-                <nav aria-label="Blog categories" className="mb-12">
-                    <h2 className="text-lg font-semibold mb-4">Browse by Category:</h2>
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {Object.entries(tradesData).map(([id, data]) => (
-                            <Link
-                                key={id}
-                                href={`/blog/trades/${id}`}
-                                className="group"
-                            >
-                                <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                                    <div className="flex items-center mb-4">
-                                        {data.icon && data.icon.startsWith('/') ? (
-                                            <div className="w-12 h-12 mr-3 flex items-center justify-center rounded-lg bg-[#e8f0fe] transition-colors duration-300 group-hover:bg-blue-600">
-                                                <Image
-                                                    src={data.icon}
-                                                    alt={data.title}
-                                                    width={24}
-                                                    height={24}
-                                                    className="text-blue-600 group-hover:brightness-0 group-hover:invert transition-all duration-300"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <span className="text-3xl mr-3" aria-hidden="true">
-                                                {data.icon || "📝"}
-                                            </span>
-                                        )}
-                                        <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                            {data.title}
-                                        </h3>
-                                    </div>
-                                    <p className="text-gray-600 line-clamp-2">{data.description}</p>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </nav>
+        return (
+            <main className="container mx-auto px-4 py-8">
+                <JsonLd data={structuredData} />
+                <h1 className="text-4xl font-bold mb-8">
+                    {category ? `${tradesData[category]?.title} Articles` : 'Home Improvement Blog'}
+                </h1>
 
-                {/* Posts Grid */}
-                <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Latest Posts</h2>
-                </div>
-                
-                {posts.length === 0 ? (
-                    <div className="text-center py-12">
-                        <h3 className="text-xl font-medium text-gray-900 mb-2">
-                            No posts available
-                        </h3>
-                        <p className="text-gray-600">
-                            Please check back later for new content.
-                        </p>
-                    </div>
-                ) : (
-                    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                        {posts.map((post) => (
-                            <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                                {post.feature_image && (
-                                    <Link href={`/blog/${post.slug}`}>
-                                        <div className="relative h-48 overflow-hidden">
-                                            <Image
-                                                src={post.feature_image}
-                                                alt={post.feature_image_alt || post.title}
-                                                fill
-                                                className="object-cover"
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                            />
-                                        </div>
-                                    </Link>
-                                )}
-                                <div className="p-6">
-                                    <Link href={`/blog/${post.slug}`}>
-                                        <h3 className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
-                                            {post.title}
-                                        </h3>
-                                    </Link>
-                                    <p className="text-gray-600 mb-4 line-clamp-3">
-                                        {post.excerpt || post.title}
-                                    </p>
-                                    <div className="flex items-center justify-between text-sm text-gray-500">
-                                        <time dateTime={post.published_at}>
-                                            {formatDate(post.published_at)}
-                                        </time>
-                                        <Link
-                                            href={`/blog/${post.slug}`}
-                                            className="text-blue-600 hover:text-blue-700 font-medium"
-                                        >
-                                            Read More →
-                                        </Link>
-                                    </div>
-                                </div>
-                            </article>
-                        ))}
+                {category && (
+                    <div className="mb-8">
+                        <Link
+                            href="/blog"
+                            className="text-blue-600 hover:text-blue-800 transition-colors"
+                        >
+                            ← Back to All Articles
+                        </Link>
                     </div>
                 )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {posts.map((post) => (
+                        <article
+                            key={post.id}
+                            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                        >
+                            {post.feature_image && (
+                                <Link href={`/blog/${post.slug}`}>
+                                    <div className="relative h-48 w-full">
+                                        <Image
+                                            src={post.feature_image}
+                                            alt={post.feature_image_alt || post.title}
+                                            fill
+                                            className="object-cover"
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                        />
+                                    </div>
+                                </Link>
+                            )}
+                            <div className="p-6">
+                                <h2 className="text-xl font-semibold mb-2">
+                                    <Link
+                                        href={`/blog/${post.slug}`}
+                                        className="text-gray-900 hover:text-blue-600 transition-colors"
+                                    >
+                                        {post.title}
+                                    </Link>
+                                </h2>
+                                <p className="text-gray-600 mb-4 text-sm">
+                                    {formatDate(post.published_at)}
+                                    {post.reading_time && ` • ${post.reading_time} min read`}
+                                </p>
+                                <p className="text-gray-700 mb-4 line-clamp-3">
+                                    {post.excerpt || post.title}
+                                </p>
+                                <Link
+                                    href={`/blog/${post.slug}`}
+                                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                                >
+                                    Read More →
+                                </Link>
+                            </div>
+                        </article>
+                    ))}
+                </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
-                    <div className="mt-12 flex justify-center gap-2">
-                        {hasPrevPage && (
-                            <Link
-                                href={`/blog?page=${currentPage - 1}`}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                            >
-                                Previous
-                            </Link>
-                        )}
-                        {hasNextPage && (
-                            <Link
-                                href={`/blog?page=${currentPage + 1}`}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                            >
-                                Next
-                            </Link>
-                        )}
-                    </div>
-                )}
-            </div>
-        </>
-    );
+                <div className="mt-8 flex justify-center gap-4">
+                    {hasPrevPage && (
+                        <Link
+                            href={`/blog?${new URLSearchParams({
+                                ...(category && { category }),
+                                page: (currentPage - 1).toString(),
+                            })}`}
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                        >
+                            Previous
+                        </Link>
+                    )}
+                    {hasNextPage && (
+                        <Link
+                            href={`/blog?${new URLSearchParams({
+                                ...(category && { category }),
+                                page: (currentPage + 1).toString(),
+                            })}`}
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                        >
+                            Next
+                        </Link>
+                    )}
+                </div>
+            </main>
+        );
+    } catch (error) {
+        console.error('Error fetching blog posts:', error);
+        throw error;
+    }
 }
