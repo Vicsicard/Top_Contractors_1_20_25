@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { getPostsByCategory } from '@/utils/ghost';
+import { getPostsByCategory } from '@/utils/supabase-blog';
 import { tradesData } from '@/lib/trades-data';
 import { formatDate } from '@/utils/date';
 import { JsonLd } from '@/components/json-ld';
@@ -56,187 +56,112 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function TradeBlogPage({ params, searchParams }: Props) {
     const trade = params.trade;
     const tradeData = tradesData[trade];
-    const currentPage = parseInt(searchParams.page || '1');
+    const page = searchParams.page ? parseInt(searchParams.page) : 1;
 
     if (!tradeData) {
         notFound();
     }
 
-    const posts = await getPostsByCategory(trade, currentPage);
-    const { posts: blogPosts, totalPages, currentPage: page, hasNextPage, hasPrevPage } = posts;
+    const { posts, totalPages, hasNextPage, hasPrevPage } = await getPostsByCategory(trade, page);
 
-    // Show empty state if no posts
-    if (blogPosts.length === 0) {
+    if (!posts || posts.length === 0) {
         return (
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="text-center">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">{tradeData.title} Blog</h1>
-                    <p className="text-xl text-gray-600 mb-8">No posts found for this category yet. Check back soon!</p>
-                    <Link
-                        href="/blog"
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-                    >
-                        ← Back to All Posts
-                    </Link>
-                </div>
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-4xl font-bold mb-8">{tradeData.title} Blog</h1>
+                <p className="text-gray-600">No blog posts found for this trade category.</p>
             </div>
         );
     }
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: `${tradeData.title} Blog | Top Contractors Denver`,
+        description: `Read expert ${tradeData.title.toLowerCase()} tips, guides, and advice. Professional insights for Denver homeowners.`,
+        url: `/blog/trades/${trade}`,
+        mainEntity: {
+            '@type': 'ItemList',
+            itemListElement: posts.map((post, index) => ({
+                '@type': 'ListItem',
+                position: index + 1,
+                item: {
+                    '@type': 'BlogPosting',
+                    headline: post.title,
+                    url: `/blog/${post.slug}`,
+                    datePublished: post.published_at,
+                    dateModified: post.updated_at || post.published_at,
+                    author: post.authors?.[0] ? {
+                        '@type': 'Person',
+                        name: post.authors[0].name
+                    } : undefined,
+                    image: post.feature_image || undefined
+                }
+            }))
+        }
+    };
+
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            {/* Trade Header */}
-            <div className="mb-12 text-center">
-                <div className="flex items-center justify-center mb-4">
-                    {tradeData.icon && isValidImageUrl(tradeData.icon) && (
-                        <div className="w-16 h-16 flex items-center justify-center rounded-lg bg-blue-600 mb-4">
-                            <Image
-                                src={tradeData.icon}
-                                alt={`${tradeData.title} icon`}
-                                width={32}
-                                height={32}
-                                className="text-white"
-                            />
-                        </div>
-                    )}
-                </div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">{tradeData.title} Blog</h1>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">{tradeData.description}</p>
-            </div>
-
-            {trade === 'kitchen-remodeling' && (
-                <div className="mb-8">
-                    <div className="aspect-w-16 aspect-h-9 mb-4">
-                        <iframe
-                            className="w-full rounded-lg shadow-lg"
-                            src="https://www.youtube.com/embed/Y7cjt8cyvqA"
-                            title="Build Your Dream Outdoor Kitchen in Denver"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                        ></iframe>
-                    </div>
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-2">Build Your Dream Outdoor Kitchen in Denver</h2>
-                    <p className="text-gray-600 mb-4">
-                        Discover how to create the perfect outdoor kitchen for Denver&apos;s unique climate. Our expert contractors share their insights on materials, design, and essential features.
-                    </p>
-                </div>
-            )}
-
-            {trade === 'home-remodeling' && (
-                <div className="mb-8">
-                    <div className="aspect-w-16 aspect-h-9 mb-4">
-                        <iframe
-                            className="w-full rounded-lg shadow-lg"
-                            src="https://www.youtube.com/embed/pTKgEtJpGjE"
-                            title="Home Remodeling in Denver - Top Contractors Guide"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                        ></iframe>
-                    </div>
-                </div>
-            )}
-
-            {trade === 'bathroom-remodeling' && (
-                <div className="mb-8">
-                    <div className="aspect-w-16 aspect-h-9 mb-4">
-                        <iframe
-                            className="w-full rounded-lg shadow-lg"
-                            src="https://www.youtube.com/embed/mTOqRT0unsY"
-                            title="Bathroom Remodeling in Denver - Expert Guide"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                        ></iframe>
-                    </div>
-                </div>
-            )}
-
-            <p className="text-xl text-gray-600 mb-8">
-                Connect with specialized {tradeData.title.toLowerCase()} contractors who can help with your project. 
-                Our verified professionals deliver quality work with attention to detail.
-            </p>
-
-            {/* Blog Posts Grid */}
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {blogPosts.map((post) => (
-                    <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        {post.feature_image && isValidImageUrl(post.feature_image) && (
-                            <Link href={`/blog/trades/${trade}/${post.slug}`}>
-                                <div className="relative h-48 overflow-hidden">
+        <>
+            <JsonLd data={jsonLd} />
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-4xl font-bold mb-8">{tradeData.title} Blog</h1>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {posts.map(post => (
+                        <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                            {isValidImageUrl(post.feature_image) && (
+                                <Link href={`/blog/${post.slug}`} className="block aspect-video relative overflow-hidden">
                                     <Image
                                         src={post.feature_image}
                                         alt={post.feature_image_alt || post.title}
                                         fill
-                                        className="object-cover"
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                        className="object-cover transition-transform hover:scale-105"
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                     />
-                                </div>
-                            </Link>
-                        )}
-                        <div className="p-6">
-                            <Link href={`/blog/trades/${trade}/${post.slug}`}>
-                                <h2 className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
-                                    {post.title}
+                                </Link>
+                            )}
+                            <div className="p-6">
+                                <h2 className="text-xl font-semibold mb-2 hover:text-blue-600">
+                                    <Link href={`/blog/${post.slug}`}>{post.title}</Link>
                                 </h2>
-                            </Link>
-                            <p className="text-gray-600 mb-4 line-clamp-3">
-                                {post.excerpt || post.title}
-                            </p>
-                            <div className="flex items-center justify-between text-sm text-gray-500">
-                                <time dateTime={post.published_at}>
+                                <p className="text-gray-600 text-sm mb-4">
                                     {formatDate(post.published_at)}
-                                </time>
+                                </p>
+                                {post.excerpt && (
+                                    <p className="text-gray-700 mb-4 line-clamp-3">{post.excerpt}</p>
+                                )}
                                 <Link
-                                    href={`/blog/trades/${trade}/${post.slug}`}
-                                    className="text-blue-600 hover:text-blue-700 font-medium"
+                                    href={`/blog/${post.slug}`}
+                                    className="text-blue-600 hover:text-blue-800 font-medium"
                                 >
                                     Read More →
                                 </Link>
                             </div>
-                        </div>
-                    </article>
-                ))}
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className="mt-12 flex justify-center gap-2">
-                    {hasPrevPage && (
-                        <Link
-                            href={`/blog/trades/${trade}?page=${page - 1}`}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                        >
-                            Previous
-                        </Link>
-                    )}
-                    {hasNextPage && (
-                        <Link
-                            href={`/blog/trades/${trade}?page=${page + 1}`}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                        >
-                            Next
-                        </Link>
-                    )}
+                        </article>
+                    ))}
                 </div>
-            )}
 
-            {/* Structured Data */}
-            <JsonLd
-                data={{
-                    "@context": "https://schema.org",
-                    "@type": "Blog",
-                    "name": `${tradeData.title} Blog | Top Contractors Denver`,
-                    "description": `Read expert ${tradeData.title.toLowerCase()} tips, guides, and advice. Professional insights for Denver homeowners.`,
-                    "url": `https://topcontractorsdenver.com/blog/trades/${trade}`,
-                    "publisher": {
-                        "@type": "Organization",
-                        "name": "Top Contractors Denver",
-                        "logo": {
-                            "@type": "ImageObject",
-                            "url": "https://topcontractorsdenver.com/logo.png"
-                        }
-                    }
-                }}
-            />
-        </div>
+                {(hasNextPage || hasPrevPage) && (
+                    <div className="mt-8 flex justify-center gap-4">
+                        {hasPrevPage && (
+                            <Link
+                                href={`/blog/trades/${trade}?page=${page - 1}`}
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            >
+                                ← Previous
+                            </Link>
+                        )}
+                        {hasNextPage && (
+                            <Link
+                                href={`/blog/trades/${trade}?page=${page + 1}`}
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            >
+                                Next →
+                            </Link>
+                        )}
+                    </div>
+                )}
+            </div>
+        </>
     );
 }
