@@ -62,7 +62,7 @@ export default async function TradeBlogPage({ params, searchParams }: Props) {
         notFound();
     }
 
-    const { posts, totalPages, hasNextPage, hasPrevPage } = await getPostsByCategory(trade, page);
+    const { posts, hasNextPage, hasPrevPage } = await getPostsByCategory(trade, page);
 
     if (!posts || posts.length === 0) {
         return (
@@ -109,7 +109,7 @@ export default async function TradeBlogPage({ params, searchParams }: Props) {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {posts.map(post => (
                         <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                            {isValidImageUrl(post.feature_image) && (
+                            {post.feature_image && isValidImageUrl(post.feature_image) && (
                                 <Link href={`/blog/${post.slug}`} className="block aspect-video relative overflow-hidden">
                                     <Image
                                         src={post.feature_image}

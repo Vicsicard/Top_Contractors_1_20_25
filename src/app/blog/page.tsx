@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getPosts, getPostsByCategory } from '@/utils/supabase-blog';
@@ -51,11 +52,11 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
 export default async function BlogPage({ searchParams }: Props) {
     const category = searchParams.category;
-    const currentPage = parseInt(searchParams.page || '1');
+    const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
     const postsPerPage = 10;
 
     try {
-        const { posts, totalPages, hasNextPage, hasPrevPage } = category
+        const { posts, hasNextPage, hasPrevPage } = category
             ? await getPostsByCategory(category, currentPage, postsPerPage)
             : await getPosts(currentPage, postsPerPage);
 

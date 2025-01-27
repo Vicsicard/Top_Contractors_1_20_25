@@ -98,8 +98,10 @@ export default async function BlogPost({ params }: Props) {
                             {formatDate(post.published_at)}
                         </time>
                         {post.reading_time && (
-                            <span>·</span>
-                            <span>{post.reading_time} min read</span>
+                            <>
+                                <span>·</span>
+                                <span>{post.reading_time} min read</span>
+                            </>
                         )}
                     </div>
                     {post.authors?.[0] && (

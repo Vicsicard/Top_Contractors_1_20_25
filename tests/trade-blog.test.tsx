@@ -12,6 +12,11 @@ jest.mock('next/navigation', () => ({
   notFound: jest.fn()
 }));
 
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: (props: any) => <img {...props} />
+}));
+
 describe('TradeBlogPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -47,12 +52,16 @@ describe('TradeBlogPage', () => {
     const params = { trade: 'bathroom-remodeling' };
     const searchParams = { page: '1' };
 
-    await TradeBlogPage({ params, searchParams });
+    const { container } = render(await TradeBlogPage({ params, searchParams }));
 
     expect(supabaseBlog.getPostsByCategory).toHaveBeenCalledWith(
       'bathroom-remodeling',
       1
     );
+
+    expect(screen.getByText('Test Post 1')).toBeInTheDocument();
+    expect(screen.getByText('Test Post 2')).toBeInTheDocument();
+    expect(container.querySelector('article')).toBeInTheDocument();
   });
 
   it('calls notFound when trade does not exist', async () => {
@@ -64,7 +73,7 @@ describe('TradeBlogPage', () => {
     expect(notFound).toHaveBeenCalled();
   });
 
-  it('calls notFound when no posts are found', async () => {
+  it('shows no posts message when no posts are found', async () => {
     const mockPosts = {
       posts: [],
       totalPages: 0,
@@ -77,8 +86,37 @@ describe('TradeBlogPage', () => {
     const params = { trade: 'bathroom-remodeling' };
     const searchParams = { page: '1' };
 
-    await TradeBlogPage({ params, searchParams });
+    render(await TradeBlogPage({ params, searchParams }));
 
-    expect(notFound).toHaveBeenCalled();
+    expect(screen.getByText(/no posts found/i)).toBeInTheDocument();
+    expect(screen.getByText(/back to blog/i)).toBeInTheDocument();
+  });
+
+  it('renders pagination controls when there are multiple pages', async () => {
+    const mockPosts = {
+      posts: [
+        {
+          id: '1',
+          title: 'Test Post 1',
+          slug: 'test-post-1',
+          feature_image: 'test-image-1.jpg',
+          excerpt: 'Test excerpt 1',
+          published_at: '2023-01-01T00:00:00.000Z'
+        }
+      ],
+      totalPages: 2,
+      hasNextPage: true,
+      hasPrevPage: false
+    };
+
+    (supabaseBlog.getPostsByCategory as jest.Mock).mockResolvedValue(mockPosts);
+
+    const params = { trade: 'bathroom-remodeling' };
+    const searchParams = { page: '1' };
+
+    render(await TradeBlogPage({ params, searchParams }));
+
+    expect(screen.getByText('Next →')).toBeInTheDocument();
+    expect(screen.queryByText('← Previous')).not.toBeInTheDocument();
   });
 });

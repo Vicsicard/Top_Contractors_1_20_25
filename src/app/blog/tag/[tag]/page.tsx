@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function TagPage({ params, searchParams }: Props) {
     const tag = decodeURIComponent(params.tag);
     const page = searchParams.page ? parseInt(searchParams.page) : 1;
-    const { posts, totalPages, hasNextPage, hasPrevPage } = await getPostsByTag(tag, page);
+    const { posts, hasNextPage, hasPrevPage } = await getPostsByTag(tag, page);
 
     if (!posts || posts.length === 0) {
         return (

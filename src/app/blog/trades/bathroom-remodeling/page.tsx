@@ -48,7 +48,7 @@ export default async function TradeBlogPage({ searchParams }: Props) {
         notFound();
     }
 
-    const { posts, totalPages, hasNextPage, hasPrevPage } = await getPostsByCategory(trade, page);
+    const { posts, hasNextPage, hasPrevPage } = await getPostsByCategory(trade, page);
 
     if (!posts || posts.length === 0) {
         return (
