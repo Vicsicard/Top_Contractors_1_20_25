@@ -2,10 +2,8 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getPostBySlug } from '@/utils/supabase-blog';
-import { extractPostCategory } from '@/utils/ghost';
 import { formatDate } from '@/utils/date';
-import { tradesData } from '@/lib/trades-data';
+import { getPostBySlug } from '@/utils/supabase-blog';
 import { JsonLd } from '@/components/json-ld';
 
 interface Props {
@@ -16,141 +14,129 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const post = await getPostBySlug(params.slug);
-    
+
     if (!post) {
         return {
-            title: 'Post Not Found | Top Contractors Denver',
+            title: 'Post Not Found | Top Contractors Denver Blog',
             description: 'The requested blog post could not be found.',
             robots: 'noindex, nofollow'
         };
     }
-    
+
     return {
-        title: post.title + ' | Top Contractors Denver Blog',
-        description: post.excerpt || post.title,
+        title: `${post.title} | Top Contractors Denver Blog`,
+        description: post.excerpt || `Read ${post.title} on Top Contractors Denver Blog`,
         openGraph: {
             title: post.title,
-            description: post.excerpt || post.title,
+            description: post.excerpt || undefined,
             type: 'article',
             publishedTime: post.published_at,
-            modifiedTime: post.updated_at,
-            authors: post.authors?.map(author => author.name) || [],
-            images: post.feature_image ? [post.feature_image] : [],
+            modifiedTime: post.updated_at || undefined,
+            authors: post.authors?.map(author => author.name) || undefined,
+            images: post.feature_image ? [post.feature_image] : undefined,
         },
-        twitter: {
-            card: 'summary_large_image',
-            title: post.title,
-            description: post.excerpt || post.title,
-            images: post.feature_image ? [post.feature_image] : [],
+        alternates: {
+            canonical: `/blog/${post.slug}`
         }
     };
 }
 
 export default async function BlogPost({ params }: Props) {
     const post = await getPostBySlug(params.slug);
-    
+
     if (!post) {
-        return notFound();
+        notFound();
     }
 
-    const category = extractPostCategory(post);
-    const categoryData = category ? tradesData[category] : null;
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: post.title,
+        description: post.excerpt || undefined,
+        image: post.feature_image || undefined,
+        datePublished: post.published_at,
+        dateModified: post.updated_at || post.published_at,
+        author: post.authors?.[0] ? {
+            '@type': 'Person',
+            name: post.authors[0].name,
+            url: post.authors[0].url || undefined
+        } : undefined,
+        publisher: {
+            '@type': 'Organization',
+            name: 'Top Contractors Denver',
+            logo: {
+                '@type': 'ImageObject',
+                url: 'https://topcontractorsdenver.com/logo.png'
+            }
+        },
+        mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': `https://topcontractorsdenver.com/blog/${post.slug}`
+        }
+    };
 
     return (
-        <main className="container mx-auto px-4 py-8">
-            <JsonLd
-                data={{
-                    '@context': 'https://schema.org',
-                    '@type': 'BlogPosting',
-                    headline: post.title,
-                    description: post.excerpt || post.title,
-                    image: post.feature_image ? [post.feature_image] : [],
-                    datePublished: post.published_at,
-                    dateModified: post.updated_at || post.published_at,
-                    author: post.authors?.map(author => ({
-                        '@type': 'Person',
-                        name: author.name,
-                    })) || [],
-                    publisher: {
-                        '@type': 'Organization',
-                        name: 'Top Contractors Denver',
-                        url: 'https://topcontractorsdenver.com',
-                    },
-                    mainEntityOfPage: {
-                        '@type': 'WebPage',
-                        '@id': `https://topcontractorsdenver.com/blog/${post.slug}`,
-                    },
-                }}
-            />
-
-            {/* Navigation */}
-            <nav className="mb-8">
-                <div className="flex flex-wrap gap-4 items-center text-sm">
-                    <Link
-                        href="/blog"
-                        className="text-blue-600 hover:text-blue-800 transition-colors"
-                    >
-                        ← Back to Blog
-                    </Link>
-                    {category && (
-                        <>
-                            <span className="text-gray-400">|</span>
-                            <Link
-                                href={`/blog?category=${category}`}
-                                className="text-blue-600 hover:text-blue-800 transition-colors"
-                            >
-                                {categoryData?.title || category} Articles
-                            </Link>
-                        </>
-                    )}
-                </div>
-            </nav>
-
-            <article className="max-w-4xl mx-auto">
-                {/* Header */}
+        <>
+            <JsonLd data={jsonLd} />
+            <article className="container mx-auto px-4 py-8 max-w-4xl">
                 <header className="mb-8">
-                    <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-                    <div className="flex items-center gap-4 text-gray-600 mb-6">
-                        <time dateTime={post.published_at}>
-                            {formatDate(post.published_at)}
-                        </time>
-                        {post.reading_time && (
-                            <>
-                                <span>•</span>
-                                <span>{post.reading_time} min read</span>
-                            </>
-                        )}
-                    </div>
                     {post.feature_image && (
-                        <div className="relative aspect-video w-full mb-8">
+                        <div className="relative aspect-video mb-6 rounded-lg overflow-hidden">
                             <Image
                                 src={post.feature_image}
                                 alt={post.feature_image_alt || post.title}
                                 fill
-                                className="object-cover rounded-lg"
+                                className="object-cover"
+                                sizes="(max-width: 1024px) 100vw, 1024px"
                                 priority
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             />
+                        </div>
+                    )}
+                    <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+                    <div className="flex items-center gap-4 text-gray-600 mb-4">
+                        <time dateTime={post.published_at}>
+                            {formatDate(post.published_at)}
+                        </time>
+                        {post.reading_time && (
+                            <span>·</span>
+                            <span>{post.reading_time} min read</span>
+                        )}
+                    </div>
+                    {post.authors?.[0] && (
+                        <div className="flex items-center gap-3">
+                            {post.authors[0].profile_image && (
+                                <Image
+                                    src={post.authors[0].profile_image}
+                                    alt={post.authors[0].name}
+                                    width={40}
+                                    height={40}
+                                    className="rounded-full"
+                                />
+                            )}
+                            <div>
+                                <p className="font-medium">{post.authors[0].name}</p>
+                                {post.authors[0].bio && (
+                                    <p className="text-sm text-gray-600">{post.authors[0].bio}</p>
+                                )}
+                            </div>
                         </div>
                     )}
                 </header>
 
-                {/* Content */}
-                <div
+                <div 
                     className="prose prose-lg max-w-none"
                     dangerouslySetInnerHTML={{ __html: post.html }}
                 />
 
-                {/* Tags */}
                 {post.tags && post.tags.length > 0 && (
                     <div className="mt-8 pt-8 border-t">
-                        <h2 className="text-lg font-semibold mb-4">Related Topics:</h2>
+                        <h2 className="text-xl font-semibold mb-4">Tags</h2>
                         <div className="flex flex-wrap gap-2">
-                            {post.tags.map((tag) => (
+                            {post.tags.map(tag => (
                                 <Link
                                     key={tag.id}
-                                    href={`/blog?tag=${tag.slug}`}
-                                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition-colors"
+                                    href={`/blog/tag/${tag.slug}`}
+                                    className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-sm"
                                 >
                                     {tag.name}
                                 </Link>
@@ -158,35 +144,7 @@ export default async function BlogPost({ params }: Props) {
                         </div>
                     </div>
                 )}
-
-                {/* Authors */}
-                {post.authors && post.authors.length > 0 && (
-                    <div className="mt-8 pt-8 border-t">
-                        <h2 className="text-lg font-semibold mb-4">Written by:</h2>
-                        <div className="flex flex-wrap gap-4">
-                            {post.authors.map((author) => (
-                                <div key={author.id} className="flex items-center gap-3">
-                                    {author.profile_image && (
-                                        <Image
-                                            src={author.profile_image}
-                                            alt={author.name}
-                                            width={40}
-                                            height={40}
-                                            className="rounded-full"
-                                        />
-                                    )}
-                                    <div>
-                                        <div className="font-medium">{author.name}</div>
-                                        {author.bio && (
-                                            <p className="text-sm text-gray-600">{author.bio}</p>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
             </article>
-        </main>
+        </>
     );
 }

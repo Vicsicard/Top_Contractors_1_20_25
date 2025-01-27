@@ -1,39 +1,37 @@
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
-import { getPostsByCategory } from '@/utils/ghost';
-import { tradesData } from '@/lib/trades-data';
+import { getPostsByCategory } from '@/utils/supabase-blog';
 import { formatDate } from '@/utils/date';
-import { VideoPlayer } from '@/components/VideoPlayer';
+import { tradesData } from '@/lib/trades-data';
+import { JsonLd } from '@/components/json-ld';
 
 interface Props {
-    params: {
-        trade: string;
-    };
     searchParams: {
         page?: string;
     };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const trade = 'bathroom-remodeling';
+const trade = 'bathroom-remodeling';
+
+export async function generateMetadata(): Promise<Metadata> {
     const tradeData = tradesData[trade];
 
     if (!tradeData) {
         return {
             title: 'Trade Not Found | Top Contractors Denver Blog',
-            description: 'The requested trade blog page could not be found.',
+            description: 'The requested trade page could not be found.',
             robots: 'noindex, nofollow'
         };
     }
 
     return {
         title: `${tradeData.title} Blog | Top Contractors Denver`,
-        description: `Read expert ${tradeData.title.toLowerCase()} tips, guides, and advice. Professional insights for Denver homeowners.`,
+        description: `Read expert articles about ${tradeData.title.toLowerCase()} on Top Contractors Denver Blog`,
         openGraph: {
             title: `${tradeData.title} Blog | Top Contractors Denver`,
-            description: `Read expert ${tradeData.title.toLowerCase()} tips, guides, and advice. Professional insights for Denver homeowners.`,
+            description: `Read expert articles about ${tradeData.title.toLowerCase()} on Top Contractors Denver Blog`,
             type: 'website',
         },
         alternates: {
@@ -42,108 +40,138 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
-export default async function BathroomRemodelingPage({ params, searchParams }: Props) {
-    const trade = 'bathroom-remodeling';
+export default async function TradeBlogPage({ searchParams }: Props) {
     const tradeData = tradesData[trade];
-    const currentPage = parseInt(searchParams.page || '1');
+    const page = searchParams.page ? parseInt(searchParams.page) : 1;
 
     if (!tradeData) {
         notFound();
     }
 
-    const posts = await getPostsByCategory(trade, currentPage);
-    const { posts: blogPosts, totalPages, currentPage: page, hasNextPage, hasPrevPage } = posts;
+    const { posts, totalPages, hasNextPage, hasPrevPage } = await getPostsByCategory(trade, page);
+
+    if (!posts || posts.length === 0) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-4xl font-bold mb-4">{tradeData.title} Blog</h1>
+                <p className="text-gray-600 mb-8">
+                    No posts found. Please check back soon for new content about {tradeData.title.toLowerCase()}.
+                </p>
+                <Link
+                    href="/blog"
+                    className="text-blue-600 hover:text-blue-800"
+                >
+                    ← Back to Blog
+                </Link>
+            </div>
+        );
+    }
+
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: `${tradeData.title} Blog | Top Contractors Denver`,
+        description: `Read expert articles about ${tradeData.title.toLowerCase()} on Top Contractors Denver Blog`,
+        url: `/blog/trades/${trade}`,
+        mainEntity: {
+            '@type': 'ItemList',
+            itemListElement: posts.map((post, index) => ({
+                '@type': 'ListItem',
+                position: index + 1,
+                item: {
+                    '@type': 'BlogPosting',
+                    headline: post.title,
+                    url: `/blog/${post.slug}`,
+                    datePublished: post.published_at,
+                    dateModified: post.updated_at || post.published_at,
+                    author: post.authors?.[0] ? {
+                        '@type': 'Person',
+                        name: post.authors[0].name
+                    } : undefined,
+                    image: post.feature_image || undefined
+                }
+            }))
+        }
+    };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            {/* Trade Header */}
-            <div className="mb-12 text-center">
-                <div className="flex items-center justify-center mb-4">
-                    {tradeData.icon && (
-                        <div className="w-16 h-16 flex items-center justify-center rounded-lg bg-blue-600 mb-4">
+        <>
+            <JsonLd data={jsonLd} />
+            <div className="container mx-auto px-4 py-8">
+                <header className="mb-8">
+                    <div className="flex items-center gap-4 mb-6">
+                        {tradeData.icon && (
                             <Image
                                 src={tradeData.icon}
                                 alt={`${tradeData.title} icon`}
-                                width={32}
-                                height={32}
-                                className="text-white"
+                                width={48}
+                                height={48}
+                                className="w-12 h-12"
                             />
-                        </div>
-                    )}
-                </div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">{tradeData.title} Blog</h1>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto">{tradeData.description}</p>
-            </div>
+                        )}
+                        <h1 className="text-4xl font-bold">{tradeData.title} Blog</h1>
+                    </div>
+                    <p className="text-gray-600 text-lg">
+                        Read expert articles about {tradeData.title.toLowerCase()} and related topics.
+                    </p>
+                </header>
 
-            {/* Video Section */}
-            <VideoPlayer
-                url="https://youtu.be/mTOqRT0unsY"
-                title="Bathroom Remodeling in Denver - Expert Guide"
-            />
-
-            {/* Blog Posts Grid */}
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {blogPosts.map((post) => (
-                    <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        {post.feature_image && (
-                            <Link href={`/blog/trades/${trade}/${post.slug}`}>
-                                <div className="relative h-48 overflow-hidden">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {posts.map(post => (
+                        <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                            {post.feature_image && (
+                                <Link href={`/blog/${post.slug}`} className="block aspect-video relative overflow-hidden">
                                     <Image
                                         src={post.feature_image}
                                         alt={post.feature_image_alt || post.title}
                                         fill
-                                        className="object-cover"
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                        className="object-cover transition-transform hover:scale-105"
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                     />
-                                </div>
-                            </Link>
-                        )}
-                        <div className="p-6">
-                            <Link href={`/blog/trades/${trade}/${post.slug}`}>
-                                <h2 className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
-                                    {post.title}
+                                </Link>
+                            )}
+                            <div className="p-6">
+                                <h2 className="text-xl font-semibold mb-2 hover:text-blue-600">
+                                    <Link href={`/blog/${post.slug}`}>{post.title}</Link>
                                 </h2>
-                            </Link>
-                            <p className="text-gray-600 mb-4 line-clamp-3">
-                                {post.excerpt || post.title}
-                            </p>
-                            <div className="flex items-center justify-between text-sm text-gray-500">
-                                <time dateTime={post.published_at}>
+                                <p className="text-gray-600 text-sm mb-4">
                                     {formatDate(post.published_at)}
-                                </time>
+                                </p>
+                                {post.excerpt && (
+                                    <p className="text-gray-700 mb-4 line-clamp-3">{post.excerpt}</p>
+                                )}
                                 <Link
-                                    href={`/blog/trades/${trade}/${post.slug}`}
-                                    className="text-blue-600 hover:text-blue-700 font-medium"
+                                    href={`/blog/${post.slug}`}
+                                    className="text-blue-600 hover:text-blue-800 font-medium"
                                 >
                                     Read More →
                                 </Link>
                             </div>
-                        </div>
-                    </article>
-                ))}
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className="mt-12 flex justify-center gap-2">
-                    {hasPrevPage && (
-                        <Link
-                            href={`/blog/trades/${trade}?page=${page - 1}`}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                        >
-                            Previous
-                        </Link>
-                    )}
-                    {hasNextPage && (
-                        <Link
-                            href={`/blog/trades/${trade}?page=${page + 1}`}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                        >
-                            Next
-                        </Link>
-                    )}
+                        </article>
+                    ))}
                 </div>
-            )}
-        </div>
+
+                {(hasNextPage || hasPrevPage) && (
+                    <div className="mt-8 flex justify-center gap-4">
+                        {hasPrevPage && (
+                            <Link
+                                href={`/blog/trades/${trade}?page=${page - 1}`}
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            >
+                                ← Previous
+                            </Link>
+                        )}
+                        {hasNextPage && (
+                            <Link
+                                href={`/blog/trades/${trade}?page=${page + 1}`}
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            >
+                                Next →
+                            </Link>
+                        )}
+                    </div>
+                )}
+            </div>
+        </>
     );
 }

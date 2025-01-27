@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
-import { getPostsByTag } from '@/utils/ghost';
+import Image from 'next/image';
+import { getPostsByTag } from '@/utils/supabase-blog';
 import { formatDate } from '@/utils/date';
 import { JsonLd } from '@/components/json-ld';
 
@@ -9,36 +9,60 @@ interface Props {
     params: {
         tag: string;
     };
-    searchParams: { page?: string };
+    searchParams: {
+        page?: string;
+    };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const tag = decodeURIComponent(params.tag);
+    const { posts } = await getPostsByTag(tag, 1, 1);
+
+    if (!posts || posts.length === 0) {
+        return {
+            title: 'Tag Not Found | Top Contractors Denver Blog',
+            description: 'The requested tag page could not be found.',
+            robots: 'noindex, nofollow'
+        };
+    }
+
     return {
-        title: `${tag} Posts | Top Contractors Denver Blog`,
-        description: `Read all our blog posts about ${tag.toLowerCase()} and related topics.`,
+        title: `${tag} Articles | Top Contractors Denver Blog`,
+        description: `Read expert articles about ${tag} on Top Contractors Denver Blog`,
+        openGraph: {
+            title: `${tag} Articles | Top Contractors Denver Blog`,
+            description: `Read expert articles about ${tag} on Top Contractors Denver Blog`,
+            type: 'website',
+        },
+        alternates: {
+            canonical: `/blog/tag/${params.tag}`
+        }
     };
 }
 
 export default async function TagPage({ params, searchParams }: Props) {
     const tag = decodeURIComponent(params.tag);
-    const currentPage = parseInt(searchParams.page || '1');
-    const { posts, totalPages } = await getPostsByTag(tag, currentPage);
+    const page = searchParams.page ? parseInt(searchParams.page) : 1;
+    const { posts, totalPages, hasNextPage, hasPrevPage } = await getPostsByTag(tag, page);
 
-    // Generate schema for the tag page
-    const tagPageSchema = {
+    if (!posts || posts.length === 0) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-4xl font-bold mb-8">Tag Not Found</h1>
+                <p className="text-gray-600">No posts found with this tag.</p>
+                <Link href="/blog" className="text-blue-600 hover:text-blue-800 mt-4 inline-block">
+                    ← Back to Blog
+                </Link>
+            </div>
+        );
+    }
+
+    const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
-        name: `${tag} Posts`,
-        description: `Blog posts about ${tag.toLowerCase()} and related topics`,
-        publisher: {
-            '@type': 'Organization',
-            name: 'Top Contractors Denver',
-            logo: {
-                '@type': 'ImageObject',
-                url: 'https://topcontractorsdenver.com/images/logo.png'
-            }
-        },
+        name: `${tag} Articles | Top Contractors Denver Blog`,
+        description: `Read expert articles about ${tag} on Top Contractors Denver Blog`,
+        url: `/blog/tag/${params.tag}`,
         mainEntity: {
             '@type': 'ItemList',
             itemListElement: posts.map((post, index) => ({
@@ -47,95 +71,81 @@ export default async function TagPage({ params, searchParams }: Props) {
                 item: {
                     '@type': 'BlogPosting',
                     headline: post.title,
-                    description: post.excerpt || post.title,
-                    url: `https://topcontractorsdenver.com/blog/${post.slug}`,
+                    url: `/blog/${post.slug}`,
                     datePublished: post.published_at,
                     dateModified: post.updated_at || post.published_at,
-                    author: post.authors?.map(author => ({
+                    author: post.authors?.[0] ? {
                         '@type': 'Person',
-                        name: author.name
-                    })) || []
+                        name: post.authors[0].name
+                    } : undefined,
+                    image: post.feature_image || undefined
                 }
             }))
         }
     };
 
     return (
-        <div className="max-w-4xl mx-auto px-4 py-8">
-            <JsonLd data={tagPageSchema} />
-            
-            <header className="mb-8">
-                <h1 className="text-4xl font-bold mb-2">Posts tagged with &ldquo;{tag}&rdquo;</h1>
-                <p className="text-gray-600">Browse all our blog posts about {tag.toLowerCase()} and related topics.</p>
-            </header>
-
-            <div className="space-y-8">
-                {posts.map(post => (
-                    <article key={post.id} className="border-b border-gray-200 pb-8">
-                        <Link href={`/blog/${post.slug}`} className="group">
+        <>
+            <JsonLd data={jsonLd} />
+            <div className="container mx-auto px-4 py-8">
+                <h1 className="text-4xl font-bold mb-8">{tag} Articles</h1>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {posts.map(post => (
+                        <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                             {post.feature_image && (
-                                <div className="relative aspect-video mb-4">
+                                <Link href={`/blog/${post.slug}`} className="block aspect-video relative overflow-hidden">
                                     <Image
                                         src={post.feature_image}
                                         alt={post.feature_image_alt || post.title}
                                         fill
-                                        className="object-cover rounded-lg group-hover:opacity-90 transition-opacity"
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                                        className="object-cover transition-transform hover:scale-105"
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                     />
-                                </div>
+                                </Link>
                             )}
-                            <h2 className="text-2xl font-bold mb-2 group-hover:text-blue-600 transition-colors">{post.title}</h2>
-                        </Link>
-
-                        {post.excerpt && (
-                            <p className="text-gray-600 mb-4">{post.excerpt}</p>
-                        )}
-
-                        <div className="flex items-center text-sm text-gray-500">
-                            {post.authors?.[0] && (
-                                <div className="flex items-center mr-6">
-                                    {post.authors[0].profile_image && (
-                                        <Image
-                                            src={post.authors[0].profile_image}
-                                            alt={post.authors[0].name}
-                                            width={24}
-                                            height={24}
-                                            className="rounded-full mr-2"
-                                        />
-                                    )}
-                                    <span>{post.authors[0].name}</span>
-                                </div>
-                            )}
-                            <time dateTime={post.published_at}>{formatDate(post.published_at)}</time>
-                            {post.reading_time && (
-                                <span className="ml-6">{post.reading_time} min read</span>
-                            )}
-                        </div>
-                    </article>
-                ))}
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className="flex justify-center space-x-4 mt-8">
-                    {currentPage > 1 && (
-                        <Link
-                            href={`/blog/tag/${params.tag}?page=${currentPage - 1}`}
-                            className="px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-600 hover:text-white transition-colors"
-                        >
-                            Previous
-                        </Link>
-                    )}
-                    {currentPage < totalPages && (
-                        <Link
-                            href={`/blog/tag/${params.tag}?page=${currentPage + 1}`}
-                            className="px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-600 hover:text-white transition-colors"
-                        >
-                            Next
-                        </Link>
-                    )}
+                            <div className="p-6">
+                                <h2 className="text-xl font-semibold mb-2 hover:text-blue-600">
+                                    <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+                                </h2>
+                                <p className="text-gray-600 text-sm mb-4">
+                                    {formatDate(post.published_at)}
+                                </p>
+                                {post.excerpt && (
+                                    <p className="text-gray-700 mb-4 line-clamp-3">{post.excerpt}</p>
+                                )}
+                                <Link
+                                    href={`/blog/${post.slug}`}
+                                    className="text-blue-600 hover:text-blue-800 font-medium"
+                                >
+                                    Read More →
+                                </Link>
+                            </div>
+                        </article>
+                    ))}
                 </div>
-            )}
-        </div>
+
+                {(hasNextPage || hasPrevPage) && (
+                    <div className="mt-8 flex justify-center gap-4">
+                        {hasPrevPage && (
+                            <Link
+                                href={`/blog/tag/${params.tag}?page=${page - 1}`}
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            >
+                                ← Previous
+                            </Link>
+                        )}
+                        {hasNextPage && (
+                            <Link
+                                href={`/blog/tag/${params.tag}?page=${page + 1}`}
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            >
+                                Next →
+                            </Link>
+                        )}
+                    </div>
+                )}
+            </div>
+        </>
     );
 }
