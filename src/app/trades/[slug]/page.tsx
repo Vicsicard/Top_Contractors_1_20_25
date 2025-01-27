@@ -6,6 +6,8 @@ import { generateLocalBusinessSchema, generateBreadcrumbSchema, generateFAQSchem
 import { Breadcrumb } from '@/components/breadcrumb';
 import { FAQSection } from '@/components/FAQSection';
 import { getFAQsForTrade } from '@/data/faqs';
+import { getPostsByCategory } from '@/utils/supabase-blog';
+import { BlogPostCard } from '@/components/BlogPostCard';
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -56,6 +58,9 @@ export default async function TradePage({ params }: Props) {
   const tradeName = trade.category_name;
   const faqs = getFAQsForTrade(tradeName);
   
+  // Fetch blog posts for this trade
+  const { posts } = await getPostsByCategory(params.slug);
+  
   const schema = {
     localBusiness: generateLocalBusinessSchema({ trade: tradeName }),
     breadcrumb: generateBreadcrumbSchema({ trade: tradeName }),
@@ -101,15 +106,34 @@ export default async function TradePage({ params }: Props) {
                 <p className="text-gray-600">All reviews are from real customers who have used our services.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h3 className="text-xl font-semibold mb-3">Licensed & Insured</h3>
-                <p className="text-gray-600">Every contractor is properly licensed and fully insured for your protection.</p>
+                <h3 className="text-xl font-semibold mb-3">Expert Contractors</h3>
+                <p className="text-gray-600">Our contractors are licensed, insured, and highly experienced.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                 <h3 className="text-xl font-semibold mb-3">Free Quotes</h3>
-                <p className="text-gray-600">Get competitive quotes from multiple contractors at no cost to you.</p>
+                <p className="text-gray-600">Get multiple quotes from top contractors at no cost to you.</p>
               </div>
             </div>
           </section>
+
+          {posts.length > 0 && (
+            <section className="mt-16">
+              <h2 className="text-2xl font-bold mb-6">{tradeName} Resources & Tips</h2>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {posts.map(post => (
+                  <BlogPostCard key={post.id} post={post} />
+                ))}
+              </div>
+              <div className="mt-8 text-center">
+                <a 
+                  href={`/blog/trades/${params.slug}`}
+                  className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  View All {tradeName} Articles
+                </a>
+              </div>
+            </section>
+          )}
 
           <FAQSection 
             faqs={faqs} 

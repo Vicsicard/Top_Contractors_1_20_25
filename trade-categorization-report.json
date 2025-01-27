@@ -1,0 +1,92 @@
+{
+  "timestamp": "2025-01-27T23:36:15.280Z",
+  "summary": {
+    "total": 986,
+    "categorized": 986,
+    "uncategorized": 0,
+    "percentageCategorized": "100.00"
+  },
+  "tradeBreakdown": [
+    {
+      "trade": "landscaper",
+      "count": 231,
+      "percentage": "23.43"
+    },
+    {
+      "trade": "bathroom-remodeling",
+      "count": 137,
+      "percentage": "13.89"
+    },
+    {
+      "trade": "windows",
+      "count": 97,
+      "percentage": "9.84"
+    },
+    {
+      "trade": "home-remodeling",
+      "count": 82,
+      "percentage": "8.32"
+    },
+    {
+      "trade": "epoxy-garage",
+      "count": 81,
+      "percentage": "8.22"
+    },
+    {
+      "trade": "hvac",
+      "count": 74,
+      "percentage": "7.51"
+    },
+    {
+      "trade": "roofer",
+      "count": 72,
+      "percentage": "7.30"
+    },
+    {
+      "trade": "decks",
+      "count": 68,
+      "percentage": "6.90"
+    },
+    {
+      "trade": "kitchen-remodeling",
+      "count": 64,
+      "percentage": "6.49"
+    },
+    {
+      "trade": "fencing",
+      "count": 59,
+      "percentage": "5.98"
+    },
+    {
+      "trade": "painter",
+      "count": 10,
+      "percentage": "1.01"
+    },
+    {
+      "trade": "plumber",
+      "count": 5,
+      "percentage": "0.51"
+    },
+    {
+      "trade": "electrician",
+      "count": 3,
+      "percentage": "0.30"
+    },
+    {
+      "trade": "flooring",
+      "count": 3,
+      "percentage": "0.30"
+    },
+    {
+      "trade": "siding-gutters",
+      "count": 0,
+      "percentage": "0.00"
+    },
+    {
+      "trade": "masonry",
+      "count": 0,
+      "percentage": "0.00"
+    }
+  ],
+  "uncategorizedPosts": []
+}

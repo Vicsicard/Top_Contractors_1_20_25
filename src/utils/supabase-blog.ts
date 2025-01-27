@@ -102,7 +102,7 @@ export async function getPostsByCategory(category: string, page = 1, limit = POS
         const { count } = await supabase
             .from('posts')
             .select('*', { count: 'exact', head: true })
-            .eq('category', category);
+            .eq('trade_category', category);
 
         // Calculate pagination
         const from = (page - 1) * limit;
@@ -116,7 +116,7 @@ export async function getPostsByCategory(category: string, page = 1, limit = POS
                 authors (*),
                 tags (*)
             `)
-            .eq('category', category)
+            .eq('trade_category', category)
             .order('published_at', { ascending: false })
             .range(from, to);
 
