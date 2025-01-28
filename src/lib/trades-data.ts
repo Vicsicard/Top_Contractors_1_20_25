@@ -1,9 +1,9 @@
 import { TradeData } from '../types/trade';
 
 export const tradesData: Record<string, TradeData> = {
-  "plumber": {
-    name: "plumber",
-    title: "Plumber",
+  "plumbing": {
+    name: "plumbing",
+    title: "Plumbing",
     metaTitle: "Licensed Plumbers in Denver | Professional Plumbing Services",
     metaDescription: "Find top-rated licensed plumbers in Denver. Our network of professional plumbers provides expert residential and commercial plumbing services.",
     heading: "Expert Plumbing Services in Denver",
@@ -38,9 +38,9 @@ export const tradesData: Record<string, TradeData> = {
     keywords: ["plumber", "plumbing", "drain cleaning", "water heater", "pipe repair", "emergency plumber"],
     category: "plumbing"
   },
-  "electrician": {
-    name: "electrician",
-    title: "Electrician",
+  "electrical": {
+    name: "electrical",
+    title: "Electrical",
     metaTitle: "Licensed Electricians in Denver | Professional Electrical Services",
     metaDescription: "Find certified electricians in Denver, CO. Professional electrical services for residential and commercial properties. Available 24/7 for emergencies.",
     heading: "Licensed Electricians in Denver, CO",
@@ -116,9 +116,9 @@ export const tradesData: Record<string, TradeData> = {
     keywords: ["hvac", "heating", "cooling", "ventilation", "furnace", "ac", "heat pump"],
     category: "hvac"
   },
-  "roofer": {
-    name: "roofer",
-    title: "Roofer",
+  "roofing": {
+    name: "roofing",
+    title: "Roofing",
     metaTitle: "Denver Roofing Contractors | Professional Roof Services",
     metaDescription: "Find expert roofing contractors in Denver, CO. Professional roof repair, replacement, and installation services. Free estimates available.",
     heading: "Professional Roofing Contractors in Denver, CO",
@@ -155,9 +155,9 @@ export const tradesData: Record<string, TradeData> = {
     keywords: ["roofer", "roofing", "roof", "shingle", "tile", "metal roof", "flat roof"],
     category: "roofing"
   },
-  "carpenter": {
-    name: "carpenter",
-    title: "Carpenter",
+  "carpentry": {
+    name: "carpentry",
+    title: "Carpentry",
     metaTitle: "Professional Carpenters in Denver | Custom Woodworking & Repairs",
     metaDescription: "Find skilled carpenters in Denver, CO. Expert woodworking, custom carpentry, and repair services for residential and commercial properties.",
     heading: "Professional Carpenters in Denver, CO",
@@ -194,9 +194,9 @@ export const tradesData: Record<string, TradeData> = {
     keywords: ["carpenter", "carpentry", "wood", "woodworking", "cabinet", "door", "deck"],
     category: "carpentry"
   },
-  "painter": {
-    name: "painter",
-    title: "Painter",
+  "painting": {
+    name: "painting",
+    title: "Painting",
     metaTitle: "Professional Painters in Denver | Interior & Exterior Painting",
     metaDescription: "Find expert painters in Denver, CO. Quality interior and exterior painting services for residential and commercial properties. Free estimates available.",
     heading: "Professional Painters in Denver, CO",
@@ -233,9 +233,9 @@ export const tradesData: Record<string, TradeData> = {
     keywords: ["painter", "painting", "interior paint", "exterior paint", "wall", "texture"],
     category: "painting"
   },
-  "landscaper": {
-    name: "landscaper",
-    title: "Landscaper",
+  "landscaping": {
+    name: "landscaping",
+    title: "Landscaping",
     metaTitle: "Professional Landscapers in Denver | Lawn & Garden Services",
     metaDescription: "Find expert landscapers in Denver, CO. Professional lawn care, garden design, and landscape maintenance services. Free consultations available.",
     heading: "Professional Landscapers in Denver, CO",

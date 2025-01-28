@@ -1,4 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
 import { Post, PaginatedPosts } from '@/types/blog';
 import { supabase } from '@/utils/supabase';
 
@@ -122,6 +121,32 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 /**
  * Gets posts by category.
  */
+/**
+ * Gets all unique trade categories from posts
+ */
+export async function getTradeCategories(): Promise<string[]> {
+    try {
+        const { data, error } = await supabase
+            .from('posts')
+            .select('trade_category')
+            .not('trade_category', 'is', null)
+            .order('trade_category');
+
+        if (error) {
+            console.error('Error fetching trade categories:', error);
+            return [];
+        }
+
+        // Get unique categories
+        const categories = [...new Set(data.map(post => post.trade_category))];
+        console.log('Available trade categories:', categories);
+        return categories;
+    } catch (error) {
+        console.error('Error in getTradeCategories:', error);
+        return [];
+    }
+}
+
 export async function getPostsByCategory(
     category: string,
     page = 1,
@@ -129,6 +154,12 @@ export async function getPostsByCategory(
 ): Promise<PaginatedPosts> {
     try {
         console.log('getPostsByCategory - Starting with params:', { category, page, limit });
+
+        // Validate connection first
+        const isConnected = await validateSupabaseConnection();
+        if (!isConnected) {
+            throw new Error('Failed to connect to Supabase');
+        }
 
         if (!category) {
             throw new Error('Category is required');
@@ -139,10 +170,15 @@ export async function getPostsByCategory(
         const to = from + limit - 1;
 
         // Get total count first
-        const { count, error: countError } = await supabase
+        console.log('getPostsByCategory - Executing count query for category:', category);
+        const countQuery = supabase
             .from('posts')
             .select('*', { count: 'exact', head: true })
-            .eq('trade_category', category);
+            .eq('trade_category', category)
+            .not('trade_category', 'is', null);
+            
+        const { count, error: countError } = await countQuery;
+        console.log('getPostsByCategory - Count query result:', { count, error: countError });
 
         if (countError) {
             console.error('getPostsByCategory - Count query error:', countError);
@@ -156,6 +192,7 @@ export async function getPostsByCategory(
         console.log('getPostsByCategory - Total posts count:', count);
 
         // Then get the actual posts
+        console.log('getPostsByCategory - Building posts query');
         const query = supabase
             .from('posts')
             .select(`
@@ -172,6 +209,7 @@ export async function getPostsByCategory(
                 trade_category
             `)
             .eq('trade_category', category)
+            .not('trade_category', 'is', null)
             .order('published_at', { ascending: false })
             .range(from, to);
 
@@ -183,6 +221,16 @@ export async function getPostsByCategory(
         });
 
         const { data: posts, error: postsError } = await query;
+        
+        console.log('getPostsByCategory - Posts query response:', {
+            error: postsError,
+            postsCount: posts?.length,
+            firstPost: posts?.[0] ? {
+                id: posts[0].id,
+                title: posts[0].title,
+                category: posts[0].trade_category
+            } : null
+        });
 
         if (postsError) {
             console.error('getPostsByCategory - Posts query error:', postsError);

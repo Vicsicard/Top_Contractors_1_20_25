@@ -9,7 +9,7 @@ export interface Post {
     published_at: string;
     updated_at: string | null;
     reading_time: number | null;
-    trade_category: string;
+    trade_category: string | null;
     authors: Author[];
     tags: Tag[];
 }
