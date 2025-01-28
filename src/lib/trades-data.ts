@@ -281,7 +281,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Transform your home with Denver's top remodeling experts",
     description: "Connect with experienced home remodeling contractors in Denver who can turn your vision into reality. Our verified professionals specialize in full home renovations, kitchen remodels, bathroom updates, and more.",
     shortDescription: "Professional home remodeling and renovation services in Denver.",
-    icon: "/icons/home-remodeling.svg",
+    icon: "🏠",
     benefits: [
       "Licensed & Insured Contractors",
       "Custom Design Services",
@@ -320,7 +320,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Transform your bathroom with Denver's top remodeling experts",
     description: "Connect with experienced bathroom remodeling contractors in Denver who can turn your vision into reality. Our verified professionals specialize in complete bathroom renovations with attention to detail.",
     shortDescription: "Professional bathroom remodeling and renovation services in Denver.",
-    icon: "/icons/bathroom-remodeling.svg",
+    icon: "🚿",
     benefits: [
       "Licensed & Insured Contractors",
       "Custom Design Services",

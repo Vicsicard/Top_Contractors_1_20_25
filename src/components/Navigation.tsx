@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 function Navigation() {
@@ -11,10 +12,22 @@ function Navigation() {
       <div className="flex justify-between items-center">
         <Link 
           href="/" 
-          className="text-2xl font-bold text-white hover:text-accent-warm transition-colors"
+          className="flex items-center gap-2 hover:opacity-90 transition-opacity"
         >
-          <span className="lg:inline hidden">Top Contractors Denver</span>
-          <span className="lg:hidden text-xl">TCD</span>
+          <Image
+            src="/images/logo.png"
+            alt="Top Contractors Denver Logo"
+            width={40}
+            height={40}
+            className="w-10 h-10"
+            priority
+          />
+          <span className="lg:inline hidden text-2xl font-bold text-white">
+            Top Contractors Denver
+          </span>
+          <span className="lg:hidden text-xl font-bold text-white">
+            TCD
+          </span>
         </Link>
         
         <div className="flex items-center gap-4 md:gap-8">

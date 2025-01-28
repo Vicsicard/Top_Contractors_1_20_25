@@ -2,42 +2,66 @@ import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config();
+// Get the directory path of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+// Load environment variables from .env.local
+const envPath = path.resolve(__dirname, '../.env.local');
+if (fs.existsSync(envPath)) {
+    console.log('Loading environment variables from:', envPath);
+    dotenv.config({ path: envPath });
+} else {
+    console.error('.env.local file not found at:', envPath);
+    process.exit(1);
+}
+
+// Verify environment variables
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+    console.error('Required environment variables are missing:');
+    console.error('NEXT_PUBLIC_SUPABASE_URL:', !!supabaseUrl);
+    console.error('SUPABASE_SERVICE_ROLE_KEY:', !!supabaseKey);
+    process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Trade categories and their related keywords
 const TRADE_CATEGORIES_INFO = {
-    'plumber': ['plumb', 'plumbing', 'water', 'pipe', 'drain', 'leak'],
-    'electrician': ['electric', 'wiring', 'circuit', 'power', 'lighting'],
+    'plumbing': ['plumb', 'plumbing', 'water', 'pipe', 'drain', 'leak'],
+    'electrical': ['electric', 'wiring', 'circuit', 'power', 'lighting'],
     'hvac': ['hvac', 'heat', 'cooling', 'air condition', 'furnace', 'ac unit'],
-    'roofer': ['roof', 'shingle', 'gutter'],
-    'painter': ['paint', 'stain', 'finish', 'color', 'wall finish'],
-    'landscaper': ['landscap', 'garden', 'yard', 'lawn', 'sprinkler', 'outdoor'],
-    'home-remodeling': ['home remodel', 'house remodel', 'renovation', 'whole home', 'whole house'],
-    'bathroom-remodeling': ['bathroom', 'bath', 'shower', 'tub', 'vanity'],
-    'kitchen-remodeling': ['kitchen', 'cabinet', 'countertop', 'appliance'],
-    'siding-gutters': ['siding', 'gutter', 'exterior', 'facade'],
+    'roofing': ['roof', 'shingle', 'gutter'],
+    'painting': ['paint', 'stain', 'finish', 'color', 'wall finish'],
+    'landscaping': ['landscap', 'garden', 'yard', 'lawn', 'sprinkler', 'outdoor'],
+    'remodeling': ['home remodel', 'house remodel', 'renovation', 'whole home', 'whole house'],
+    'bathroom': ['bathroom', 'bath', 'shower', 'tub', 'vanity'],
+    'kitchen': ['kitchen', 'cabinet', 'countertop', 'appliance'],
+    'siding': ['siding', 'gutter', 'exterior', 'facade'],
     'masonry': ['mason', 'brick', 'stone', 'concrete', 'block'],
     'decks': ['deck', 'patio', 'porch', 'outdoor space'],
     'flooring': ['floor', 'tile', 'hardwood', 'carpet', 'epoxy'],
     'windows': ['window', 'glass', 'pane', 'skylight'],
     'fencing': ['fence', 'gate', 'barrier', 'privacy wall'],
-    'epoxy-garage': ['epoxy', 'garage floor', 'concrete floor']
+    'epoxy': ['epoxy', 'garage floor', 'concrete floor']
 };
 
 // Function to extract trade category from post content and title
 function extractTradeCategory(html, title) {
     if (!html) return null;
     
+    console.log(`\nAnalyzing post: "${title}"`);
+    
     // First try to find an exact URL match
     for (const trade of Object.keys(TRADE_CATEGORIES_INFO)) {
         const pattern = new RegExp(`href="https://www\\.topcontractorsdenver\\.com/blog/trades/${trade}(?:\\?[^"]*?)?"`, 'i');
         if (pattern.test(html)) {
+            console.log(`Found exact URL match for trade: ${trade}`);
             return trade;
         }
     }
@@ -54,6 +78,7 @@ function extractTradeCategory(html, title) {
             const matches = combinedText.match(regex);
             if (matches) {
                 scores[trade] += matches.length;
+                console.log(`Found ${matches.length} matches for "${keyword}" in trade "${trade}"`);
             }
         }
     }
@@ -68,6 +93,8 @@ function extractTradeCategory(html, title) {
         }
     }
 
+    console.log(`Best matching trade: ${bestTrade} (score: ${maxScore})`);
+    
     // Only return a trade if we have a significant match
     return maxScore >= 2 ? bestTrade : null;
 }
@@ -92,29 +119,28 @@ async function categorizePosts() {
 
         if (error) throw error;
 
-        analysis.total = posts.length;
         console.log(`Found ${posts.length} total posts`);
+        analysis.total = posts.length;
 
-        // Initialize trade counters
-        Object.keys(TRADE_CATEGORIES_INFO).forEach(trade => {
-            analysis.byTrade[trade] = {
-                count: 0,
-                posts: []
-            };
-        });
-
-        // Analyze each post
+        // Process each post
         for (const post of posts) {
-            const tradeCategory = extractTradeCategory(post.html, post.title);
+            const category = extractTradeCategory(post.html, post.title);
             
-            if (tradeCategory) {
+            if (category) {
+                // Update the post with its category
+                const { error: updateError } = await supabase
+                    .from('posts')
+                    .update({ trade_category: category })
+                    .eq('id', post.id);
+                
+                if (updateError) {
+                    console.error(`Error updating post ${post.id}:`, updateError);
+                    continue;
+                }
+
                 analysis.categorized++;
-                analysis.byTrade[tradeCategory].count++;
-                analysis.byTrade[tradeCategory].posts.push({
-                    id: post.id,
-                    title: post.title,
-                    slug: post.slug
-                });
+                analysis.byTrade[category] = (analysis.byTrade[category] || 0) + 1;
+                console.log(`Categorized "${post.title}" as ${category}`);
             } else {
                 analysis.uncategorized++;
                 analysis.uncategorizedPosts.push({
@@ -122,85 +148,31 @@ async function categorizePosts() {
                     title: post.title,
                     slug: post.slug
                 });
+                console.log(`Could not categorize: "${post.title}"`);
             }
         }
 
-        // Generate report
-        const report = {
-            timestamp: new Date().toISOString(),
-            summary: {
-                total: analysis.total,
-                categorized: analysis.categorized,
-                uncategorized: analysis.uncategorized,
-                percentageCategorized: ((analysis.categorized / analysis.total) * 100).toFixed(2)
-            },
-            tradeBreakdown: Object.entries(analysis.byTrade)
-                .map(([trade, data]) => ({
-                    trade,
-                    count: data.count,
-                    percentage: ((data.count / analysis.total) * 100).toFixed(2)
-                }))
-                .sort((a, b) => b.count - a.count),
-            uncategorizedPosts: analysis.uncategorizedPosts
-        };
-
-        // Save report to file
-        const reportPath = path.join(process.cwd(), 'trade-categorization-report.json');
-        fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-        
-        console.log('\nCategorization Summary:');
-        console.log(`Total Posts: ${report.summary.total}`);
-        console.log(`Categorized: ${report.summary.categorized} (${report.summary.percentageCategorized}%)`);
-        console.log(`Uncategorized: ${report.summary.uncategorized}`);
-        
-        console.log('\nTrade Breakdown:');
-        report.tradeBreakdown.forEach(({ trade, count, percentage }) => {
-            console.log(`${trade}: ${count} posts (${percentage}%)`);
-        });
-        
-        console.log(`\nFull report saved to: ${reportPath}`);
-
-        // Update posts with trade categories in Supabase
-        console.log('\nUpdating posts in Supabase...');
-        
-        // Update each trade category separately
-        for (const trade of Object.keys(TRADE_CATEGORIES_INFO)) {
-            const posts = analysis.byTrade[trade].posts;
-            if (posts.length > 0) {
-                const { error: updateError } = await supabase
-                    .from('posts')
-                    .update({ trade_category: trade })
-                    .in('id', posts.map(p => p.id));
-                
-                if (updateError) {
-                    console.error(`Error updating ${trade} posts:`, updateError);
-                } else {
-                    console.log(`Successfully updated ${posts.length} posts for ${trade}`);
-                }
-            }
+        // Print analysis
+        console.log('\nCategorization complete!');
+        console.log(`Total posts: ${analysis.total}`);
+        console.log(`Categorized: ${analysis.categorized}`);
+        console.log(`Uncategorized: ${analysis.uncategorized}`);
+        console.log('\nPosts by trade:');
+        for (const [trade, count] of Object.entries(analysis.byTrade)) {
+            console.log(`${trade}: ${count} posts`);
         }
 
-        // Show some examples of uncategorized posts
-        console.log('\nExample uncategorized posts:');
-        for (let i = 0; i < Math.min(5, analysis.uncategorizedPosts.length); i++) {
-            const post = analysis.uncategorizedPosts[i];
-            console.log(`\n${i + 1}. "${post.title}" (${post.slug})`);
-            // Get the post content
-            const { data } = await supabase
-                .from('posts')
-                .select('html')
-                .eq('id', post.id)
-                .single();
-            if (data) {
-                // Show a snippet of the HTML content
-                console.log('Content snippet:', data.html.substring(0, 200) + '...');
+        if (analysis.uncategorizedPosts.length > 0) {
+            console.log('\nUncategorized posts:');
+            for (const post of analysis.uncategorizedPosts) {
+                console.log(`- ${post.title} (${post.slug})`);
             }
         }
 
     } catch (error) {
         console.error('Error during categorization:', error);
-        process.exit(1);
     }
 }
 
+// Run the script
 categorizePosts();

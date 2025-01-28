@@ -6,6 +6,7 @@ import { getPostBySlug } from '@/utils/supabase-blog';
 import { formatDate } from '@/utils/date';
 import { tradesData } from '@/lib/trades-data';
 import { JsonLd } from '@/components/json-ld';
+import { Author, Tag } from '@/types/blog';
 
 interface Props {
     params: {
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             type: 'article',
             publishedTime: post.published_at,
             modifiedTime: post.updated_at || undefined,
-            authors: post.authors?.map(author => author.name) || undefined,
+            authors: post.authors?.map((author: Author) => author.name) || undefined,
             images: post.feature_image ? [post.feature_image] : undefined,
         },
         alternates: {
@@ -147,7 +148,7 @@ export default async function TradeBlogPost({ params }: Props) {
                     <div className="mt-8 pt-8 border-t">
                         <h2 className="text-xl font-semibold mb-4">Tags</h2>
                         <div className="flex flex-wrap gap-2">
-                            {post.tags.map(tag => (
+                            {post.tags.map((tag: Tag) => (
                                 <Link
                                     key={tag.id}
                                     href={`/blog/tag/${tag.slug}`}

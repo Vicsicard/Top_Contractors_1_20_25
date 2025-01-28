@@ -1,18 +1,38 @@
 import { createClient } from '@supabase/supabase-js';
-import { BlogPost, PaginatedPosts } from '@/types/blog';
-
-// Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { Post, PaginatedPosts } from '@/types/blog';
+import { supabase } from '@/utils/supabase';
 
 const POSTS_PER_PAGE = 12;
+
+/**
+ * Validate Supabase connection
+ */
+async function validateSupabaseConnection() {
+    try {
+        const { data, error } = await supabase.from('posts').select('count').limit(1);
+        if (error) {
+            console.error('Supabase connection error:', error);
+            return false;
+        }
+        console.log('Supabase connection successful');
+        return true;
+    } catch (error) {
+        console.error('Failed to validate Supabase connection:', error);
+        return false;
+    }
+}
 
 /**
  * Gets all posts with pagination.
  */
 export async function getPosts(page = 1, limit = POSTS_PER_PAGE): Promise<PaginatedPosts> {
     try {
+        // Validate connection first
+        const isConnected = await validateSupabaseConnection();
+        if (!isConnected) {
+            throw new Error('Failed to connect to Supabase');
+        }
+
         // Get total count for pagination
         const { count } = await supabase
             .from('posts')
@@ -40,7 +60,7 @@ export async function getPosts(page = 1, limit = POSTS_PER_PAGE): Promise<Pagina
             ...post,
             authors: post.authors ? [post.authors] : undefined,
             tags: post.tags || undefined
-        })) as BlogPost[];
+        })) as Post[];
 
         const totalPages = Math.ceil((count || 0) / limit);
         const hasNextPage = page < totalPages;
@@ -66,8 +86,14 @@ export async function getPosts(page = 1, limit = POSTS_PER_PAGE): Promise<Pagina
 /**
  * Gets a single post by slug.
  */
-export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+export async function getPostBySlug(slug: string): Promise<Post | null> {
     try {
+        // Validate connection first
+        const isConnected = await validateSupabaseConnection();
+        if (!isConnected) {
+            throw new Error('Failed to connect to Supabase');
+        }
+
         const { data: post, error } = await supabase
             .from('posts')
             .select(`
@@ -86,7 +112,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
             ...post,
             authors: post.authors ? [post.authors] : undefined,
             tags: post.tags || undefined
-        } as BlogPost;
+        } as Post;
     } catch (error) {
         console.error('Error fetching post by slug:', error);
         return null;
@@ -96,57 +122,114 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
 /**
  * Gets posts by category.
  */
-export async function getPostsByCategory(category: string, page = 1, limit = POSTS_PER_PAGE): Promise<PaginatedPosts> {
+export async function getPostsByCategory(
+    category: string,
+    page = 1,
+    limit = POSTS_PER_PAGE
+): Promise<PaginatedPosts> {
     try {
-        // Get total count for pagination
-        const { count } = await supabase
-            .from('posts')
-            .select('*', { count: 'exact', head: true })
-            .eq('trade_category', category);
+        console.log('getPostsByCategory - Starting with params:', { category, page, limit });
+
+        if (!category) {
+            throw new Error('Category is required');
+        }
 
         // Calculate pagination
         const from = (page - 1) * limit;
         const to = from + limit - 1;
 
-        // Fetch posts with authors and tags
-        const { data: posts, error } = await supabase
+        // Get total count first
+        const { count, error: countError } = await supabase
+            .from('posts')
+            .select('*', { count: 'exact', head: true })
+            .eq('trade_category', category);
+
+        if (countError) {
+            console.error('getPostsByCategory - Count query error:', countError);
+            throw new Error(`Failed to get post count: ${countError.message}`);
+        }
+
+        if (count === null) {
+            throw new Error('Failed to get post count: count is null');
+        }
+
+        console.log('getPostsByCategory - Total posts count:', count);
+
+        // Then get the actual posts
+        const query = supabase
             .from('posts')
             .select(`
-                *,
-                authors (*),
-                tags (*)
+                id,
+                title,
+                slug,
+                html,
+                excerpt,
+                feature_image,
+                feature_image_alt,
+                published_at,
+                updated_at,
+                reading_time,
+                trade_category
             `)
             .eq('trade_category', category)
             .order('published_at', { ascending: false })
             .range(from, to);
 
-        if (error) throw error;
+        console.log('getPostsByCategory - Executing query with params:', {
+            category,
+            from,
+            to,
+            orderBy: 'published_at DESC'
+        });
 
-        // Transform posts to match BlogPost interface
+        const { data: posts, error: postsError } = await query;
+
+        if (postsError) {
+            console.error('getPostsByCategory - Posts query error:', postsError);
+            throw new Error(`Failed to fetch posts: ${postsError.message}`);
+        }
+
+        if (!posts) {
+            throw new Error('Failed to fetch posts: posts data is null');
+        }
+
+        console.log('getPostsByCategory - Query results:', {
+            category,
+            postsFound: posts.length,
+            posts: posts.map(p => ({
+                id: p.id,
+                title: p.title,
+                category: p.trade_category,
+                hasHtml: !!p.html
+            }))
+        });
+
+        // Transform the posts to include empty authors and tags arrays
         const transformedPosts = posts.map(post => ({
             ...post,
-            authors: post.authors ? [post.authors] : undefined,
-            tags: post.tags || undefined
-        })) as BlogPost[];
-
-        const totalPages = Math.ceil((count || 0) / limit);
-        const hasNextPage = page < totalPages;
-        const hasPrevPage = page > 1;
+            authors: [],
+            tags: []
+        }));
 
         return {
             posts: transformedPosts,
-            totalPages,
-            hasNextPage,
-            hasPrevPage
+            totalPages: Math.ceil(count / limit),
+            hasNextPage: from + limit < count,
+            hasPrevPage: page > 1
         };
     } catch (error) {
-        console.error('Error fetching posts by category:', error);
-        return {
-            posts: [],
-            totalPages: 0,
-            hasNextPage: false,
-            hasPrevPage: false
-        };
+        console.error('getPostsByCategory - Unexpected error:', error);
+        
+        // Convert any error to a proper Error object with a message
+        if (error instanceof Error) {
+            throw error;
+        } else {
+            throw new Error(
+                typeof error === 'string' 
+                    ? error 
+                    : 'An unexpected error occurred while fetching blog posts'
+            );
+        }
     }
 }
 
@@ -155,6 +238,12 @@ export async function getPostsByCategory(category: string, page = 1, limit = POS
  */
 export async function getPostsByTag(tag: string, page = 1, limit = POSTS_PER_PAGE): Promise<PaginatedPosts> {
     try {
+        // Validate connection first
+        const isConnected = await validateSupabaseConnection();
+        if (!isConnected) {
+            throw new Error('Failed to connect to Supabase');
+        }
+
         // Get total count for pagination
         const { count } = await supabase
             .from('posts')
@@ -184,7 +273,7 @@ export async function getPostsByTag(tag: string, page = 1, limit = POSTS_PER_PAG
             ...post,
             authors: post.authors ? [post.authors] : undefined,
             tags: post.tags || undefined
-        })) as BlogPost[];
+        })) as Post[];
 
         const totalPages = Math.ceil((count || 0) / limit);
         const hasNextPage = page < totalPages;

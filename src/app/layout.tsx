@@ -94,7 +94,13 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         
         {/* Preload critical assets */}
-        <link rel="preload" href="/images/logo.png" as="image" />
+        <link 
+          rel="preload" 
+          href="/images/logo.png" 
+          as="image" 
+          type="image/png"
+          fetchPriority="high"
+        />
       </head>
       <body className={inter.className}>
         <header className="fixed top-0 left-0 right-0 z-50 bg-primary shadow-lg">

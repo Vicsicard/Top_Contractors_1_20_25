@@ -7,12 +7,18 @@ import { tradesData } from '@/lib/trades-data';
 import { formatDate } from '@/utils/date';
 import { JsonLd } from '@/components/json-ld';
 import { supabase } from '@/utils/supabase';
+import { BlogPostCard } from '@/components/BlogPostCard';
+import { Post } from '@/types/blog';
 
 interface Props {
     searchParams: { 
         category?: string;
         page?: string;
     };
+}
+
+interface BlogCardProps {
+    post: Post;
 }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
@@ -56,206 +62,157 @@ export default async function BlogPage({ searchParams }: Props) {
     const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
     const postsPerPage = 10;
 
+    console.log('BlogPage - Starting render with params:', { searchParams, category, currentPage, postsPerPage });
+
     try {
+        // Map the URL category to the database category
+        const getCategoryFromSlug = (slug: string) => {
+            // Use the exact category names from the database
+            const categoryMap: Record<string, string> = {
+                'plumber': 'plumber',
+                'electrician': 'electrician',
+                'roofer': 'roofer',
+                'painter': 'painter',
+                'landscaper': 'landscaper',
+                'carpenter': 'carpenter',
+                'siding-gutters': 'siding-gutters',
+                'epoxy-garage': 'epoxy-garage',
+                'hvac': 'hvac',
+                'bathroom-remodeling': 'bathroom-remodeling',
+                'home-remodeling': 'home-remodeling',
+                'windows': 'windows',
+                'decks': 'decks'
+            };
+
+            // Return the exact slug - no transformation needed
+            return slug;
+        };
+
         // If a category is selected, show posts for that category
         if (category) {
-            const { posts, hasNextPage, hasPrevPage } = await getPostsByCategory(category, currentPage, postsPerPage);
-
-            if (posts.length === 0 && currentPage > 1) {
+            // Verify if category exists in tradesData
+            if (!tradesData[category]) {
+                console.error('BlogPage - Invalid category:', category);
+                console.log('BlogPage - Available categories:', Object.keys(tradesData));
                 return notFound();
             }
 
-            // Prepare structured data for category page
-            const structuredData = {
-                '@context': 'https://schema.org',
-                '@type': 'Blog',
-                headline: `${tradesData[category]?.title} Blog Posts`,
-                description: `Expert ${tradesData[category]?.title.toLowerCase()} tips and advice for Denver homeowners`,
-                publisher: {
-                    '@type': 'Organization',
-                    name: 'Top Contractors Denver',
-                    url: 'https://topcontractorsdenver.com'
-                },
-                url: `https://topcontractorsdenver.com/blog?category=${category}`,
-                mainEntityOfPage: {
-                    '@type': 'WebPage',
-                    '@id': 'https://topcontractorsdenver.com/blog'
-                },
-                blogPost: posts.map(post => ({
-                    '@type': 'BlogPosting',
-                    headline: post.title,
-                    description: post.excerpt,
-                    datePublished: post.published_at,
-                    dateModified: post.updated_at || post.published_at,
-                    image: post.feature_image,
-                    author: post.authors?.map(author => ({
-                        '@type': 'Person',
-                        name: author.name
-                    })) || [],
-                    publisher: {
-                        '@type': 'Organization',
-                        name: 'Top Contractors Denver',
-                        url: 'https://topcontractorsdenver.com'
-                    }
+            const dbCategory = getCategoryFromSlug(category);
+            console.log('BlogPage - Using exact category:', { urlSlug: category, dbCategory });
+
+            // Get posts for this category
+            console.log('BlogPage - Fetching posts for category:', dbCategory);
+            const result = await getPostsByCategory(dbCategory, currentPage, postsPerPage);
+            
+            if (!result) {
+                throw new Error(`Failed to fetch posts for category: ${dbCategory}`);
+            }
+
+            // Log the results for debugging
+            console.log('BlogPage - Query result:', {
+                category: dbCategory,
+                postsCount: result.posts.length,
+                posts: result.posts.map(p => ({
+                    id: p.id,
+                    title: p.title,
+                    trade_category: p.trade_category,
+                    html: p.html ? 'Has HTML content' : 'No HTML content'
                 }))
-            };
+            });
 
             return (
-                <main className="container mx-auto px-4 py-8">
-                    <JsonLd data={structuredData} />
-                    <div className="mb-8">
-                        <Link
-                            href="/blog"
-                            className="text-blue-600 hover:text-blue-800 transition-colors"
-                        >
-                            ← Back to All Categories
-                        </Link>
-                    </div>
-                    <h1 className="text-4xl font-bold mb-8">
-                        {tradesData[category]?.title} Articles
-                    </h1>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {posts.map((post) => (
-                            <article
-                                key={post.id}
-                                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
-                            >
-                                {post.feature_image && (
-                                    <Link href={`/blog/${post.slug}`}>
-                                        <div className="relative h-48 w-full">
-                                            <Image
-                                                src={post.feature_image}
-                                                alt={post.feature_image_alt || post.title}
-                                                fill
-                                                className="object-cover"
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                            />
-                                        </div>
-                                    </Link>
-                                )}
-                                <div className="p-6">
-                                    <h2 className="text-xl font-semibold mb-2">
-                                        <Link
-                                            href={`/blog/${post.slug}`}
-                                            className="text-gray-900 hover:text-blue-600 transition-colors"
-                                        >
-                                            {post.title}
-                                        </Link>
-                                    </h2>
-                                    <p className="text-gray-600 mb-4 text-sm">
-                                        {formatDate(post.published_at)}
-                                        {post.reading_time && ` • ${post.reading_time} min read`}
-                                    </p>
-                                    <p className="text-gray-700 mb-4 line-clamp-3">
-                                        {post.excerpt || post.title}
-                                    </p>
-                                    <Link
-                                        href={`/blog/${post.slug}`}
-                                        className="text-blue-600 hover:text-blue-800 transition-colors"
-                                    >
-                                        Read More →
-                                    </Link>
-                                </div>
-                            </article>
-                        ))}
-                    </div>
+                <div className="container mx-auto px-4 py-8">
+                    <header className="mb-8">
+                        <h1 className="text-4xl font-bold mb-4">
+                            {tradesData[category].title} Blog Posts
+                        </h1>
+                        <p className="text-gray-600">
+                            Expert tips and advice about {tradesData[category].title.toLowerCase()} 
+                            for Denver homeowners
+                        </p>
+                    </header>
+
+                    {result.posts.length === 0 ? (
+                        <div className="text-center py-12">
+                            <p className="text-gray-600">
+                                No blog posts found for this category yet. Check back soon for updates!
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                            {result.posts.map((post) => (
+                                <BlogPostCard key={post.id} post={post} />
+                            ))}
+                        </div>
+                    )}
 
                     {/* Pagination */}
-                    <div className="mt-8 flex justify-center gap-4">
-                        {hasPrevPage && (
-                            <Link
-                                href={`/blog?${new URLSearchParams({
-                                    category,
-                                    page: (currentPage - 1).toString(),
-                                })}`}
-                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                            >
-                                Previous
-                            </Link>
-                        )}
-                        {hasNextPage && (
-                            <Link
-                                href={`/blog?${new URLSearchParams({
-                                    category,
-                                    page: (currentPage + 1).toString(),
-                                })}`}
-                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                            >
-                                Next
-                            </Link>
-                        )}
-                    </div>
-                </main>
+                    {(result.hasPrevPage || result.hasNextPage) && (
+                        <div className="mt-12 flex justify-center gap-4">
+                            {result.hasPrevPage && (
+                                <Link
+                                    href={`/blog?category=${category}&page=${currentPage - 1}`}
+                                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded"
+                                >
+                                    Previous
+                                </Link>
+                            )}
+                            {result.hasNextPage && (
+                                <Link
+                                    href={`/blog?category=${category}&page=${currentPage + 1}`}
+                                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded"
+                                >
+                                    Next
+                                </Link>
+                            )}
+                        </div>
+                    )}
+                </div>
             );
         }
 
-        // If no category is selected, show trade category cards
-        const structuredData = {
-            '@context': 'https://schema.org',
-            '@type': 'Blog',
-            headline: 'Home Improvement Blog',
-            description: 'Expert home improvement tips and advice for Denver homeowners',
-            publisher: {
-                '@type': 'Organization',
-                name: 'Top Contractors Denver',
-                url: 'https://topcontractorsdenver.com'
-            },
-            url: 'https://topcontractorsdenver.com/blog',
-            mainEntityOfPage: {
-                '@type': 'WebPage',
-                '@id': 'https://topcontractorsdenver.com/blog'
-            }
-        };
-
-        // Get post counts for each category
-        const categoryCounts: Record<string, number> = {};
-        for (const [slug] of Object.entries(tradesData)) {
-            const { count } = await supabase
-                .from('posts')
-                .select('*', { count: 'exact', head: true })
-                .eq('trade_category', slug);
-            categoryCounts[slug] = count || 0;
-        }
-
+        // If no category is selected, show all categories
         return (
-            <main className="container mx-auto px-4 py-8">
-                <JsonLd data={structuredData} />
-                <h1 className="text-4xl font-bold mb-8">Home Improvement Blog</h1>
-                <p className="text-xl text-gray-600 mb-12">
-                    Expert tips, guides, and advice for all your home improvement projects
-                </p>
+            <div className="container mx-auto px-4 py-8">
+                <header className="mb-12 text-center">
+                    <h1 className="text-4xl font-bold mb-4">
+                        Home Improvement Blog
+                    </h1>
+                    <p className="text-gray-600 max-w-2xl mx-auto">
+                        Expert tips, guides, and advice for Denver homeowners. Find professional insights 
+                        and practical solutions for your next project.
+                    </p>
+                </header>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                     {Object.entries(tradesData).map(([slug, data]) => (
-                        categoryCounts[slug] > 0 && (
-                            <Link
-                                key={slug}
-                                href={`/blog?category=${slug}`}
-                                className="block group"
-                            >
-                                <article className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow h-full">
-                                    <div className="p-6">
-                                        <div className="text-3xl mb-4">{data.icon}</div>
-                                        <h2 className="text-xl font-semibold mb-2 group-hover:text-blue-600 transition-colors">
-                                            {data.title} Resources
-                                        </h2>
-                                        <p className="text-gray-600 mb-4">
-                                            {data.shortDescription}
-                                        </p>
-                                        <p className="text-sm text-gray-500">
-                                            {categoryCounts[slug]} articles
-                                        </p>
-                                    </div>
-                                </article>
-                            </Link>
-                        )
+                        <Link
+                            key={slug}
+                            href={`/blog?category=${slug}`}
+                            className="block p-6 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+                        >
+                            <h2 className="text-xl font-semibold mb-2">
+                                {data.title} Articles
+                            </h2>
+                            <p className="text-gray-600">
+                                {data.shortDescription}
+                            </p>
+                        </Link>
                     ))}
                 </div>
-            </main>
+            </div>
         );
     } catch (error) {
-        console.error('Error fetching blog posts:', error);
-        throw error;
+        console.error('BlogPage - Error:', error);
+        // Convert any error to a proper Error object with a message
+        if (error instanceof Error) {
+            throw error;
+        } else {
+            throw new Error(
+                typeof error === 'string' 
+                    ? error 
+                    : 'An unexpected error occurred while loading the blog page'
+            );
+        }
     }
 }
