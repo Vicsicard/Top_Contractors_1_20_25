@@ -103,6 +103,12 @@ export default async function TradeBlogPost({ params }: Props) {
                                 className="object-cover"
                                 sizes="(max-width: 1024px) 100vw, 1024px"
                                 priority
+                                onError={(e) => {
+                                    console.error('Image loading error:', {
+                                        src: post.feature_image,
+                                        error: e
+                                    });
+                                }}
                             />
                         </div>
                     )}
@@ -127,6 +133,12 @@ export default async function TradeBlogPost({ params }: Props) {
                                     width={40}
                                     height={40}
                                     className="rounded-full"
+                                    onError={(e) => {
+                                        console.error('Author image loading error:', {
+                                            src: post.authors[0].profile_image,
+                                            error: e
+                                        });
+                                    }}
                                 />
                             )}
                             <div>

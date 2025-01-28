@@ -12,8 +12,21 @@ function isValidImageUrl(url: string | undefined): boolean {
     if (!url) return false;
     try {
         const urlObj = new URL(url);
+        // Log the URL being validated
+        console.log('Validating image URL:', {
+            url,
+            protocol: urlObj.protocol,
+            hostname: urlObj.hostname
+        });
+        // Accept any https URL from bubble.io CDN
+        if (urlObj.hostname.includes('bubble.io')) {
+            return true;
+        }
+        // For other URLs, require http/https protocol
         return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
-    } catch {
+    } catch (error) {
+        console.error('URL validation error:', error);
+        // Allow relative URLs starting with /
         return url.startsWith('/');
     }
 }
@@ -117,6 +130,12 @@ export default async function TradeBlogPage({ params, searchParams }: Props) {
                                         fill
                                         className="object-cover transition-transform hover:scale-105"
                                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                        onError={(e) => {
+                                            console.error('Image loading error:', {
+                                                src: post.feature_image,
+                                                error: e
+                                            });
+                                        }}
                                     />
                                 </Link>
                             )}

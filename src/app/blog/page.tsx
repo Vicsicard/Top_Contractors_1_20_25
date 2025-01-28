@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getPostsByCategory } from '@/utils/supabase-blog';
+import { getPostsByCategory, getTradeCategories } from '@/utils/supabase-blog';
 import { tradesData } from '@/lib/trades-data';
 import { formatDate } from '@/utils/date';
 import { JsonLd } from '@/components/json-ld';
@@ -65,28 +65,9 @@ export default async function BlogPage({ searchParams }: Props) {
     console.log('BlogPage - Starting render with params:', { searchParams, category, currentPage, postsPerPage });
 
     try {
-        // Map the URL category to the database category
-        const getCategoryFromSlug = (slug: string) => {
-            // Use the exact category names from the database
-            const categoryMap: Record<string, string> = {
-                'plumber': 'plumber',
-                'electrician': 'electrician',
-                'roofer': 'roofer',
-                'painter': 'painter',
-                'landscaper': 'landscaper',
-                'carpenter': 'carpenter',
-                'siding-gutters': 'siding-gutters',
-                'epoxy-garage': 'epoxy-garage',
-                'hvac': 'hvac',
-                'bathroom-remodeling': 'bathroom-remodeling',
-                'home-remodeling': 'home-remodeling',
-                'windows': 'windows',
-                'decks': 'decks'
-            };
-
-            // Return the exact slug - no transformation needed
-            return slug;
-        };
+        // Get all available trade categories from the database
+        const availableCategories = await getTradeCategories();
+        console.log('BlogPage - Available categories in database:', availableCategories);
 
         // If a category is selected, show posts for that category
         if (category) {
@@ -97,20 +78,17 @@ export default async function BlogPage({ searchParams }: Props) {
                 return notFound();
             }
 
-            const dbCategory = getCategoryFromSlug(category);
-            console.log('BlogPage - Using exact category:', { urlSlug: category, dbCategory });
-
             // Get posts for this category
-            console.log('BlogPage - Fetching posts for category:', dbCategory);
-            const result = await getPostsByCategory(dbCategory, currentPage, postsPerPage);
+            console.log('BlogPage - Fetching posts for category:', category);
+            const result = await getPostsByCategory(category, currentPage, postsPerPage);
             
             if (!result) {
-                throw new Error(`Failed to fetch posts for category: ${dbCategory}`);
+                throw new Error(`Failed to fetch posts for category: ${category}`);
             }
 
             // Log the results for debugging
             console.log('BlogPage - Query result:', {
-                category: dbCategory,
+                category,
                 postsCount: result.posts.length,
                 posts: result.posts.map(p => ({
                     id: p.id,

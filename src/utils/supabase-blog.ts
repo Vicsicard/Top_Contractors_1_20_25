@@ -248,7 +248,8 @@ export async function getPostsByCategory(
                 id: p.id,
                 title: p.title,
                 category: p.trade_category,
-                hasHtml: !!p.html
+                hasHtml: !!p.html,
+                feature_image: p.feature_image // Log the feature_image URL
             }))
         });
 
