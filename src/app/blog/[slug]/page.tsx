@@ -15,6 +15,17 @@ interface Props {
     };
 }
 
+// Helper function to validate image URL
+function isValidImageUrl(url: string | undefined): boolean {
+    if (!url) return false;
+    try {
+        const urlObj = new URL(url);
+        return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    } catch (error) {
+        return url.startsWith('/');
+    }
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const post = await getPostBySlug(params.slug);
 
@@ -44,12 +55,67 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
+function BlogContent({ html }: { html: string }) {
+    return (
+        <div 
+            className="prose prose-lg max-w-none
+                prose-headings:font-bold
+                prose-h1:text-3xl
+                prose-h2:text-2xl
+                prose-h3:text-xl
+                prose-p:text-gray-600
+                prose-a:text-blue-600 hover:prose-a:text-blue-800
+                prose-strong:text-gray-900
+                prose-ul:list-disc
+                prose-ol:list-decimal
+                prose-li:text-gray-600
+                prose-blockquote:border-l-4 prose-blockquote:border-gray-300
+                prose-img:rounded-lg"
+            dangerouslySetInnerHTML={{ __html: html }}
+        />
+    );
+}
+
+function BlogImages() {
+    // Convert Next.js Image wrappers back to actual images
+    const replaceImageWrappers = () => {
+        if (typeof document === 'undefined') return;
+        
+        const wrappers = document.querySelectorAll('.next-image-wrapper');
+        wrappers.forEach(wrapper => {
+            const src = wrapper.getAttribute('data-image-src');
+            const alt = wrapper.getAttribute('data-image-alt');
+            
+            if (src && isValidImageUrl(src)) {
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'relative aspect-video mb-4';
+                
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = alt || '';
+                img.className = 'object-cover';
+                
+                imgContainer.appendChild(img);
+                wrapper.parentNode?.replaceChild(imgContainer, wrapper);
+            }
+        });
+    };
+
+    if (typeof window !== 'undefined') {
+        setTimeout(replaceImageWrappers, 0);
+    }
+
+    return null;
+}
+
 export default async function BlogPost({ params }: Props) {
     const post = await getPostBySlug(params.slug);
 
     if (!post) {
         notFound();
     }
+
+    const processedHtml = processHtml(post.html);
 
     const jsonLd = {
         '@context': 'https://schema.org',
@@ -83,7 +149,7 @@ export default async function BlogPost({ params }: Props) {
             <JsonLd data={jsonLd} />
             <article className="container mx-auto px-4 py-8 max-w-4xl">
                 <header className="mb-8">
-                    {post.feature_image && (
+                    {post.feature_image && isValidImageUrl(post.feature_image) && (
                         <div className="relative aspect-video mb-6 rounded-lg overflow-hidden">
                             <Image
                                 src={post.feature_image}
@@ -92,6 +158,12 @@ export default async function BlogPost({ params }: Props) {
                                 className="object-cover"
                                 sizes="(max-width: 1024px) 100vw, 1024px"
                                 priority
+                                onError={(e) => {
+                                    console.error('Feature image loading error:', {
+                                        src: post.feature_image,
+                                        error: e
+                                    });
+                                }}
                             />
                         </div>
                     )}
@@ -109,13 +181,19 @@ export default async function BlogPost({ params }: Props) {
                     </div>
                     {post.authors && post.authors.length > 0 && (
                         <div className="flex items-center gap-3">
-                            {post.authors[0].profile_image && (
+                            {post.authors[0].profile_image && isValidImageUrl(post.authors[0].profile_image) && (
                                 <Image
                                     src={post.authors[0].profile_image}
                                     alt={post.authors[0].name}
                                     width={40}
                                     height={40}
                                     className="rounded-full"
+                                    onError={(e) => {
+                                        console.error('Author image loading error:', {
+                                            src: post.authors[0].profile_image,
+                                            error: e
+                                        });
+                                    }}
                                 />
                             )}
                             <div>
@@ -139,24 +217,8 @@ export default async function BlogPost({ params }: Props) {
                     }
                 >
                     <BlogContentErrorBoundary>
-                        <div 
-                            className="prose prose-lg max-w-none
-                                prose-headings:font-bold
-                                prose-h1:text-3xl
-                                prose-h2:text-2xl
-                                prose-h3:text-xl
-                                prose-p:text-gray-600
-                                prose-a:text-blue-600 hover:prose-a:text-blue-800
-                                prose-strong:text-gray-900
-                                prose-ul:list-disc
-                                prose-ol:list-decimal
-                                prose-li:text-gray-600
-                                prose-blockquote:border-l-4 prose-blockquote:border-gray-300
-                                prose-img:rounded-lg"
-                            dangerouslySetInnerHTML={{ 
-                                __html: processHtml(post.html) 
-                            }}
-                        />
+                        <BlogContent html={processedHtml} />
+                        <BlogImages />
                     </BlogContentErrorBoundary>
                 </Suspense>
 

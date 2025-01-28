@@ -1,7 +1,7 @@
-import { Post, PaginatedPosts } from '@/types/blog';
+import { Post, PaginatedPosts, Author, Tag } from '@/types/blog';
 import { supabase } from '@/utils/supabase';
 
-const POSTS_PER_PAGE = 12;
+const POSTS_PER_PAGE = 10; // Standardized posts per page across the site
 
 /**
  * Validate Supabase connection
@@ -19,6 +19,39 @@ async function validateSupabaseConnection() {
         console.error('Failed to validate Supabase connection:', error);
         return false;
     }
+}
+
+/**
+ * Transform raw post data to match Post interface
+ */
+function transformPost(post: any): Post {
+    return {
+        id: post.id,
+        title: post.title,
+        slug: post.slug,
+        html: post.html,
+        excerpt: post.excerpt,
+        feature_image: post.feature_image,
+        feature_image_alt: post.feature_image_alt,
+        published_at: post.published_at,
+        updated_at: post.updated_at,
+        reading_time: post.reading_time,
+        trade_category: post.trade_category,
+        authors: post.authors ? [post.authors].map((author: any): Author => ({
+            id: author.id,
+            name: author.name,
+            slug: author.slug,
+            profile_image: author.profile_image,
+            bio: author.bio,
+            url: author.url
+        })) : [],
+        tags: post.tags ? post.tags.map((tag: any): Tag => ({
+            id: tag.id,
+            name: tag.name,
+            slug: tag.slug,
+            description: tag.description
+        })) : []
+    };
 }
 
 /**
@@ -45,21 +78,27 @@ export async function getPosts(page = 1, limit = POSTS_PER_PAGE): Promise<Pagina
         const { data: posts, error } = await supabase
             .from('posts')
             .select(`
-                *,
+                id,
+                title,
+                slug,
+                html,
+                excerpt,
+                feature_image,
+                feature_image_alt,
+                published_at,
+                updated_at,
+                reading_time,
                 authors (*),
-                tags (*)
+                tags (*),
+                trade_category
             `)
             .order('published_at', { ascending: false })
             .range(from, to);
 
         if (error) throw error;
 
-        // Transform posts to match BlogPost interface
-        const transformedPosts = posts.map(post => ({
-            ...post,
-            authors: post.authors ? [post.authors] : undefined,
-            tags: post.tags || undefined
-        })) as Post[];
+        // Transform posts to match Post interface
+        const transformedPosts = posts.map(transformPost);
 
         const totalPages = Math.ceil((count || 0) / limit);
         const hasNextPage = page < totalPages;
@@ -96,9 +135,19 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
         const { data: post, error } = await supabase
             .from('posts')
             .select(`
-                *,
+                id,
+                title,
+                slug,
+                html,
+                excerpt,
+                feature_image,
+                feature_image_alt,
+                published_at,
+                updated_at,
+                reading_time,
                 authors (*),
-                tags (*)
+                tags (*),
+                trade_category
             `)
             .eq('slug', slug)
             .single();
@@ -106,21 +155,14 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
         if (error) throw error;
         if (!post) return null;
 
-        // Transform post to match BlogPost interface
-        return {
-            ...post,
-            authors: post.authors ? [post.authors] : undefined,
-            tags: post.tags || undefined
-        } as Post;
+        // Transform post to match Post interface
+        return transformPost(post);
     } catch (error) {
         console.error('Error fetching post by slug:', error);
         return null;
     }
 }
 
-/**
- * Gets posts by category.
- */
 /**
  * Gets all unique trade categories from posts
  */
@@ -206,7 +248,9 @@ export async function getPostsByCategory(
                 published_at,
                 updated_at,
                 reading_time,
-                trade_category
+                trade_category,
+                authors (*),
+                tags (*)
             `)
             .eq('trade_category', category)
             .not('trade_category', 'is', null)
@@ -249,16 +293,12 @@ export async function getPostsByCategory(
                 title: p.title,
                 category: p.trade_category,
                 hasHtml: !!p.html,
-                feature_image: p.feature_image // Log the feature_image URL
+                feature_image: p.feature_image
             }))
         });
 
-        // Transform the posts to include empty authors and tags arrays
-        const transformedPosts = posts.map(post => ({
-            ...post,
-            authors: [],
-            tags: []
-        }));
+        // Transform posts to match Post interface
+        const transformedPosts = posts.map(transformPost);
 
         return {
             posts: transformedPosts,
@@ -269,7 +309,6 @@ export async function getPostsByCategory(
     } catch (error) {
         console.error('getPostsByCategory - Unexpected error:', error);
         
-        // Convert any error to a proper Error object with a message
         if (error instanceof Error) {
             throw error;
         } else {
@@ -307,9 +346,19 @@ export async function getPostsByTag(tag: string, page = 1, limit = POSTS_PER_PAG
         const { data: posts, error } = await supabase
             .from('posts')
             .select(`
-                *,
+                id,
+                title,
+                slug,
+                html,
+                excerpt,
+                feature_image,
+                feature_image_alt,
+                published_at,
+                updated_at,
+                reading_time,
                 authors (*),
-                tags (*)
+                tags (*),
+                trade_category
             `)
             .contains('tags', [{ slug: tag }])
             .order('published_at', { ascending: false })
@@ -317,12 +366,8 @@ export async function getPostsByTag(tag: string, page = 1, limit = POSTS_PER_PAG
 
         if (error) throw error;
 
-        // Transform posts to match BlogPost interface
-        const transformedPosts = posts.map(post => ({
-            ...post,
-            authors: post.authors ? [post.authors] : undefined,
-            tags: post.tags || undefined
-        })) as Post[];
+        // Transform posts to match Post interface
+        const transformedPosts = posts.map(transformPost);
 
         const totalPages = Math.ceil((count || 0) / limit);
         const hasNextPage = page < totalPages;

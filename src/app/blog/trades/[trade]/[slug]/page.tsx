@@ -7,12 +7,26 @@ import { formatDate } from '@/utils/date';
 import { tradesData } from '@/lib/trades-data';
 import { JsonLd } from '@/components/json-ld';
 import { Author, Tag } from '@/types/blog';
+import { processHtml } from '@/utils/html-processor';
+import { BlogContentErrorBoundary } from '@/components/BlogContentErrorBoundary';
+import { Suspense } from 'react';
 
 interface Props {
     params: {
         trade: string;
         slug: string;
     };
+}
+
+// Helper function to validate image URL
+function isValidImageUrl(url: string | undefined): boolean {
+    if (!url) return false;
+    try {
+        const urlObj = new URL(url);
+        return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    } catch (error) {
+        return url.startsWith('/');
+    }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -45,6 +59,59 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
+function BlogContent({ html }: { html: string }) {
+    return (
+        <div 
+            className="prose prose-lg max-w-none
+                prose-headings:font-bold
+                prose-h1:text-3xl
+                prose-h2:text-2xl
+                prose-h3:text-xl
+                prose-p:text-gray-600
+                prose-a:text-blue-600 hover:prose-a:text-blue-800
+                prose-strong:text-gray-900
+                prose-ul:list-disc
+                prose-ol:list-decimal
+                prose-li:text-gray-600
+                prose-blockquote:border-l-4 prose-blockquote:border-gray-300
+                prose-img:rounded-lg"
+            dangerouslySetInnerHTML={{ __html: html }}
+        />
+    );
+}
+
+function BlogImages() {
+    // Convert Next.js Image wrappers back to actual images
+    const replaceImageWrappers = () => {
+        if (typeof document === 'undefined') return;
+        
+        const wrappers = document.querySelectorAll('.next-image-wrapper');
+        wrappers.forEach(wrapper => {
+            const src = wrapper.getAttribute('data-image-src');
+            const alt = wrapper.getAttribute('data-image-alt');
+            
+            if (src && isValidImageUrl(src)) {
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'relative aspect-video mb-4';
+                
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = alt || '';
+                img.className = 'object-cover';
+                
+                imgContainer.appendChild(img);
+                wrapper.parentNode?.replaceChild(imgContainer, wrapper);
+            }
+        });
+    };
+
+    if (typeof window !== 'undefined') {
+        setTimeout(replaceImageWrappers, 0);
+    }
+
+    return null;
+}
+
 export default async function TradeBlogPost({ params }: Props) {
     const post = await getPostBySlug(params.slug);
     const trade = tradesData[params.trade];
@@ -52,6 +119,8 @@ export default async function TradeBlogPost({ params }: Props) {
     if (!post || !trade) {
         notFound();
     }
+
+    const processedHtml = processHtml(post.html);
 
     const jsonLd = {
         '@context': 'https://schema.org',
@@ -94,7 +163,7 @@ export default async function TradeBlogPost({ params }: Props) {
                         </Link>
                     </nav>
 
-                    {post.feature_image && (
+                    {post.feature_image && isValidImageUrl(post.feature_image) && (
                         <div className="relative aspect-video mb-6 rounded-lg overflow-hidden">
                             <Image
                                 src={post.feature_image}
@@ -104,7 +173,7 @@ export default async function TradeBlogPost({ params }: Props) {
                                 sizes="(max-width: 1024px) 100vw, 1024px"
                                 priority
                                 onError={(e) => {
-                                    console.error('Image loading error:', {
+                                    console.error('Feature image loading error:', {
                                         src: post.feature_image,
                                         error: e
                                     });
@@ -126,7 +195,7 @@ export default async function TradeBlogPost({ params }: Props) {
                     </div>
                     {post.authors?.[0] && (
                         <div className="flex items-center gap-3">
-                            {post.authors[0].profile_image && (
+                            {post.authors[0].profile_image && isValidImageUrl(post.authors[0].profile_image) && (
                                 <Image
                                     src={post.authors[0].profile_image}
                                     alt={post.authors[0].name}
@@ -151,31 +220,20 @@ export default async function TradeBlogPost({ params }: Props) {
                     )}
                 </header>
 
-                <div className="prose prose-lg max-w-none">
-                    <div dangerouslySetInnerHTML={{ __html: post.html }} />
-                    
-                    {/* Process any next-image-wrapper divs after the content is rendered */}
-                    <script dangerouslySetInnerHTML={{ __html: `
-                        document.querySelectorAll('.next-image-wrapper').forEach(wrapper => {
-                            const src = wrapper.getAttribute('data-image-src');
-                            const alt = wrapper.getAttribute('data-image-alt');
-                            const width = parseInt(wrapper.getAttribute('data-image-width') || '1200');
-                            const height = parseInt(wrapper.getAttribute('data-image-height') || '675');
-                            
-                            if (src) {
-                                const img = document.createElement('img');
-                                img.src = src;
-                                img.alt = alt || '';
-                                img.width = width;
-                                img.height = height;
-                                img.className = 'w-full h-auto rounded-lg';
-                                img.style.aspectRatio = '16/9';
-                                img.loading = 'lazy';
-                                wrapper.appendChild(img);
-                            }
-                        });
-                    `}} />
-                </div>
+                <Suspense
+                    fallback={
+                        <div className="animate-pulse">
+                            <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                            <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+                            <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                        </div>
+                    }
+                >
+                    <BlogContentErrorBoundary>
+                        <BlogContent html={processedHtml} />
+                        <BlogImages />
+                    </BlogContentErrorBoundary>
+                </Suspense>
 
                 {post.tags && post.tags.length > 0 && (
                     <div className="mt-8 pt-8 border-t">
