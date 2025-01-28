@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { formatDate } from '@/utils/date';
 import { getPostBySlug } from '@/utils/supabase-blog';
 import { JsonLd } from '@/components/json-ld';
+import { processHtml } from '@/utils/html-processor';
+import { BlogContentErrorBoundary } from '@/components/BlogContentErrorBoundary';
+import { Suspense } from 'react';
 
 interface Props {
     params: {
@@ -32,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             type: 'article',
             publishedTime: post.published_at,
             modifiedTime: post.updated_at || undefined,
-            authors: post.authors?.map(author => author.name) || undefined,
+            authors: post.authors?.map((author: { name: string }) => author.name) || undefined,
             images: post.feature_image ? [post.feature_image] : undefined,
         },
         alternates: {
@@ -104,7 +107,7 @@ export default async function BlogPost({ params }: Props) {
                             </>
                         )}
                     </div>
-                    {post.authors?.[0] && (
+                    {post.authors && post.authors.length > 0 && (
                         <div className="flex items-center gap-3">
                             {post.authors[0].profile_image && (
                                 <Image
@@ -125,16 +128,43 @@ export default async function BlogPost({ params }: Props) {
                     )}
                 </header>
 
-                <div 
-                    className="prose prose-lg max-w-none"
-                    dangerouslySetInnerHTML={{ __html: post.html }}
-                />
+                {/* Blog post content with enhanced typography */}
+                <Suspense
+                    fallback={
+                        <div className="animate-pulse">
+                            <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                            <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+                            <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                        </div>
+                    }
+                >
+                    <BlogContentErrorBoundary>
+                        <div 
+                            className="prose prose-lg max-w-none
+                                prose-headings:font-bold
+                                prose-h1:text-3xl
+                                prose-h2:text-2xl
+                                prose-h3:text-xl
+                                prose-p:text-gray-600
+                                prose-a:text-blue-600 hover:prose-a:text-blue-800
+                                prose-strong:text-gray-900
+                                prose-ul:list-disc
+                                prose-ol:list-decimal
+                                prose-li:text-gray-600
+                                prose-blockquote:border-l-4 prose-blockquote:border-gray-300
+                                prose-img:rounded-lg"
+                            dangerouslySetInnerHTML={{ 
+                                __html: processHtml(post.html) 
+                            }}
+                        />
+                    </BlogContentErrorBoundary>
+                </Suspense>
 
                 {post.tags && post.tags.length > 0 && (
                     <div className="mt-8 pt-8 border-t">
                         <h2 className="text-xl font-semibold mb-4">Tags</h2>
                         <div className="flex flex-wrap gap-2">
-                            {post.tags.map(tag => (
+                            {post.tags.map((tag: { id: string; name: string; slug: string }) => (
                                 <Link
                                     key={tag.id}
                                     href={`/blog/tag/${tag.slug}`}
