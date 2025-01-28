@@ -10,7 +10,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
   return (
     <article className="bg-white rounded-lg shadow-md overflow-hidden">
       {post.feature_image && (
-        <div className="relative aspect-video">
+        <div className="relative w-full h-48">
           <Image 
             src={post.feature_image} 
             alt={post.feature_image_alt || post.title}
