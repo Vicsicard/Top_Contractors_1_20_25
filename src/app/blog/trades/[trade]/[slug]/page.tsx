@@ -151,10 +151,31 @@ export default async function TradeBlogPost({ params }: Props) {
                     )}
                 </header>
 
-                <div 
-                    className="prose prose-lg max-w-none"
-                    dangerouslySetInnerHTML={{ __html: post.html }}
-                />
+                <div className="prose prose-lg max-w-none">
+                    <div dangerouslySetInnerHTML={{ __html: post.html }} />
+                    
+                    {/* Process any next-image-wrapper divs after the content is rendered */}
+                    <script dangerouslySetInnerHTML={{ __html: `
+                        document.querySelectorAll('.next-image-wrapper').forEach(wrapper => {
+                            const src = wrapper.getAttribute('data-image-src');
+                            const alt = wrapper.getAttribute('data-image-alt');
+                            const width = parseInt(wrapper.getAttribute('data-image-width') || '1200');
+                            const height = parseInt(wrapper.getAttribute('data-image-height') || '675');
+                            
+                            if (src) {
+                                const img = document.createElement('img');
+                                img.src = src;
+                                img.alt = alt || '';
+                                img.width = width;
+                                img.height = height;
+                                img.className = 'w-full h-auto rounded-lg';
+                                img.style.aspectRatio = '16/9';
+                                img.loading = 'lazy';
+                                wrapper.appendChild(img);
+                            }
+                        });
+                    `}} />
+                </div>
 
                 {post.tags && post.tags.length > 0 && (
                     <div className="mt-8 pt-8 border-t">

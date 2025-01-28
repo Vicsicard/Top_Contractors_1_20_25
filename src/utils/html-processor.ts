@@ -70,9 +70,24 @@ export function processHtml(html: string | null): string {
             }
         });
 
-        // Add responsive classes to images
+        // Process images for Next.js compatibility
         document.querySelectorAll('img').forEach(img => {
-            img.classList.add('w-full', 'h-auto', 'rounded-lg');
+            // Convert img to a div that will be transformed into a Next.js Image
+            const src = img.getAttribute('src');
+            const alt = img.getAttribute('alt') || '';
+            
+            // Create a wrapper div
+            const wrapper = document.createElement('div');
+            wrapper.className = 'next-image-wrapper relative w-full aspect-video mb-4';
+            
+            // Set data attributes that will be used by the page component
+            wrapper.setAttribute('data-image-src', src || '');
+            wrapper.setAttribute('data-image-alt', alt);
+            wrapper.setAttribute('data-image-width', '1200');
+            wrapper.setAttribute('data-image-height', '675');
+            
+            // Replace the img with our wrapper
+            img.parentNode?.replaceChild(wrapper, img);
         });
 
         // Add styling to tables
