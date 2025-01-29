@@ -1,157 +1,60 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
-
 export interface Database {
   public: {
     Tables: {
-      posts: {
+      videos: {
         Row: {
-          id: string
-          title: string
-          slug: string
-          html: string
-          feature_image?: string
-          feature_image_alt?: string
-          excerpt?: string
-          published_at: string
-          updated_at?: string
-          reading_time?: number
-          trade_category?: string
-          created_at: string
-        }
+          id: string;
+          title: string;
+          description: string | null;
+          youtube_id: string;
+          category: string;
+          timestamps: Record<string, string> | null;
+          transcript: string | null;
+          related_services: string[] | null;
+          metadata: Record<string, unknown> | null;
+          created_at: string;
+        };
         Insert: {
-          id?: string
-          title: string
-          slug: string
-          html: string
-          feature_image?: string
-          feature_image_alt?: string
-          excerpt?: string
-          published_at?: string
-          updated_at?: string
-          reading_time?: number
-          trade_category?: string
-          created_at?: string
-        }
+          id?: string;
+          title: string;
+          description?: string | null;
+          youtube_id: string;
+          category: string;
+          timestamps?: Record<string, string> | null;
+          transcript?: string | null;
+          related_services?: string[] | null;
+          metadata?: Record<string, unknown> | null;
+          created_at?: string;
+        };
         Update: {
-          id?: string
-          title?: string
-          slug?: string
-          html?: string
-          feature_image?: string
-          feature_image_alt?: string
-          excerpt?: string
-          published_at?: string
-          updated_at?: string
-          reading_time?: number
-          trade_category?: string
-          created_at?: string
-        }
-      }
-      categories: {
-        Row: {
-          id: string
-          name: string
-          slug: string
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          name: string
-          slug: string
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          name?: string
-          slug?: string
-          created_at?: string
-          updated_at?: string
-        }
-      }
-      subregions: {
-        Row: {
-          id: string
-          name: string
-          slug: string
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          name: string
-          slug: string
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          name?: string
-          slug?: string
-          created_at?: string
-          updated_at?: string
-        }
-      }
-      contractors: {
-        Row: {
-          id: string
-          category_id: string
-          subregion_id: string
-          name: string
-          slug: string
-          address: string
-          phone: string
-          website: string | null
-          rating: number
-          reviews_count: number
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          category_id: string
-          subregion_id: string
-          name: string
-          slug: string
-          address: string
-          phone: string
-          website?: string | null
-          rating: number
-          reviews_count?: number
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          category_id?: string
-          subregion_id?: string
-          name?: string
-          slug?: string
-          address?: string
-          phone?: string
-          website?: string | null
-          rating?: number
-          reviews_count?: number
-          created_at?: string
-          updated_at?: string
-        }
-      }
-    }
+          id?: string;
+          title?: string;
+          description?: string | null;
+          youtube_id?: string;
+          category?: string;
+          timestamps?: Record<string, string> | null;
+          transcript?: string | null;
+          related_services?: string[] | null;
+          metadata?: Record<string, unknown> | null;
+          created_at?: string;
+        };
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [key: string]: {
+        Row: Record<string, unknown>;
+        Insert: Record<string, unknown>;
+        Update: Record<string, unknown>;
+      };
+    };
     Functions: {
-      [_ in never]: never
-    }
+      [key: string]: {
+        Args: Record<string, unknown>;
+        Returns: unknown;
+      };
+    };
     Enums: {
-      [_ in never]: never
-    }
-  }
+      [key: string]: string[];
+    };
+  };
 }
