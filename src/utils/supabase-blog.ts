@@ -235,45 +235,45 @@ export async function getPostsByCategory(
         const from = (page - 1) * limit;
         const to = from + limit - 1;
 
-        // Run count query and posts query in parallel for better performance
-        // Get filtered count first to ensure accurate pagination
-        const [countResult, postsResult] = await Promise.all([
-            supabase
-                .from('posts')
-                .select('id', { count: 'exact', head: true })
-                .ilike('trade_category', category)
-                .not('trade_category', 'is', null)
-                .not('published_at', 'is', null)
-                .lt('published_at', new Date().toISOString()),
-            
-            supabase
-                .from('posts')
-                .select(`
-                    id,
-                    title,
-                    slug,
-                    excerpt,
-                    feature_image,
-                    feature_image_alt,
-                    published_at,
-                    updated_at,
-                    reading_time,
-                    trade_category
-                `)
-                .ilike('trade_category', category)
-                .not('trade_category', 'is', null)
-                .not('published_at', 'is', null)
-                .lt('published_at', new Date().toISOString())
-                .order('published_at', { ascending: false })
-                .range(from, to)
-        ]);
+        // Get count first to ensure it's properly retrieved
+        const countResult = await supabase
+            .from('posts')
+            .select('*', { count: 'exact', head: true })
+            .ilike('trade_category', category)
+            .not('trade_category', 'is', null)
+            .not('published_at', 'is', null)
+            .lt('published_at', new Date().toISOString());
 
-        // Handle errors
         if (countResult.error) throw countResult.error;
+        if (countResult.count === null) throw new Error('Failed to get post count');
+
+        // Then get posts
+        const postsResult = await supabase
+            .from('posts')
+            .select(`
+                id,
+                title,
+                slug,
+                excerpt,
+                feature_image,
+                feature_image_alt,
+                published_at,
+                updated_at,
+                reading_time,
+                trade_category
+            `)
+            .ilike('trade_category', category)
+            .not('trade_category', 'is', null)
+            .not('published_at', 'is', null)
+            .lt('published_at', new Date().toISOString())
+            .order('published_at', { ascending: false })
+            .range(from, to);
+
+        // Handle post query errors
         if (postsResult.error) throw postsResult.error;
         if (!postsResult.data) throw new Error('Failed to fetch posts: posts data is null');
 
-        const count = countResult.count ?? 0;
+        const count = countResult.count;
         const posts = postsResult.data;
 
         // Transform posts to match Post interface
