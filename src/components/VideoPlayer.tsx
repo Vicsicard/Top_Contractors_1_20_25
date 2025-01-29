@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import Script from 'next/script';
+import React from 'react';
 
 interface VideoPlayerProps {
   youtubeId: string;
@@ -20,51 +19,8 @@ export default function VideoPlayer({
   showTranscript = false,
   className = '',
 }: VideoPlayerProps) {
-  const playerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Initialize YouTube player when the API is ready
-    const initPlayer = () => {
-      if (!playerRef.current) return;
-      
-      new window.YT.Player(playerRef.current, {
-        videoId: youtubeId,
-        playerVars: {
-          autoplay: 0,
-          modestbranding: 1,
-          rel: 0,
-          playsinline: 1,
-        },
-        events: {
-          onError: (event) => {
-            console.error('YouTube Player Error:', event);
-          }
-        }
-      });
-    };
-
-    // If YT API is already loaded, initialize immediately
-    if (window.YT) {
-      initPlayer();
-    } else {
-      // If not loaded, set up callback for when it loads
-      window.onYouTubeIframeAPIReady = initPlayer;
-    }
-
-    // Cleanup
-    return () => {
-      window.onYouTubeIframeAPIReady = undefined;
-    };
-  }, [youtubeId]);
-
   return (
     <div className={`video-container ${className}`}>
-      {/* YouTube IFrame API Script */}
-      <Script
-        src="https://www.youtube.com/iframe_api"
-        strategy="afterInteractive"
-      />
-
       {/* Schema.org VideoObject markup */}
       <script
         type="application/ld+json"
@@ -83,7 +39,13 @@ export default function VideoPlayer({
 
       {/* Video Player Container */}
       <div className="aspect-w-16 aspect-h-9 bg-gray-100 rounded-lg overflow-hidden">
-        <div ref={playerRef} />
+        <iframe
+          src={`https://www.youtube.com/embed/${youtubeId}?modestbranding=1&rel=0`}
+          title={title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="w-full h-full"
+        />
       </div>
 
       {/* Video Title and Description */}
