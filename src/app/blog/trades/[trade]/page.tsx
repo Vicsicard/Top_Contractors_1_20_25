@@ -44,13 +44,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function TradeBlogPage({ params, searchParams }: Props) {
     const trade = params.trade;
     const tradeData = tradesData[trade];
-    const page = searchParams.page ? parseInt(searchParams.page) : 1;
-
     if (!tradeData) {
         notFound();
     }
 
+    // Validate and sanitize page parameter
+    let page = 1;
+    if (searchParams.page) {
+        const parsedPage = parseInt(searchParams.page);
+        if (!isNaN(parsedPage) && parsedPage > 0) {
+            page = parsedPage;
+        }
+    }
+
     const { posts, totalPages, hasNextPage, hasPrevPage, totalPosts } = await getPostsByCategory(trade, page);
+
+    // Redirect to page 1 if requested page is beyond total pages
+    if (totalPages > 0 && page > totalPages) {
+        return {
+            redirect: {
+                destination: `/blog/trades/${trade}?page=1`,
+                permanent: false
+            }
+        };
+    }
 
     if (!posts || posts.length === 0) {
         return (

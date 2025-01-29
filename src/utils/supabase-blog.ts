@@ -236,12 +236,15 @@ export async function getPostsByCategory(
         const to = from + limit - 1;
 
         // Run count query and posts query in parallel for better performance
+        // Get filtered count first to ensure accurate pagination
         const [countResult, postsResult] = await Promise.all([
             supabase
                 .from('posts')
                 .select('id', { count: 'exact', head: true })
                 .ilike('trade_category', category)
-                .not('trade_category', 'is', null),
+                .not('trade_category', 'is', null)
+                .not('published_at', 'is', null)
+                .lt('published_at', new Date().toISOString()),
             
             supabase
                 .from('posts')
@@ -259,6 +262,8 @@ export async function getPostsByCategory(
                 `)
                 .ilike('trade_category', category)
                 .not('trade_category', 'is', null)
+                .not('published_at', 'is', null)
+                .lt('published_at', new Date().toISOString())
                 .order('published_at', { ascending: false })
                 .range(from, to)
         ]);
