@@ -125,11 +125,14 @@ export default async function BlogPost({ params }: Props) {
         image: post.feature_image || undefined,
         datePublished: post.published_at,
         dateModified: post.updated_at || post.published_at,
-        author: post.authors?.[0] ? {
+        author: post.authors && post.authors[0] ? {
             '@type': 'Person',
             name: post.authors[0].name,
             url: post.authors[0].url || undefined
-        } : undefined,
+        } : {
+            '@type': 'Organization',
+            name: 'Top Contractors Denver'
+        },
         publisher: {
             '@type': 'Organization',
             name: 'Top Contractors Denver',
@@ -179,31 +182,36 @@ export default async function BlogPost({ params }: Props) {
                             </>
                         )}
                     </div>
-                    {post.authors && post.authors.length > 0 && (
-                        <div className="flex items-center gap-3">
-                            {post.authors[0].profile_image && isValidImageUrl(post.authors[0].profile_image) && (
-                                <Image
-                                    src={post.authors[0].profile_image}
-                                    alt={post.authors[0].name}
-                                    width={40}
-                                    height={40}
-                                    className="rounded-full"
-                                    onError={(e) => {
-                                        console.error('Author image loading error:', {
-                                            src: post.authors[0].profile_image,
-                                            error: e
-                                        });
-                                    }}
-                                />
-                            )}
-                            <div>
-                                <p className="font-medium">{post.authors[0].name}</p>
-                                {post.authors[0].bio && (
-                                    <p className="text-sm text-gray-600">{post.authors[0].bio}</p>
+                    {(() => {
+                        const author = post.authors?.[0];
+                        if (!author) return null;
+
+                        return (
+                            <div className="flex items-center gap-3">
+                                {author.profile_image && isValidImageUrl(author.profile_image) && (
+                                    <Image
+                                        src={author.profile_image}
+                                        alt={author.name}
+                                        width={40}
+                                        height={40}
+                                        className="rounded-full"
+                                        onError={(e) => {
+                                            console.error('Author image loading error:', {
+                                                src: author.profile_image,
+                                                error: e
+                                            });
+                                        }}
+                                    />
                                 )}
+                                <div>
+                                    <p className="font-medium">{author.name}</p>
+                                    {author.bio && (
+                                        <p className="text-sm text-gray-600">{author.bio}</p>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        );
+                    })()}
                 </header>
 
                 {/* Blog post content with enhanced typography */}

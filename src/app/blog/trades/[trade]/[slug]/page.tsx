@@ -30,7 +30,7 @@ function isValidImageUrl(url: string | undefined): boolean {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const post = await getPostBySlug(params.slug);
+    const post = await getPostBySlug(params.slug, params.trade);
     const trade = tradesData[params.trade];
 
     if (!post || !trade) {
@@ -113,7 +113,7 @@ function BlogImages() {
 }
 
 export default async function TradeBlogPost({ params }: Props) {
-    const post = await getPostBySlug(params.slug);
+    const post = await getPostBySlug(params.slug, params.trade);
     const trade = tradesData[params.trade];
 
     if (!post || !trade) {
@@ -204,7 +204,7 @@ export default async function TradeBlogPost({ params }: Props) {
                                     className="rounded-full"
                                     onError={(e) => {
                                         console.error('Author image loading error:', {
-                                            src: post.authors[0].profile_image,
+                                            src: post.authors?.[0]?.profile_image,
                                             error: e
                                         });
                                     }}

@@ -10,8 +10,8 @@ export interface Post {
     updated_at: string | null;
     reading_time: number | null;
     trade_category: string | null;
-    authors: Author[];
-    tags: Tag[];
+    authors?: Author[];
+    tags?: Tag[];
 }
 
 export interface Author {
@@ -35,4 +35,5 @@ export interface PaginatedPosts {
     totalPages: number;
     hasNextPage: boolean;
     hasPrevPage: boolean;
+    totalPosts: number;
 }

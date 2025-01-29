@@ -1,19 +1,29 @@
 import { Post, PaginatedPosts, Author, Tag } from '@/types/blog';
 import { supabase } from '@/utils/supabase';
 
-const POSTS_PER_PAGE = 10; // Standardized posts per page across the site
+const POSTS_PER_PAGE = 12; // Standardized posts per page across the site - optimized for 3-column grid
 
 /**
- * Validate Supabase connection
+ * Validate Supabase connection and table structure
  */
 async function validateSupabaseConnection() {
     try {
-        const { data, error } = await supabase.from('posts').select('count').limit(1);
+        const { data, error } = await supabase
+            .from('posts')
+            .select('id, trade_category')
+            .limit(1);
+            
         if (error) {
             console.error('Supabase connection error:', error);
             return false;
         }
-        console.log('Supabase connection successful');
+        
+        if (!data || !Array.isArray(data)) {
+            console.error('Invalid posts table structure');
+            return false;
+        }
+        
+        console.log('Supabase connection and table structure validated');
         return true;
     } catch (error) {
         console.error('Failed to validate Supabase connection:', error);
@@ -108,7 +118,8 @@ export async function getPosts(page = 1, limit = POSTS_PER_PAGE): Promise<Pagina
             posts: transformedPosts,
             totalPages,
             hasNextPage,
-            hasPrevPage
+            hasPrevPage,
+            totalPosts: count || 0
         };
     } catch (error) {
         console.error('Error fetching posts:', error);
@@ -116,15 +127,16 @@ export async function getPosts(page = 1, limit = POSTS_PER_PAGE): Promise<Pagina
             posts: [],
             totalPages: 0,
             hasNextPage: false,
-            hasPrevPage: false
+            hasPrevPage: false,
+            totalPosts: 0
         };
     }
 }
 
 /**
- * Gets a single post by slug.
+ * Gets a single post by slug and optionally filters by trade category.
  */
-export async function getPostBySlug(slug: string): Promise<Post | null> {
+export async function getPostBySlug(slug: string, trade?: string): Promise<Post | null> {
     try {
         // Validate connection first
         const isConnected = await validateSupabaseConnection();
@@ -132,7 +144,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
             throw new Error('Failed to connect to Supabase');
         }
 
-        const { data: post, error } = await supabase
+        let query = supabase
             .from('posts')
             .select(`
                 id,
@@ -149,10 +161,19 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
                 tags (*),
                 trade_category
             `)
-            .eq('slug', slug)
-            .single();
+            .eq('slug', slug);
 
-        if (error) throw error;
+        // If trade is provided, ensure the post belongs to that trade category
+        if (trade) {
+            query = query.ilike('trade_category', trade);
+        }
+
+        const { data: post, error } = await query.single();
+
+        if (error) {
+            console.error('Error fetching post:', error);
+            return null;
+        }
         if (!post) return null;
 
         // Transform post to match Post interface
@@ -179,8 +200,11 @@ export async function getTradeCategories(): Promise<string[]> {
             return [];
         }
 
-        // Get unique categories
-        const categories = [...new Set(data.map(post => post.trade_category))];
+        // Get unique categories and filter out any null/undefined values
+        const categories = [...new Set(data
+            .map(post => post.trade_category)
+            .filter(category => category)
+        )];
         console.log('Available trade categories:', categories);
         return categories;
     } catch (error) {
@@ -189,20 +213,20 @@ export async function getTradeCategories(): Promise<string[]> {
     }
 }
 
+/**
+ * Gets posts by category with case-insensitive matching
+ */
 export async function getPostsByCategory(
     category: string,
     page = 1,
     limit = POSTS_PER_PAGE
 ): Promise<PaginatedPosts> {
     try {
-        console.log('getPostsByCategory - Starting with params:', { category, page, limit });
-
-        // Validate connection first
+        // Validate connection and category
         const isConnected = await validateSupabaseConnection();
         if (!isConnected) {
             throw new Error('Failed to connect to Supabase');
         }
-
         if (!category) {
             throw new Error('Category is required');
         }
@@ -211,91 +235,41 @@ export async function getPostsByCategory(
         const from = (page - 1) * limit;
         const to = from + limit - 1;
 
-        // Get total count first
-        console.log('getPostsByCategory - Executing count query for category:', category);
-        const countQuery = supabase
-            .from('posts')
-            .select('*', { count: 'exact', head: true })
-            .eq('trade_category', category)
-            .not('trade_category', 'is', null);
+        // Run count query and posts query in parallel for better performance
+        const [countResult, postsResult] = await Promise.all([
+            supabase
+                .from('posts')
+                .select('id', { count: 'exact', head: true })
+                .ilike('trade_category', category)
+                .not('trade_category', 'is', null),
             
-        const { count, error: countError } = await countQuery;
-        console.log('getPostsByCategory - Count query result:', { count, error: countError });
+            supabase
+                .from('posts')
+                .select(`
+                    id,
+                    title,
+                    slug,
+                    excerpt,
+                    feature_image,
+                    feature_image_alt,
+                    published_at,
+                    updated_at,
+                    reading_time,
+                    trade_category
+                `)
+                .ilike('trade_category', category)
+                .not('trade_category', 'is', null)
+                .order('published_at', { ascending: false })
+                .range(from, to)
+        ]);
 
-        if (countError) {
-            console.error('getPostsByCategory - Count query error:', countError);
-            throw new Error(`Failed to get post count: ${countError.message}`);
-        }
+        // Handle errors
+        if (countResult.error) throw countResult.error;
+        if (postsResult.error) throw postsResult.error;
+        if (!postsResult.data) throw new Error('Failed to fetch posts: posts data is null');
 
-        if (count === null) {
-            throw new Error('Failed to get post count: count is null');
-        }
-
-        console.log('getPostsByCategory - Total posts count:', count);
-
-        // Then get the actual posts
-        console.log('getPostsByCategory - Building posts query');
-        const query = supabase
-            .from('posts')
-            .select(`
-                id,
-                title,
-                slug,
-                html,
-                excerpt,
-                feature_image,
-                feature_image_alt,
-                published_at,
-                updated_at,
-                reading_time,
-                trade_category,
-                authors (*),
-                tags (*)
-            `)
-            .eq('trade_category', category)
-            .not('trade_category', 'is', null)
-            .order('published_at', { ascending: false })
-            .range(from, to);
-
-        console.log('getPostsByCategory - Executing query with params:', {
-            category,
-            from,
-            to,
-            orderBy: 'published_at DESC'
-        });
-
-        const { data: posts, error: postsError } = await query;
-        
-        console.log('getPostsByCategory - Posts query response:', {
-            error: postsError,
-            postsCount: posts?.length,
-            firstPost: posts?.[0] ? {
-                id: posts[0].id,
-                title: posts[0].title,
-                category: posts[0].trade_category
-            } : null
-        });
-
-        if (postsError) {
-            console.error('getPostsByCategory - Posts query error:', postsError);
-            throw new Error(`Failed to fetch posts: ${postsError.message}`);
-        }
-
-        if (!posts) {
-            throw new Error('Failed to fetch posts: posts data is null');
-        }
-
-        console.log('getPostsByCategory - Query results:', {
-            category,
-            postsFound: posts.length,
-            posts: posts.map(p => ({
-                id: p.id,
-                title: p.title,
-                category: p.trade_category,
-                hasHtml: !!p.html,
-                feature_image: p.feature_image
-            }))
-        });
+        const count = countResult.count ?? 0;
+        const posts = postsResult.data;
 
         // Transform posts to match Post interface
         const transformedPosts = posts.map(transformPost);
@@ -304,7 +278,8 @@ export async function getPostsByCategory(
             posts: transformedPosts,
             totalPages: Math.ceil(count / limit),
             hasNextPage: from + limit < count,
-            hasPrevPage: page > 1
+            hasPrevPage: page > 1,
+            totalPosts: count
         };
     } catch (error) {
         console.error('getPostsByCategory - Unexpected error:', error);
@@ -377,7 +352,8 @@ export async function getPostsByTag(tag: string, page = 1, limit = POSTS_PER_PAG
             posts: transformedPosts,
             totalPages,
             hasNextPage,
-            hasPrevPage
+            hasPrevPage,
+            totalPosts: count || 0
         };
     } catch (error) {
         console.error('Error fetching posts by tag:', error);
@@ -385,7 +361,8 @@ export async function getPostsByTag(tag: string, page = 1, limit = POSTS_PER_PAG
             posts: [],
             totalPages: 0,
             hasNextPage: false,
-            hasPrevPage: false
+            hasPrevPage: false,
+            totalPosts: 0
         };
     }
 }

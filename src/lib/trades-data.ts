@@ -1,9 +1,9 @@
 import { TradeData } from '../types/trade';
 
 export const tradesData: Record<string, TradeData> = {
-  "plumbing": {
-    name: "plumbing",
-    title: "Plumbing",
+  "plumbers": {
+    name: "plumbers",
+    title: "Plumbers",
     metaTitle: "Licensed Plumbers in Denver | Professional Plumbing Services",
     metaDescription: "Find top-rated licensed plumbers in Denver. Our network of professional plumbers provides expert residential and commercial plumbing services.",
     heading: "Expert Plumbing Services in Denver",
@@ -36,7 +36,7 @@ export const tradesData: Record<string, TradeData> = {
       }
     ],
     keywords: ["plumber", "plumbing", "drain cleaning", "water heater", "pipe repair", "emergency plumber"],
-    category: "plumbing"
+    category: "plumbers"
   },
   "electrical": {
     name: "electrical",

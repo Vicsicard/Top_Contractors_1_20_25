@@ -50,7 +50,7 @@ export default async function TradeBlogPage({ params, searchParams }: Props) {
         notFound();
     }
 
-    const { posts, totalPages, hasNextPage, hasPrevPage } = await getPostsByCategory(trade, page);
+    const { posts, totalPages, hasNextPage, hasPrevPage, totalPosts } = await getPostsByCategory(trade, page);
 
     if (!posts || posts.length === 0) {
         return (
@@ -75,13 +75,16 @@ export default async function TradeBlogPage({ params, searchParams }: Props) {
                 item: {
                     '@type': 'BlogPosting',
                     headline: post.title,
-                    url: `/blog/${post.slug}`,
+                    url: `/blog/trades/${trade}/${post.slug}`,
                     datePublished: post.published_at,
                     dateModified: post.updated_at || post.published_at,
-                    author: post.authors?.[0] ? {
+                    author: post.authors && post.authors[0] ? {
                         '@type': 'Person',
                         name: post.authors[0].name
-                    } : undefined,
+                    } : {
+                        '@type': 'Organization',
+                        name: 'Top Contractors Denver'
+                    },
                     image: post.feature_image || undefined
                 }
             }))
@@ -97,9 +100,12 @@ export default async function TradeBlogPage({ params, searchParams }: Props) {
                     <p className="text-gray-600">
                         Expert tips and advice about {tradeData.title.toLowerCase()} for Denver homeowners
                     </p>
+                    <p className="text-sm text-gray-500 mt-2">
+                        {totalPosts} articles in this category
+                    </p>
                 </header>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                     {posts.map(post => (
                         <BlogPostCard key={post.id} post={post} />
                     ))}

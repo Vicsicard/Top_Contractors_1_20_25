@@ -22,7 +22,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
       )}
       <div className="p-6">
         <h2 className="text-xl font-bold mb-2 hover:text-blue-600">
-          <Link href={`/blog/${post.slug}`}>
+          <Link href={post.trade_category ? `/blog/trades/${post.trade_category}/${post.slug}` : `/blog/${post.slug}`}>
             {post.title}
           </Link>
         </h2>

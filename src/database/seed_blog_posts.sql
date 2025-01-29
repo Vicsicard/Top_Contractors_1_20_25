@@ -18,7 +18,7 @@ values
         '/images/blog/winter-plumbing.jpg',
         'Plumber fixing a pipe',
         'Learn how to protect your plumbing system during Denver''s cold winter months with our expert maintenance guide.',
-        'plumber',
+        'plumbers',
         6
     ),
     (
@@ -29,6 +29,26 @@ values
         'Modern HVAC system installation',
         'Navigate the complex world of HVAC systems with our expert guide to finding the perfect solution for your home.',
         'hvac',
+        10
+    ),
+    (
+        'Common Plumbing Problems and How to Fix Them',
+        'common-plumbing-problems-solutions',
+        '<p>A comprehensive guide to identifying and fixing common household plumbing issues...</p>',
+        '/images/blog/plumbing-problems.jpg',
+        'Plumber working on sink',
+        'Learn how to diagnose and fix common plumbing problems with our expert troubleshooting guide.',
+        'plumbers',
+        7
+    ),
+    (
+        'Water Heater Maintenance: A Complete Guide',
+        'water-heater-maintenance-guide',
+        '<p>Everything you need to know about maintaining your water heater for optimal performance...</p>',
+        '/images/blog/water-heater.jpg',
+        'Modern water heater installation',
+        'Keep your water heater running efficiently with our comprehensive maintenance guide.',
+        'plumbers',
         10
     );
 
