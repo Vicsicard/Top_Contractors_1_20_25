@@ -100,16 +100,6 @@ export default async function BlogPage({ searchParams }: Props) {
 
             return (
                 <div className="container mx-auto px-4 py-8">
-                    <header className="mb-8">
-                        <h1 className="text-4xl font-bold mb-4">
-                            {tradesData[category].title} Blog Posts
-                        </h1>
-                        <p className="text-gray-600">
-                            Expert tips and advice about {tradesData[category].title.toLowerCase()} 
-                            for Denver homeowners
-                        </p>
-                    </header>
-
                     {result.posts.length === 0 ? (
                         <div className="text-center py-12">
                             <p className="text-gray-600">
@@ -152,16 +142,6 @@ export default async function BlogPage({ searchParams }: Props) {
         // If no category is selected, show all categories
         return (
             <div className="container mx-auto px-4 py-8">
-                <header className="mb-12 text-center">
-                    <h1 className="text-4xl font-bold mb-4">
-                        Home Improvement Blog
-                    </h1>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
-                        Expert tips, guides, and advice for Denver homeowners. Find professional insights 
-                        and practical solutions for your next project.
-                    </p>
-                </header>
-
                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                     {Object.entries(tradesData).map(([slug, data]) => (
                         <Link
