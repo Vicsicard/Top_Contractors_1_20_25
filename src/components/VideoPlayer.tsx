@@ -40,11 +40,15 @@ export default function VideoPlayer({
       {/* Video Player Container */}
       <div className="aspect-w-16 aspect-h-9 bg-gray-100 rounded-lg overflow-hidden">
         <iframe
-          src={`https://www.youtube.com/embed/${youtubeId}?modestbranding=1&rel=0`}
+          src={`https://www.youtube.com/embed/${youtubeId}?modestbranding=1&rel=0&origin=${process.env.NEXT_PUBLIC_SITE_URL || window.location.origin}`}
           title={title}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
           className="w-full h-full"
+          onError={(e) => {
+            console.error('Error loading video:', e);
+            // You could set an error state here if needed
+          }}
         />
       </div>
 

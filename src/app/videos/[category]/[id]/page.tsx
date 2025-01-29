@@ -23,7 +23,7 @@ export default async function VideoPage({ params }: VideoPageProps) {
     .from('videos')
     .select('*')
     .eq('id', params.id)
-    .single<Video>();
+    .single();
 
   if (error || !video) {
     console.error('Error fetching video:', error);
@@ -36,8 +36,7 @@ export default async function VideoPage({ params }: VideoPageProps) {
     .select('*')
     .eq('category', params.category)
     .neq('id', params.id)
-    .limit(3)
-    .returns<Video[]>();
+    .limit(3);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -79,7 +78,7 @@ export default async function VideoPage({ params }: VideoPageProps) {
             <div className="mt-8">
               <h3 className="text-xl font-semibold mb-4">Related Services</h3>
               <div className="flex flex-wrap gap-2">
-                {video.related_services.map((service) => (
+                {video.related_services.map((service: string) => (
                   <Link
                     key={service}
                     href={`/services/${service}`}
@@ -97,7 +96,7 @@ export default async function VideoPage({ params }: VideoPageProps) {
             <div className="mt-8">
               <h3 className="text-xl font-semibold mb-4">Video Chapters</h3>
               <div className="space-y-2">
-                {Object.entries(video.timestamps).map(([time, label]) => (
+                {Object.entries(video.timestamps as Record<string, string>).map(([time, label]) => (
                   <button
                     key={time}
                     className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -118,7 +117,7 @@ export default async function VideoPage({ params }: VideoPageProps) {
         <div className="lg:col-span-1">
           <h3 className="text-xl font-semibold mb-4">Related Videos</h3>
           <div className="space-y-4">
-            {relatedVideos?.map((relatedVideo) => (
+            {relatedVideos?.map((relatedVideo: Video) => (
               <Link
                 key={relatedVideo.id}
                 href={`/videos/${relatedVideo.category}/${relatedVideo.id}`}
@@ -130,6 +129,13 @@ export default async function VideoPage({ params }: VideoPageProps) {
                       src={`https://img.youtube.com/vi/${relatedVideo.youtube_id}/maxresdefault.jpg`}
                       alt={relatedVideo.title}
                       className="object-cover w-full h-full"
+                      onError={(e) => {
+                        // Fallback to medium quality thumbnail if maxres fails
+                        const img = e.target as HTMLImageElement;
+                        if (img.src.includes('maxresdefault')) {
+                          img.src = `https://img.youtube.com/vi/${relatedVideo.youtube_id}/mqdefault.jpg`;
+                        }
+                      }}
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity" />
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">

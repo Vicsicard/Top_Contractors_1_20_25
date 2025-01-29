@@ -7,7 +7,8 @@ const config = {
       'maps.googleapis.com',
       'maps.gstatic.com',
       'bmiyyaexngxbrzkyqgzk.supabase.co', 
-      '6be7e0906f1487fecf0b9cbd301defd6.cdn.bubble.io'
+      '6be7e0906f1487fecf0b9cbd301defd6.cdn.bubble.io',
+      'img.youtube.com'
     ],
     remotePatterns: [
       {

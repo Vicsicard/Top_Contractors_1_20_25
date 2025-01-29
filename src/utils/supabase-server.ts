@@ -1,7 +1,8 @@
-import { createClient as createClientBase } from '@supabase/supabase-js';
-import { Database } from '@/types/supabase';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/supabase';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-export const createClient = () => {
+export const createClient = (): SupabaseClient<Database> => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -9,5 +10,10 @@ export const createClient = () => {
     throw new Error('Missing Supabase environment variables');
   }
 
-  return createClientBase<Database>(supabaseUrl, supabaseKey);
+  return createSupabaseClient(supabaseUrl, supabaseKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
 };
