@@ -2,85 +2,108 @@ import { createClient } from '@supabase/supabase-js';
 import { Database } from '../src/types/supabase.js';
 import { config } from 'dotenv';
 import { resolve } from 'path';
-import { readFileSync } from 'fs';
+import fetch from 'node-fetch';
+
+interface GhostTag {
+  slug: string;
+}
+
+interface GhostPost {
+  title: string;
+  slug: string;
+  html: string;
+  feature_image: string | null;
+  feature_image_alt: string | null;
+  excerpt: string | null;
+  meta_description: string | null;
+  reading_time: number | null;
+  published_at: string;
+  tags: GhostTag[];
+}
 
 // Load environment variables from .env.local
 config({ path: resolve(__dirname, '../.env.local') });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const ghostUrl = process.env.GHOST_URL || 'https://top-contractors-denver-2.ghost.io';
+const ghostKey = process.env.GHOST_ORG_CONTENT_API_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   console.error('Missing Supabase environment variables');
   process.exit(1);
 }
 
+if (!ghostKey) {
+  console.error('Missing Ghost API key in .env.local (GHOST_ORG_CONTENT_API_KEY)');
+  process.exit(1);
+}
+
 const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+
+// Function to fetch posts from Ghost
+async function fetchGhostPosts() {
+  const url = `${ghostUrl}/ghost/api/v3/content/posts/?key=${ghostKey}`;
+  console.log('Fetching from Ghost URL:', url);
+  
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch from Ghost: ${response.statusText}`);
+  }
+  
+  const data = await response.json();
+  console.log('Raw Ghost API response:', JSON.stringify(data, null, 2));
+  
+  if (!data.posts || !Array.isArray(data.posts)) {
+    throw new Error('Invalid response format from Ghost API');
+  }
+  
+  // Log the first post as a sample
+  if (data.posts.length > 0) {
+    console.log('Sample post HTML:', data.posts[0].html);
+  }
+  
+  return data.posts;
+}
+
+// Function to determine trade category from Ghost tags
+function getTradeCategory(tags: any[] | undefined) {
+  if (!tags || !Array.isArray(tags)) return 'general';
+  const tradeTags = tags.map(tag => tag.slug);
+  const categories = [
+    'bathroom', 'decks', 'electrical', 'fencing',
+    'flooring', 'hvac', 'kitchen', 'landscaping',
+    'painting', 'plumbing', 'remodeling', 'roofing',
+    'siding', 'windows'
+  ];
+  
+  return tradeTags.find(tag => categories.includes(tag)) || 'general';
+}
 
 async function populateBlogPosts() {
   try {
     console.log('Starting blog posts population...');
 
-    // Sample blog posts data
-    const blogPosts = [
-      {
-        title: 'Top 10 Home Remodeling Trends for 2025',
-        slug: 'top-10-home-remodeling-trends-2025',
-        html: '<p>Discover the latest home remodeling trends that are taking Denver by storm in 2025...</p>',
-        feature_image: '/images/blog/home-remodeling-trends.jpg',
-        feature_image_alt: 'Modern home interior after remodeling',
-        excerpt: 'Stay ahead of the curve with these emerging home remodeling trends that combine style, sustainability, and smart technology.',
-        trade_category: 'home-remodeling',
-        reading_time: 8,
-        published_at: new Date().toISOString()
-      },
-      {
-        title: 'Essential Plumbing Maintenance Tips for Winter',
-        slug: 'winter-plumbing-maintenance-tips',
-        html: '<p>Protect your pipes and prevent costly repairs with these essential winter maintenance tips...</p>',
-        feature_image: '/images/blog/winter-plumbing.jpg',
-        feature_image_alt: 'Plumber fixing a pipe',
-        excerpt: 'Learn how to protect your plumbing system during Denver\'s cold winter months with our expert maintenance guide.',
-        trade_category: 'plumbers',
-        reading_time: 6,
-        published_at: new Date().toISOString()
-      },
-      {
-        title: 'How to Choose the Right HVAC System',
-        slug: 'choosing-right-hvac-system',
-        html: '<p>A comprehensive guide to selecting the perfect HVAC system for your Denver home...</p>',
-        feature_image: '/images/blog/hvac-guide.jpg',
-        feature_image_alt: 'Modern HVAC system installation',
-        excerpt: 'Navigate the complex world of HVAC systems with our expert guide to finding the perfect solution for your home.',
-        trade_category: 'hvac',
-        reading_time: 10,
-        published_at: new Date().toISOString()
-      },
-      {
-        title: 'Common Plumbing Problems and How to Fix Them',
-        slug: 'common-plumbing-problems-solutions',
-        html: '<p>A comprehensive guide to identifying and fixing common household plumbing issues...</p>',
-        feature_image: '/images/blog/plumbing-problems.jpg',
-        feature_image_alt: 'Plumber working on sink',
-        excerpt: 'Learn how to diagnose and fix common plumbing problems with our expert troubleshooting guide.',
-        trade_category: 'plumbers',
-        reading_time: 7,
-        published_at: new Date().toISOString()
-      },
-      {
-        title: 'Water Heater Maintenance: A Complete Guide',
-        slug: 'water-heater-maintenance-guide',
-        html: '<p>Everything you need to know about maintaining your water heater for optimal performance...</p>',
-        feature_image: '/images/blog/water-heater.jpg',
-        feature_image_alt: 'Modern water heater installation',
-        excerpt: 'Keep your water heater running efficiently with our comprehensive maintenance guide.',
-        trade_category: 'plumbers',
-        reading_time: 10,
-        published_at: new Date().toISOString()
-      }
-    ];
+    // Fetch posts from Ghost
+    console.log('Fetching posts from Ghost...');
+    const ghostPosts = await fetchGhostPosts();
+    
+    // Transform Ghost posts to our format
+    const blogPosts = ghostPosts.map((post: GhostPost) => ({
+      title: post.title,
+      slug: post.slug,
+      html: post.html || '', // Store the full HTML content
+      feature_image: post.feature_image,
+      feature_image_alt: post.feature_image_alt || post.title,
+      excerpt: post.excerpt || post.meta_description,
+      trade_category: getTradeCategory(post.tags),
+      reading_time: post.reading_time || 5,
+      published_at: post.published_at
+    }));
 
-    // Insert blog posts
+    console.log(`Found ${blogPosts.length} posts to import`);
+
+    // Insert blog posts into Supabase
     const { error: insertError } = await supabase
       .from('posts')
       .upsert(blogPosts, { onConflict: 'slug' });
@@ -97,7 +120,7 @@ async function populateBlogPosts() {
 
     if (verifyError) throw verifyError;
 
-    console.log('Added blog posts:', posts);
+    console.log(`Successfully imported ${posts.length} posts to Supabase`);
   } catch (error) {
     console.error('Error populating blog posts:', error);
     process.exit(1);
