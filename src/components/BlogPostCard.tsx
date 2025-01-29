@@ -9,17 +9,22 @@ interface BlogPostCardProps {
 export function BlogPostCard({ post }: BlogPostCardProps) {
   return (
     <article className="bg-white rounded-lg shadow-md overflow-hidden">
-      {post.feature_image && (
-        <div className="relative w-full h-48">
+      <div className="relative w-full h-48">
+        {post.feature_image ? (
           <Image 
             src={post.feature_image} 
             alt={post.feature_image_alt || post.title}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            unoptimized // Skip Next.js image optimization
           />
-        </div>
-      )}
+        ) : (
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            <span className="text-gray-400">No image available</span>
+          </div>
+        )}
+      </div>
       <div className="p-6">
         <h2 className="text-xl font-bold mb-2 hover:text-blue-600">
           <Link href={post.trade_category ? `/blog/trades/${post.trade_category}/${post.slug}` : `/blog/${post.slug}`}>

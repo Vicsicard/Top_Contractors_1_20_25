@@ -16,6 +16,12 @@ const config = {
         port: '',
         pathname: '/content/images/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'top-contractors-denver-2.ghost.io',
+        port: '',
+        pathname: '/content/images/**',
+      },
     ],
   },
 };
