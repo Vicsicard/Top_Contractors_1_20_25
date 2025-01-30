@@ -105,8 +105,11 @@ const config = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   experimental: {
-    optimizeCss: true
+    optimizeCss: true,
+    excludeApiRoutes: ['/**/*'],
   },
+  skipMiddlewareUrlNormalize: true,
+  skipTrailingSlashRedirect: true,
   // Handle error pages in static export
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
