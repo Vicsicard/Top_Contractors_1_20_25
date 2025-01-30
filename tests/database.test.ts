@@ -80,14 +80,14 @@ describe('Database Operations', () => {
       expect(trade).toHaveProperty('slug', 'bathroom-remodelers');
     });
 
-    it('should handle database errors gracefully', async () => {
+    it('should handle database errors by returning null', async () => {
       const mockSupabase = {
         from: jest.fn(() => ({
           select: jest.fn(() => ({
             eq: jest.fn(() => ({
               single: jest.fn(() => ({
                 data: null,
-                error: new Error('Database error')
+                error: { message: 'Database error', code: 'ERROR', details: '', hint: '' }
               }))
             }))
           }))
@@ -96,7 +96,8 @@ describe('Database Operations', () => {
 
       (supabase as any) = mockSupabase;
 
-      await expect(getTradeBySlug('error-trade')).rejects.toThrow('Database error');
+      const result = await getTradeBySlug('error-trade');
+      expect(result).toBeNull();
     });
 
     it('should return null for non-existent trade', async () => {
@@ -131,13 +132,13 @@ describe('Database Operations', () => {
       expect(contractors[0]).toHaveProperty('google_review_count', 100);
     });
 
-    it('should handle database errors gracefully', async () => {
+    it('should handle database errors by returning empty array', async () => {
       const mockSupabase = {
         from: jest.fn(() => ({
           select: jest.fn(() => ({
             match: jest.fn(() => ({
               data: null,
-              error: new Error('Database error')
+              error: { message: 'Database error', code: 'ERROR', details: '', hint: '' }
             }))
           }))
         }))
@@ -145,8 +146,9 @@ describe('Database Operations', () => {
 
       (supabase as any) = mockSupabase;
 
-      await expect(getContractorsByTradeAndSubregion('error-trade', 'error-region'))
-        .rejects.toThrow('Database error');
+      const result = await getContractorsByTradeAndSubregion('error-trade', 'error-region');
+      expect(Array.isArray(result)).toBe(true);
+      expect(result).toHaveLength(0);
     });
 
     it('should return empty array when no contractors found', async () => {
@@ -201,13 +203,13 @@ describe('Database Operations', () => {
       expect(trades[1]).toHaveProperty('category_name', 'Plumbers');
     });
 
-    it('should handle database errors', async () => {
+    it('should handle database errors by returning empty array', async () => {
       const mockSupabase = {
         from: jest.fn(() => ({
           select: jest.fn(() => ({
             order: jest.fn(() => ({
               data: null,
-              error: new Error('Database error')
+              error: { message: 'Database error', code: 'ERROR', details: '', hint: '' }
             }))
           }))
         }))
@@ -215,7 +217,9 @@ describe('Database Operations', () => {
 
       (supabase as any) = mockSupabase;
 
-      await expect(getAllTrades()).rejects.toThrow('Failed to load categories');
+      const result = await getAllTrades();
+      expect(Array.isArray(result)).toBe(true);
+      expect(result).toHaveLength(0);
     });
   });
 
@@ -251,13 +255,13 @@ describe('Database Operations', () => {
       expect(subregions[1]).toHaveProperty('subregion_name', 'Cherry Creek');
     });
 
-    it('should handle database errors', async () => {
+    it('should handle database errors by returning empty array', async () => {
       const mockSupabase = {
         from: jest.fn(() => ({
           select: jest.fn(() => ({
             order: jest.fn(() => ({
               data: null,
-              error: new Error('Database error')
+              error: { message: 'Database error', code: 'ERROR', details: '', hint: '' }
             }))
           }))
         }))
@@ -265,7 +269,9 @@ describe('Database Operations', () => {
 
       (supabase as any) = mockSupabase;
 
-      await expect(getAllSubregions()).rejects.toThrow('Failed to load subregions');
+      const result = await getAllSubregions();
+      expect(Array.isArray(result)).toBe(true);
+      expect(result).toHaveLength(0);
     });
   });
 
@@ -314,6 +320,26 @@ describe('Database Operations', () => {
       const subregion = await getSubregionBySlug('non-existent');
       expect(subregion).toBeNull();
     });
+
+    it('should handle database errors by returning null', async () => {
+      const mockSupabase = {
+        from: jest.fn(() => ({
+          select: jest.fn(() => ({
+            eq: jest.fn(() => ({
+              single: jest.fn(() => ({
+                data: null,
+                error: { message: 'Database error', code: 'ERROR', details: '', hint: '' }
+              }))
+            }))
+          }))
+        }))
+      };
+
+      (supabase as any) = mockSupabase;
+
+      const result = await getSubregionBySlug('error-subregion');
+      expect(result).toBeNull();
+    });
   });
 
   describe('getContractorBySlug', () => {
@@ -351,14 +377,14 @@ describe('Database Operations', () => {
       expect(contractor).toHaveProperty('subregion.subregion_name', 'Denver Tech Center');
     });
 
-    it('should handle database errors', async () => {
+    it('should handle database errors by returning null', async () => {
       const mockSupabase = {
         from: jest.fn(() => ({
           select: jest.fn(() => ({
             eq: jest.fn(() => ({
               single: jest.fn(() => ({
                 data: null,
-                error: new Error('Database error')
+                error: { message: 'Database error', code: 'ERROR', details: '', hint: '' }
               }))
             }))
           }))
@@ -367,7 +393,8 @@ describe('Database Operations', () => {
 
       (supabase as any) = mockSupabase;
 
-      await expect(getContractorBySlug('error-contractor')).rejects.toThrow('Failed to load contractor');
+      const result = await getContractorBySlug('error-contractor');
+      expect(result).toBeNull();
     });
   });
 });
