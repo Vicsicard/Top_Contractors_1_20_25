@@ -11,17 +11,8 @@ function Navigation() {
       <div className="flex justify-between items-center">
         <Link 
           href="/" 
-          className="hover:opacity-90 transition-opacity flex items-center gap-3"
+          className="hover:opacity-90 transition-opacity"
         >
-          <img
-            src="/images/logo.png"
-            alt="Top Contractors Denver"
-            width={40}
-            height={40}
-            className="w-10 h-10"
-            loading="eager"
-            fetchPriority="high"
-          />
           <div>
             <span className="lg:inline hidden text-2xl font-bold text-white">
               Top Contractors Denver

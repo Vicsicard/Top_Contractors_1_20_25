@@ -12,26 +12,42 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-async function addVideo() {
-  const { data, error } = await supabase
+async function findAndUpdateVideo() {
+  // First, let's find the video in the basement-remodeling category
+  const { data: videos, error: findError } = await supabase
     .from('videos')
-    .insert([
-      {
-        title: "Remodel Your Kitchen with Denver's Top Contractors",
-        description: "Learn about kitchen remodeling services from Denver's top contractors",
-        youtube_id: 'vEyJtcJuCAA',
-        category: 'kitchen-remodeling',
-        related_services: ['kitchen-remodelers']
-      }
-    ])
-    .select();
+    .select('*')
+    .eq('category', 'basement-remodeling');
 
-  if (error) {
-    console.error('Error inserting video:', error);
+  if (findError) {
+    console.error('Error finding video:', findError);
     return;
   }
 
-  console.log('Video added successfully:', data);
+  console.log('Found videos:', videos);
+
+  if (videos && videos.length > 0) {
+    // Update the video we found
+    const { data, error } = await supabase
+      .from('videos')
+      .update({
+        title: "Transform Your Backyard: Find the Best Outdoor Kitchen Contractors in Denver!",
+        description: "Imagine crafting the perfect outdoor kitchen.",
+        category: 'kitchen-remodeling',
+        related_services: ['kitchen-remodelers']
+      })
+      .eq('id', videos[0].id)
+      .select();
+
+    if (error) {
+      console.error('Error updating video:', error);
+      return;
+    }
+
+    console.log('Video updated successfully:', data);
+  } else {
+    console.log('No videos found in basement-remodeling category');
+  }
 }
 
-addVideo().catch(console.error);
+findAndUpdateVideo().catch(console.error);

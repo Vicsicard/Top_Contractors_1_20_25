@@ -5,6 +5,7 @@ import RelatedVideoCard from '@/components/RelatedVideoCard';
 import VideoChapters from '@/components/VideoChapters';
 import Link from 'next/link';
 import type { Database } from '@/types/supabase';
+import { Metadata, ResolvingMetadata } from 'next';
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -14,6 +15,58 @@ interface VideoPageProps {
   params: {
     category: string;
     id: string;
+  };
+}
+
+// Generate metadata for the page
+export async function generateMetadata(
+  { params }: VideoPageProps,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const supabase = createClient();
+  
+  const { data: video } = await supabase
+    .from('videos')
+    .select('*')
+    .eq('id', params.id)
+    .single();
+
+  if (!video) {
+    return {
+      title: 'Video Not Found',
+      description: 'The requested video could not be found.',
+    };
+  }
+
+  const previousImages = (await parent).openGraph?.images || [];
+
+  return {
+    title: video.title,
+    description: video.description || `Watch ${video.title} - Top Contractors Denver`,
+    openGraph: {
+      title: video.title,
+      description: video.description || `Watch ${video.title} - Top Contractors Denver`,
+      type: 'video.other',
+      videos: [{
+        url: `https://www.youtube.com/watch?v=${video.youtube_id}`,
+        type: 'text/html',
+      }],
+      images: [
+        {
+          url: `https://img.youtube.com/vi/${video.youtube_id}/maxresdefault.jpg`,
+          width: 1280,
+          height: 720,
+          alt: video.title,
+        },
+        ...previousImages,
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: video.title,
+      description: video.description || `Watch ${video.title} - Top Contractors Denver`,
+      images: [`https://img.youtube.com/vi/${video.youtube_id}/maxresdefault.jpg`],
+    },
   };
 }
 
