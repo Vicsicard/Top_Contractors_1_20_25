@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const config = {
+  trailingSlash: true,
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   async rewrites() {

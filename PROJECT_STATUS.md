@@ -1,6 +1,6 @@
 # Project Status: Contractor Directory
 
-Last Updated: 2025-01-18 21:06 MST
+Last Updated: 2025-01-30 14:22 MST
 
 ## 🎯 Project Overview
 A public web directory for finding local contractors in the Denver metropolitan area, built with Next.js 15 and Supabase.
@@ -79,10 +79,27 @@ A public web directory for finding local contractors in the Denver metropolitan 
 - Fast loading pages
 
 ## 📈 Performance
-- Server-side rendering
+- Server-side rendering (maintained for dynamic features)
 - Optimized images
 - Efficient data loading
 - Responsive design
+
+## 🔄 Recent Architecture Decisions
+1. Server-Side Rendering (January 30, 2025)
+   - Maintained server-side rendering approach
+   - Decision made to support dynamic features:
+     * Real-time contractor data
+     * Dynamic API routes
+     * Blog integration
+     * Search functionality
+   - Benefits:
+     * Simpler architecture
+     * Full dynamic capabilities
+     * Easier maintenance
+   - Trade-offs accepted:
+     * Server runtime requirements
+     * Slightly higher hosting costs
+     * Server-side processing overhead
 
 ## 📝 Notes
 - Directory is complete and fully functional
@@ -91,7 +108,13 @@ A public web directory for finding local contractors in the Denver metropolitan 
 - Keep dependencies up to date
 
 ## Recent Changes
-1. Fixed database column references in `getTradeStats` function:
+1. Reverted to Server-Side Rendering (January 30, 2025):
+   - Removed static export configuration
+   - Restored dynamic API functionality
+   - Maintained all SEO optimizations
+   - Added CSS optimization with critters package
+
+2. Fixed database column references in `getTradeStats` function:
    - Updated column names from `rating` to `google_rating`
    - Updated column names from `review_count` to `google_review_count`
    - Fixed statistics calculations to use correct column names
