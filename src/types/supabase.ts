@@ -1,6 +1,32 @@
 export interface Database {
   public: {
     Tables: {
+      categories: {
+        Row: {
+          id: number;
+          name: string;
+          slug: string;
+          description: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+          slug: string;
+          description?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: number;
+          name?: string;
+          slug?: string;
+          description?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       videos: {
         Row: {
           id: string;
