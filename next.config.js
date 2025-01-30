@@ -2,6 +2,23 @@
 const config = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
+  async headers() {
+    return [
+      {
+        source: '/manifest.json',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*'
+          },
+          {
+            key: 'Content-Type',
+            value: 'application/manifest+json'
+          }
+        ],
+      }
+    ];
+  },
   images: {
     domains: [
       'maps.googleapis.com',

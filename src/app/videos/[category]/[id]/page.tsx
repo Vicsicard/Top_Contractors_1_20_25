@@ -1,6 +1,8 @@
 import { createClient } from '@/utils/supabase-server';
 import { notFound } from 'next/navigation';
 import VideoPlayer from '@/components/VideoPlayer';
+import RelatedVideoCard from '@/components/RelatedVideoCard';
+import VideoChapters from '@/components/VideoChapters';
 import Link from 'next/link';
 import type { Database } from '@/types/supabase';
 
@@ -25,17 +27,21 @@ export default async function VideoPage({ params }: VideoPageProps) {
     .eq('id', params.id)
     .single();
 
-  if (error || !video) {
-    console.error('Error fetching video:', error);
+  if (error) {
+    throw error; // This will be caught by the error boundary
+  }
+
+  if (!video) {
     notFound();
   }
 
   // Fetch related videos in the same category
-  const { data: relatedVideos } = await supabase
+  const { data: relatedVideos, error: relatedError } = await supabase
     .from('videos')
     .select('*')
     .eq('category', params.category)
     .neq('id', params.id)
+    .order('created_at', { ascending: false })
     .limit(3);
 
   return (
@@ -91,74 +97,30 @@ export default async function VideoPage({ params }: VideoPageProps) {
             </div>
           )}
 
-          {/* Timestamps */}
+          {/* Video Chapters */}
           {video.timestamps && Object.keys(video.timestamps).length > 0 && (
-            <div className="mt-8">
-              <h3 className="text-xl font-semibold mb-4">Video Chapters</h3>
-              <div className="space-y-2">
-                {Object.entries(video.timestamps as Record<string, string>).map(([time, label]) => (
-                  <button
-                    key={time}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-lg transition-colors"
-                    onClick={() => {
-                      const seconds = time.split(':').reduce((acc, curr) => acc * 60 + parseInt(curr), 0);
-                      // Note: You'll need to implement the seek functionality
-                    }}
-                  >
-                    <span className="font-medium">{time}</span> - {label}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <VideoChapters timestamps={video.timestamps as Record<string, string>} />
           )}
         </div>
 
         {/* Sidebar */}
         <div className="lg:col-span-1">
           <h3 className="text-xl font-semibold mb-4">Related Videos</h3>
-          <div className="space-y-4">
-            {relatedVideos?.map((relatedVideo: Video) => (
-              <Link
-                key={relatedVideo.id}
-                href={`/videos/${relatedVideo.category}/${relatedVideo.id}`}
-                className="block group"
-              >
-                <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                  <div className="relative aspect-w-16 aspect-h-9">
-                    <img
-                      src={`https://img.youtube.com/vi/${relatedVideo.youtube_id}/maxresdefault.jpg`}
-                      alt={relatedVideo.title}
-                      className="object-cover w-full h-full"
-                      onError={(e) => {
-                        // Fallback to medium quality thumbnail if maxres fails
-                        const img = e.target as HTMLImageElement;
-                        if (img.src.includes('maxresdefault')) {
-                          img.src = `https://img.youtube.com/vi/${relatedVideo.youtube_id}/mqdefault.jpg`;
-                        }
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity" />
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="w-12 h-12 rounded-full bg-white bg-opacity-80 flex items-center justify-center">
-                        <svg
-                          className="w-6 h-6 text-black"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <h4 className="font-medium group-hover:text-blue-600 line-clamp-2">
-                      {relatedVideo.title}
-                    </h4>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {relatedError ? (
+            <div className="bg-red-50 p-4 rounded-lg">
+              <p className="text-red-600">Failed to load related videos</p>
+            </div>
+          ) : !relatedVideos || relatedVideos.length === 0 ? (
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-gray-600">No related videos found</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {relatedVideos.map((relatedVideo: Video) => (
+                <RelatedVideoCard key={relatedVideo.id} video={relatedVideo} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
