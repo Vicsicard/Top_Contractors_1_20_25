@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 
 interface VideoPlayerProps {
   youtubeId: string;
@@ -96,10 +97,13 @@ export default function VideoPlayer({
       {/* Fallback thumbnail while loading */}
       {isLoading && !hasError && (
         <div className="absolute inset-0">
-          <img
+          <Image
             src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
             alt={title}
             className="w-full h-full object-cover"
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>

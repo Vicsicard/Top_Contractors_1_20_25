@@ -159,7 +159,7 @@ class AnalyticsTracker {
     this.trackEvent({
       category: 'Error',
       action: 'javascript_error',
-      label: error.message,
+      label: componentStack ? `${error.message} (${componentStack})` : error.message,
       nonInteraction: true
     });
   }

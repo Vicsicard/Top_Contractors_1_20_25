@@ -62,7 +62,7 @@ export function processHtml(html: string | null): string {
                     link.setAttribute('target', '_blank');
                     link.setAttribute('rel', 'noopener noreferrer');
                 }
-            } catch (_) {
+            } catch (_error) {
                 // Invalid URL, skip processing this link
             }
         });
