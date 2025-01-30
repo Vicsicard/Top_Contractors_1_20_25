@@ -1,10 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest } from 'next/server'
 
+export const dynamic = 'force-dynamic';
+
 type Props = {
-  params: Promise<{
+  params: {
     slug: string;
-  }>;
+  };
 };
 
 export async function GET(
@@ -12,7 +14,7 @@ export async function GET(
   context: Props
 ) {
   try {
-    const { slug } = await context.params;
+  const { slug } = context.params;
     const supabase = await createClient()
     
     const { data: contractor, error: dbError } = await supabase
