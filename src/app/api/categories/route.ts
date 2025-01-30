@@ -1,7 +1,9 @@
 import { createClient } from '@/utils/supabase-server';
 import { NextRequest } from 'next/server';
 
-export const revalidate = 3600; // Revalidate every hour
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+export const revalidate = 0;
 
 export async function GET(_request: NextRequest) {
   try {

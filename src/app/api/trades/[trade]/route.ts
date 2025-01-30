@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseClient } from '@/lib/supabase/client';
 
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+export const revalidate = 0;
+
 function createTradeSlug(str: string): string {
   return decodeURIComponent(str)
     .toLowerCase()
