@@ -3,7 +3,7 @@ const config = {
   trailingSlash: true,
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
-  distDir: 'build',
+  output: 'standalone',
   // Configure error handling for Vercel deployment
   async rewrites() {
     return {
