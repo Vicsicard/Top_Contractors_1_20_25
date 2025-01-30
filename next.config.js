@@ -4,8 +4,16 @@ const config = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   distDir: 'build',
-  // Add output configuration for handling error pages
-  output: 'standalone',
+  // Configure error page handling
+  async redirects() {
+    return [
+      {
+        source: '/_error',
+        destination: '/500',
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {
