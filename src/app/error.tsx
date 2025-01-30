@@ -3,11 +3,6 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 
-export const metadata = {
-    title: 'Error - Top Contractors Denver',
-    description: 'An error occurred while processing your request.',
-};
-
 interface ErrorProps {
     error: Error & { digest?: string };
     reset: () => void;
@@ -25,15 +20,15 @@ export default function Error({ error, reset }: ErrorProps) {
         : 'An unexpected error occurred. Our team has been notified and is working to fix the issue.';
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
+        <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 bg-gray-50">
             <div className="max-w-xl text-center">
-                <h2 className="text-3xl font-bold mb-4 text-gray-900">
+                <h1 className="text-3xl font-bold mb-4 text-gray-900">
                     Something went wrong!
-                </h2>
+                </h1>
                 <p className="text-gray-600 mb-8">{errorMessage}</p>
                 <div className="space-x-4">
                     <button
-                        onClick={reset}
+                        onClick={() => reset()}
                         className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                     >
                         Try again
