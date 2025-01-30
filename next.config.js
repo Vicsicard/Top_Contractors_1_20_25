@@ -4,6 +4,8 @@ const config = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   distDir: 'build',
+  // Add output configuration for handling error pages
+  output: 'standalone',
   async rewrites() {
     return [
       {
@@ -104,7 +106,6 @@ const config = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Remove experimental CSS optimization to fix error page handling
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
