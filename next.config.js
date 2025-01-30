@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const config = {
+  output: 'export',
   trailingSlash: true,
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
@@ -105,6 +106,11 @@ const config = {
   },
   experimental: {
     optimizeCss: true
+  },
+  // Handle error pages in static export
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
   },
 };
 
