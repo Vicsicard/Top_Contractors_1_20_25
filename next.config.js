@@ -2,18 +2,22 @@
 const config = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
-  async headers() {
+  async rewrites() {
     return [
       {
         source: '/manifest.json',
+        destination: '/api/manifest',
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
         headers: [
           {
             key: 'Access-Control-Allow-Origin',
             value: '*'
-          },
-          {
-            key: 'Content-Type',
-            value: 'application/manifest+json'
           }
         ],
       }
@@ -25,7 +29,9 @@ const config = {
       'maps.gstatic.com',
       'bmiyyaexngxbrzkyqgzk.supabase.co', 
       '6be7e0906f1487fecf0b9cbd301defd6.cdn.bubble.io',
-      'img.youtube.com'
+      'img.youtube.com',
+      'www.youtube.com',
+      'youtube.com'
     ],
     remotePatterns: [
       {

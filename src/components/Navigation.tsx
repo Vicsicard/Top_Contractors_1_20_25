@@ -11,14 +11,25 @@ function Navigation() {
       <div className="flex justify-between items-center">
         <Link 
           href="/" 
-          className="hover:opacity-90 transition-opacity"
+          className="hover:opacity-90 transition-opacity flex items-center gap-3"
         >
-          <span className="lg:inline hidden text-2xl font-bold text-white">
-            Top Contractors Denver
-          </span>
-          <span className="lg:hidden text-xl font-bold text-white">
-            TCD
-          </span>
+          <img
+            src="/images/logo.png"
+            alt="Top Contractors Denver"
+            width={40}
+            height={40}
+            className="w-10 h-10"
+            loading="eager"
+            fetchPriority="high"
+          />
+          <div>
+            <span className="lg:inline hidden text-2xl font-bold text-white">
+              Top Contractors Denver
+            </span>
+            <span className="lg:hidden text-xl font-bold text-white">
+              TCD
+            </span>
+          </div>
         </Link>
         
         <div className="flex items-center gap-4 md:gap-8">
@@ -56,9 +67,9 @@ function Navigation() {
             <span className="hidden md:inline">Services</span>
           </Link>
           <Link 
-            href="/video" 
+            href="/videos" 
             className={`text-white hover:text-accent-warm transition-colors font-medium flex items-center gap-2 ${
-              pathname?.startsWith('/video') ? 'text-accent-warm' : ''
+              pathname?.startsWith('/videos') ? 'text-accent-warm' : ''
             }`}
           >
             <svg className="w-6 h-6 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
