@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseClient } from '@/lib/supabase/client';
 
-export const dynamic = 'force-dynamic';
-export const fetchCache = 'force-no-store';
-export const revalidate = 0;
+// Enable caching with revalidation every 15 minutes
+export const revalidate = 900;
 
 function createSlug(str: string): string {
   return decodeURIComponent(str)

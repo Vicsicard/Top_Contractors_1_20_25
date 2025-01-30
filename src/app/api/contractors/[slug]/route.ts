@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest } from 'next/server'
 
-export const dynamic = 'force-dynamic';
+// Enable caching with revalidation every 15 minutes
+export const revalidate = 900;
 
 type Props = {
   params: {

@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 const config = {
-  output: 'export',
   trailingSlash: true,
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
+  distDir: 'build',
   async rewrites() {
     return [
       {
@@ -105,11 +105,8 @@ const config = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   experimental: {
-    optimizeCss: true,
-    excludeApiRoutes: ['/**/*'],
+    optimizeCss: true
   },
-  skipMiddlewareUrlNormalize: true,
-  skipTrailingSlashRedirect: true,
   // Handle error pages in static export
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,

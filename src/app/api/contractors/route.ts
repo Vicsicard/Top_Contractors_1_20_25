@@ -1,9 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest } from 'next/server'
 
-export const dynamic = 'force-dynamic';
-export const fetchCache = 'force-no-store';
-export const revalidate = 0;
+// Enable caching with revalidation every 15 minutes
+export const revalidate = 900;
 
 export async function GET(request: NextRequest) {
   try {
