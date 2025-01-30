@@ -104,10 +104,7 @@ const config = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  experimental: {
-    optimizeCss: true
-  },
-  // Handle error pages in static export
+  // Remove experimental CSS optimization to fix error page handling
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
