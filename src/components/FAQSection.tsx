@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { JsonLd } from '@/components/json-ld';
 
 interface FAQ {
   question: string;
@@ -10,63 +9,51 @@ interface FAQ {
 
 interface FAQSectionProps {
   faqs: FAQ[];
-  title?: string;
+  category?: string;
 }
 
-export function FAQSection({ faqs, title = "Frequently Asked Questions" }: FAQSectionProps) {
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+export function FAQSection({ faqs, category }: FAQSectionProps) {
+  // Prepare FAQ Schema
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  };
 
   return (
-    <div className="py-12 bg-gray-50">
-      <div className="max-w-3xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8">{title}</h2>
-        <div className="space-y-4">
+    <section className="py-12 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold mb-8">
+          {category ? `${category} FAQs` : 'Frequently Asked Questions'}
+        </h2>
+        
+        <div className="space-y-6">
           {faqs.map((faq, index) => (
-            <div
+            <div 
               key={index}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+              className="bg-white rounded-lg shadow-sm p-6"
             >
-              <button
-                onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
-                className="w-full px-6 py-4 text-left flex justify-between items-center hover:bg-gray-50 transition-colors duration-200"
-              >
-                <span className="text-lg font-medium text-gray-900">{faq.question}</span>
-                <span className="ml-6">
-                  <motion.svg
-                    animate={{ rotate: expandedIndex === index ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-6 h-6 text-gray-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </motion.svg>
-                </span>
-              </button>
-              <AnimatePresence>
-                {expandedIndex === index && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="px-6 pb-4 text-gray-600">
-                      {faq.answer}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <h3 className="text-xl font-semibold mb-3">
+                {faq.question}
+              </h3>
+              <div 
+                className="prose max-w-none"
+                dangerouslySetInnerHTML={{ __html: faq.answer }}
+              />
             </div>
           ))}
         </div>
+
+        {/* Inject FAQ Schema */}
+        <JsonLd data={faqSchema} />
       </div>
-    </div>
+    </section>
   );
 }

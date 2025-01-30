@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { SubregionList } from '@/components/SubregionList';
 import { getAllSubregions, getTradeBySlug } from '@/utils/database';
 import { generateLocalBusinessSchema, generateBreadcrumbSchema, generateFAQSchema } from '@/utils/schema';
-import { Breadcrumb } from '@/components/breadcrumb';
+import Breadcrumb from '@/components/breadcrumb';
 import { FAQSection } from '@/components/FAQSection';
 import { getFAQsForTrade } from '@/data/faqs';
 import { getPostsByCategory } from '@/utils/supabase-blog';
@@ -24,8 +24,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const tradeName = trade.category_name;
 
-  const title = `${tradeName} in Denver | Find Local Contractors`;
-  const description = `Find trusted ${tradeName} in the Denver area. Compare verified reviews, get free quotes, and connect with the best local contractors.`;
+  const title = `${tradeName} in Denver | Top-Rated Local Contractors`;
+  const description = `Find trusted ${tradeName} in the Denver area. Compare verified reviews, ratings, and get free quotes from licensed and insured local contractors. Expert ${tradeName.toLowerCase()} services for your project.`;
 
   return {
     title,
@@ -34,11 +34,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       type: 'website',
+      locale: 'en_US',
+      siteName: 'Top Contractors Denver',
+      images: [
+        {
+          url: 'https://topcontractorsdenver.com/images/denver-skyline.jpg',
+          width: 1200,
+          height: 630,
+          alt: `${tradeName} services in Denver`,
+        }
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
+      images: ['https://topcontractorsdenver.com/images/denver-skyline.jpg'],
+    },
+    alternates: {
+      canonical: `https://topcontractorsdenver.com/trades/${params.slug}`,
     },
   };
 }
@@ -82,43 +96,52 @@ export default async function TradePage({ params }: Props) {
           __html: JSON.stringify(schema)
         }}
       />
-      <div className="container mx-auto px-4">
+      <main className="container mx-auto px-4" role="main">
         <Breadcrumb items={breadcrumbItems} />
         
-        <div className="py-8">
-          <h1 className="text-4xl font-bold mb-4">{tradeName}</h1>
-          <p className="text-lg text-gray-600 mb-8">
-            Find the best {tradeName.toLowerCase()} in Denver. Compare verified reviews, 
-            ratings, and get free quotes from top local contractors.
-          </p>
+        <article className="py-8">
+          <header className="mb-8">
+            <h1 className="text-4xl font-bold mb-4" id="main-heading">{tradeName} Services in Denver</h1>
+            <p className="text-lg text-gray-600">
+              Find the best {tradeName.toLowerCase()} in Denver. Compare verified reviews, 
+              ratings, and get free quotes from top local contractors. Our network of licensed 
+              and insured professionals ensures quality work for your project.
+            </p>
+          </header>
 
-          <SubregionList 
-            subregions={subregions} 
-            tradeSlug={trade.slug} 
-            tradeName={trade.category_name} 
-          />
+          <nav aria-label="Service areas" className="mb-12">
+            <SubregionList 
+              subregions={subregions} 
+              tradeSlug={trade.slug} 
+              tradeName={trade.category_name} 
+            />
+          </nav>
           
-          <section className="mt-12">
-            <h2 className="text-2xl font-bold mb-6">Why Choose Our {tradeName}?</h2>
+          <section className="mt-12" aria-labelledby="benefits-heading">
+            <h2 id="benefits-heading" className="text-2xl font-bold mb-6">
+              Professional {tradeName} Services: Our Commitment to Quality
+            </h2>
             <div className="grid md:grid-cols-3 gap-6">
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h3 className="text-xl font-semibold mb-3">Verified Reviews</h3>
-                <p className="text-gray-600">All reviews are from real customers who have used our services.</p>
+                <h3 className="text-xl font-semibold mb-3">Verified Customer Reviews</h3>
+                <p className="text-gray-600">All reviews are from verified customers who have used our services, ensuring transparency and trust.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h3 className="text-xl font-semibold mb-3">Expert Contractors</h3>
-                <p className="text-gray-600">Our contractors are licensed, insured, and highly experienced.</p>
+                <h3 className="text-xl font-semibold mb-3">Licensed & Insured Experts</h3>
+                <p className="text-gray-600">Our contractors are thoroughly vetted, licensed, insured, and highly experienced in their trade.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h3 className="text-xl font-semibold mb-3">Free Quotes</h3>
-                <p className="text-gray-600">Get multiple quotes from top contractors at no cost to you.</p>
+                <h3 className="text-xl font-semibold mb-3">No-Cost Project Quotes</h3>
+                <p className="text-gray-600">Receive detailed quotes from multiple qualified contractors at no cost to you.</p>
               </div>
             </div>
           </section>
 
           {posts.length > 0 && (
-            <section className="mt-16">
-              <h2 className="text-2xl font-bold mb-6">{tradeName} Resources & Tips</h2>
+            <aside className="mt-16" aria-labelledby="resources-heading">
+              <h2 id="resources-heading" className="text-2xl font-bold mb-6">
+                Expert {tradeName} Tips & Project Guides
+              </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {posts.map(post => (
                   <BlogPostCard key={post.id} post={post} />
@@ -128,19 +151,23 @@ export default async function TradePage({ params }: Props) {
                 <a 
                   href={`/blog/trades/${params.slug}`}
                   className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                  aria-label={`View all ${tradeName} articles and guides`}
                 >
                   View All {tradeName} Articles
                 </a>
               </div>
-            </section>
+            </aside>
           )}
 
-          <FAQSection 
-            faqs={faqs} 
-            title={`Frequently Asked Questions About ${tradeName} in Denver`}
-          />
-        </div>
-      </div>
+          <section className="mt-16" aria-labelledby="faq-heading">
+            <h2 id="faq-heading" className="sr-only">Frequently Asked Questions</h2>
+            <FAQSection 
+              faqs={faqs} 
+              category={tradeName}
+            />
+          </section>
+        </article>
+      </main>
     </>
   );
 }

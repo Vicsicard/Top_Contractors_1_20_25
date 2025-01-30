@@ -1,11 +1,21 @@
 import React from 'react';
 import { StarIcon, PhoneIcon, GlobeAltIcon, MapPinIcon } from '@heroicons/react/20/solid';
-import { Database } from '@/types/database';
-
-type Contractor = Database['public']['Tables']['contractors']['Row'];
+interface ContractorData {
+  id: string;
+  contractor_name: string;
+  address: string;
+  phone: string | null;
+  website: string | null;
+  google_rating: number;
+  google_review_count?: number;
+  reviews_count?: number;
+  category_id: string;
+  subregion_id: string;
+  slug: string;
+}
 
 interface ContractorCardProps {
-  contractor: Contractor;
+  contractor: ContractorData;
 }
 
 export function ContractorCard({ contractor }: ContractorCardProps) {
@@ -56,7 +66,7 @@ export function ContractorCard({ contractor }: ContractorCardProps) {
             ))}
           </div>
           <span className="text-sm text-gray-600">
-            ({contractor.reviews_count || 0} reviews)
+            ({contractor.google_review_count || contractor.reviews_count || 0} reviews)
           </span>
         </div>
       </div>

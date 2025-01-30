@@ -9,7 +9,7 @@ import {
   getContractorsByTradeAndSubregion
 } from '@/utils/database';
 import { generateLocalBusinessSchema, generateBreadcrumbSchema, generateFAQSchema } from '@/utils/schema';
-import { Breadcrumb } from '@/components/breadcrumb';
+import Breadcrumb from '@/components/breadcrumb';
 import { FAQSection } from '@/components/FAQSection';
 import { getFAQsForTrade } from '@/data/faqs';
 
@@ -202,7 +202,7 @@ export default async function TradeSubregionPage({ params }: Props) {
 
           <FAQSection 
             faqs={faqs} 
-            title={`Frequently Asked Questions About ${tradeName} in ${subregionName}`}
+            category={tradeName}
           />
         </div>
       </div>

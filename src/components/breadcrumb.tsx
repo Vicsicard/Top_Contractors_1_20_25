@@ -1,48 +1,33 @@
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import Link from 'next/link';
 
 interface BreadcrumbItem {
   label: string;
-  href: string;
+  href?: string;
 }
 
 interface BreadcrumbProps {
   items: BreadcrumbItem[];
 }
 
-export function Breadcrumb({ items }: BreadcrumbProps) {
+export default function Breadcrumb({ items }: BreadcrumbProps) {
   return (
-    <nav aria-label="Breadcrumb" className="py-4">
-      <ol className="flex items-center space-x-2 text-sm" itemScope itemType="https://schema.org/BreadcrumbList">
+    <nav className="text-sm text-gray-600 mb-4" aria-label="Breadcrumb">
+      <ol className="list-none p-0 inline-flex">
+        <li className="flex items-center">
+          <Link href="/" className="hover:text-blue-600">
+            Home
+          </Link>
+        </li>
         {items.map((item, index) => (
-          <li 
-            key={item.href} 
-            className="flex items-center"
-            itemProp="itemListElement" 
-            itemScope 
-            itemType="https://schema.org/ListItem"
-          >
-            {index > 0 && (
-              <ChevronRight className="w-4 h-4 mx-2 text-gray-400 flex-shrink-0" aria-hidden="true" />
-            )}
-            {index === items.length - 1 ? (
-              <span 
-                className="text-gray-700 font-medium"
-                itemProp="name"
-                aria-current="page"
-              >
+          <li key={index} className="flex items-center">
+            <span className="mx-2">/</span>
+            {item.href ? (
+              <Link href={item.href} className="hover:text-blue-600">
                 {item.label}
-              </span>
-            ) : (
-              <Link
-                href={item.href}
-                className="text-gray-500 hover:text-[#3366FF] transition-colors"
-                itemProp="item"
-              >
-                <span itemProp="name">{item.label}</span>
               </Link>
+            ) : (
+              <span className="text-gray-800">{item.label}</span>
             )}
-            <meta itemProp="position" content={`${index + 1}`} />
           </li>
         ))}
       </ol>

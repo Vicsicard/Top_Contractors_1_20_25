@@ -1,93 +1,123 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  })
+// Helper function to extract trade category from URL
+function getTradeCategory(pathname: string): string | null {
+  const tradePaths = ['/trades/', '/blog/trades/'];
+  for (const tradePath of tradePaths) {
+    if (pathname.startsWith(tradePath)) {
+      const parts = pathname.slice(tradePath.length).split('/');
+      return parts[0] || null;
+    }
+  }
+  return null;
+}
 
-  // Add security headers
-  response.headers.set('X-DNS-Prefetch-Control', 'on')
-  response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
-  response.headers.set('X-Frame-Options', 'SAMEORIGIN')
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+// Helper function to extract region from URL
+function getRegion(pathname: string): string | null {
+  const parts = pathname.split('/');
+  // Check if URL matches pattern /[trade]/[region]
+  if (parts.length >= 3 && !parts[1].includes('trades')) {
+    return parts[2];
+  }
+  return null;
+}
 
-  // Add caching headers for static assets
-  const isStaticAsset = request.nextUrl.pathname.match(/\.(js|css|woff2|jpg|png|svg|ico)$/);
-  if (isStaticAsset) {
-    response.headers.set('Cache-Control', 'public, max-age=31536000, immutable')
-  } else {
-    response.headers.set('Cache-Control', 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400')
+// Helper function to determine user type based on behavior
+function getUserType(request: NextRequest): string {
+  const searchParams = request.nextUrl.searchParams;
+  const referrer = request.headers.get('referer') || '';
+  const visitCount = request.cookies.get('visit_count')?.value;
+
+  if (searchParams.get('utm_source') === 'google' && searchParams.get('utm_medium') === 'cpc') {
+    return 'paid_search';
+  }
+  
+  if (referrer.includes('google.com')) {
+    return 'organic_search';
   }
 
-  // Add Server-Timing header for performance monitoring
-  response.headers.set('Server-Timing', 'miss, db;dur=53, app;dur=47.2')
+  if (visitCount && parseInt(visitCount) > 3) {
+    return 'returning_visitor';
+  }
 
-  // Handle Supabase auth
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          })
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          })
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          })
-        },
-      },
-    }
-  )
+  return 'new_visitor';
+}
 
-  await supabase.auth.getSession()
+export async function middleware(request: NextRequest) {
+  // Get the pathname
+  const pathname = request.nextUrl.pathname;
 
-  return response
+  // Skip API routes and static files
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.match(/\.(ico|png|jpg|jpeg|svg|css|js)$/)
+  ) {
+    return NextResponse.next();
+  }
+
+  // Create response
+  const response = NextResponse.next();
+
+  // Set cache-control headers for static assets
+  if (pathname.match(/\.(webp|avif)$/)) {
+    response.headers.set(
+      'Cache-Control',
+      'public, max-age=31536000, immutable'
+    );
+  }
+
+  // Set security headers
+  response.headers.set('X-DNS-Prefetch-Control', 'on');
+  response.headers.set('X-Frame-Options', 'SAMEORIGIN');
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set(
+    'Strict-Transport-Security',
+    'max-age=31536000; includeSubDomains'
+  );
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=()'
+  );
+
+  // Track visit count
+  const visitCount = request.cookies.get('visit_count');
+  const newCount = visitCount ? parseInt(visitCount.value) + 1 : 1;
+  response.cookies.set('visit_count', newCount.toString(), {
+    maxAge: 60 * 60 * 24 * 365, // 1 year
+    path: '/',
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+  });
+
+  // Set analytics dimensions in headers for client-side tracking
+  const tradeCategory = getTradeCategory(pathname);
+  const region = getRegion(pathname);
+  const userType = getUserType(request);
+
+  response.headers.set(
+    'x-analytics-dimensions',
+    JSON.stringify({
+      userType,
+      serviceCategory: tradeCategory,
+      region,
+    })
+  );
+
+  return response;
 }
 
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - _next
-     * - static (static files)
-     * - favicon.ico (favicon file)
-     * - public folder
+     * Match all request paths except:
+     * 1. /api/ (API routes)
+     * 2. /_next/ (Next.js internals)
+     * 3. /_static (inside /public)
+     * 4. all root files inside /public (e.g. /favicon.ico)
      */
-    '/((?!_next|static|favicon.ico|public|.*\\.).*)',
+    '/((?!api|_next|_static|_vercel|[\\w-]+\\.\\w+).*)',
   ],
-}
+};

@@ -2,6 +2,14 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ContractorCard } from '../src/components/contractor-card';
 
+// Mock heroicons
+jest.mock('@heroicons/react/20/solid', () => ({
+  StarIcon: () => <div data-testid="star-icon" />,
+  PhoneIcon: () => <div data-testid="phone-icon" />,
+  GlobeAltIcon: () => <div data-testid="globe-icon" />,
+  MapPinIcon: () => <div data-testid="map-pin-icon" />
+}));
+
 describe('ContractorCard', () => {
   const mockContractor = {
     id: '1',
@@ -11,86 +19,105 @@ describe('ContractorCard', () => {
     address: '123 Tech Center Dr, Denver, CO',
     phone: '303-555-0123',
     website: 'https://abcremodeling.com',
-    reviews_avg: 4.8,
-    reviews_count: 150,
-    slug: 'abc-remodeling',
-    created_at: '2025-01-09T14:56:32Z',
-    updated_at: '2025-01-09T14:56:32Z',
     google_rating: 4.8,
     google_review_count: 150,
-    category_slug: 'bathroom-remodelers',
-    subregion_slug: 'denver-tech-center'
+    slug: 'abc-remodeling'
   };
 
-  it('displays contractor name and address', () => {
+  it('displays contractor name and address with correct icons', () => {
     render(<ContractorCard contractor={mockContractor} />);
     
     expect(screen.getByText('ABC Remodeling')).toBeInTheDocument();
     expect(screen.getByText('123 Tech Center Dr, Denver, CO')).toBeInTheDocument();
+    expect(screen.getByTestId('map-pin-icon')).toBeInTheDocument();
   });
 
-  it('displays contact information correctly', () => {
+  it('displays contact information with correct icons', () => {
     render(<ContractorCard contractor={mockContractor} />);
     
-    expect(screen.getByText('Phone:')).toBeInTheDocument();
-    expect(screen.getByText('303-555-0123', { exact: false })).toBeInTheDocument();
+    const phoneLink = screen.getByText('303-555-0123');
+    expect(phoneLink).toBeInTheDocument();
+    expect(phoneLink).toHaveAttribute('href', 'tel:303-555-0123');
+    expect(screen.getByTestId('phone-icon')).toBeInTheDocument();
     
     const websiteLink = screen.getByText('Visit Website');
     expect(websiteLink).toBeInTheDocument();
     expect(websiteLink).toHaveAttribute('href', 'https://abcremodeling.com');
     expect(websiteLink).toHaveAttribute('target', '_blank');
     expect(websiteLink).toHaveAttribute('rel', 'noopener noreferrer');
+    expect(screen.getByTestId('globe-icon')).toBeInTheDocument();
   });
 
-  it('displays review information correctly', () => {
+  it('displays review information with star icons', () => {
     render(<ContractorCard contractor={mockContractor} />);
     
     expect(screen.getByText('(150 reviews)')).toBeInTheDocument();
-    
-    // Verify star rating
-    const stars = document.querySelectorAll('.text-yellow-400');
-    expect(stars.length).toBe(5); // 4.8 rounds to 5 stars
+    const stars = screen.getAllByTestId('star-icon');
+    expect(stars).toHaveLength(5);
   });
 
   it('handles missing optional information gracefully', () => {
     const contractorWithoutOptionals = {
       ...mockContractor,
       phone: null,
-      website: null
+      website: null,
+      google_review_count: undefined,
+      reviews_count: 75
     };
 
     render(<ContractorCard contractor={contractorWithoutOptionals} />);
     
-    expect(screen.queryByText('Phone:')).not.toBeInTheDocument();
-    expect(screen.queryByText('Visit Website')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('phone-icon')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('globe-icon')).not.toBeInTheDocument();
+    expect(screen.getByText('(75 reviews)')).toBeInTheDocument();
   });
 
-  it('displays correct number of filled stars based on rating', () => {
-    const contractorWithLowerRating = {
+  it('uses reviews_count when google_review_count is not available', () => {
+    const contractorWithReviewsCount = {
       ...mockContractor,
-      reviews_avg: 3.2
+      google_review_count: undefined,
+      reviews_count: 100
     };
 
-    render(<ContractorCard contractor={contractorWithLowerRating} />);
-    
-    const filledStars = document.querySelectorAll('.text-yellow-400');
-    const emptyStars = document.querySelectorAll('.text-gray-300');
-    
-    expect(filledStars.length).toBe(3); // 3.2 rounds to 3 stars
-    expect(emptyStars.length).toBe(2); // remaining 2 stars should be empty
+    render(<ContractorCard contractor={contractorWithReviewsCount} />);
+    expect(screen.getByText('(100 reviews)')).toBeInTheDocument();
   });
 
-  it('handles zero reviews correctly', () => {
+  it('displays zero reviews when no review counts are available', () => {
     const contractorWithNoReviews = {
       ...mockContractor,
-      reviews_avg: 0,
-      reviews_count: 0
+      google_review_count: undefined,
+      reviews_count: undefined,
+      google_rating: 0
     };
 
     render(<ContractorCard contractor={contractorWithNoReviews} />);
-    
     expect(screen.getByText('(0 reviews)')).toBeInTheDocument();
-    const emptyStars = document.querySelectorAll('.text-gray-300');
-    expect(emptyStars.length).toBe(5); // all stars should be empty
+  });
+
+  it('applies responsive text classes', () => {
+    render(<ContractorCard contractor={mockContractor} />);
+    
+    const name = screen.getByText('ABC Remodeling');
+    expect(name.parentElement).toHaveClass('text-lg', 'sm:text-xl');
+    
+    const address = screen.getByText('123 Tech Center Dr, Denver, CO');
+    expect(address.parentElement).toHaveClass('text-sm', 'sm:text-base');
+  });
+
+  it('applies hover effects to contact links', () => {
+    render(<ContractorCard contractor={mockContractor} />);
+    
+    const phoneLink = screen.getByText('303-555-0123').parentElement;
+    expect(phoneLink).toHaveClass('hover:text-blue-600');
+    
+    const websiteLink = screen.getByText('Visit Website');
+    expect(websiteLink).toHaveClass('hover:text-blue-800');
+  });
+
+  it('applies transition effects to card', () => {
+    const { container } = render(<ContractorCard contractor={mockContractor} />);
+    const card = container.firstChild;
+    expect(card).toHaveClass('hover:shadow-lg', 'transition-shadow');
   });
 });

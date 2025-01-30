@@ -1,8 +1,10 @@
 import './globals.css'
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
+import { headers } from 'next/headers'
 import { generateOrganizationSchema } from '@/utils/schema'
-import { PerformanceMonitor } from '@/components/PerformanceMonitor'
+import { PerformanceMonitor } from '@/components/PerformanceMonitor';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import Navigation from '@/components/Navigation';
@@ -73,11 +75,13 @@ export const viewport: Viewport = {
   themeColor: [{ media: '(prefers-color-scheme: light)', color: '#3366FF' }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const headersList = headers();
+  const analyticsDimensions = headersList.get('x-analytics-dimensions') || '{}';
   return (
     <html lang="en" className={inter.className}>
       <head>
@@ -88,6 +92,10 @@ export default function RootLayout({
           }}
         />
         <meta name="google-site-verification" content="Uc0OPZIJKQg-K8pxzJAKqYGANtZvY_IzDMqhN9vQwpI" />
+        <meta
+          name="analytics-dimensions"
+          content={analyticsDimensions}
+        />
         {/* Resource hints */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -108,9 +116,11 @@ export default function RootLayout({
             <Navigation />
           </div>
         </header>
-        <main className="min-h-screen bg-gray-50 pt-20">
-          {children}
-        </main>
+        <ErrorBoundary>
+          <main className="min-h-screen bg-gray-50 pt-20">
+            {children}
+          </main>
+        </ErrorBoundary>
         <Footer />
         <GoogleAnalytics />
         <PerformanceMonitor />
