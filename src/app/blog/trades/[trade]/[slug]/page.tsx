@@ -24,7 +24,7 @@ function isValidImageUrl(url: string | undefined): boolean {
     try {
         const urlObj = new URL(url);
         return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
-    } catch (error) {
+    } catch (_) {
         return url.startsWith('/');
     }
 }

@@ -31,10 +31,7 @@ export function sanitizeHtml(html: string | null): string {
     if (!html) return '';
     
     try {
-        // Create a new JSDOM instance for server-side sanitization
-        const window = new JSDOM('').window;
-        
-        // Sanitize the HTML using DOMPurify
+        // Create a new JSDOM instance for server-side sanitization and sanitize the HTML using DOMPurify
         return DOMPurify.sanitize(html, {
             ...purifyOptions,
             RETURN_DOM: false,
@@ -65,7 +62,7 @@ export function processHtml(html: string | null): string {
                     link.setAttribute('target', '_blank');
                     link.setAttribute('rel', 'noopener noreferrer');
                 }
-            } catch (e) {
+            } catch (_) {
                 // Invalid URL, skip processing this link
             }
         });

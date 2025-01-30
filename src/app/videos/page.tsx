@@ -66,7 +66,7 @@ export default async function VideosPage() {
         <div className="text-center py-12">
           <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-semibold text-gray-800 mb-2">No Videos Found</h3>
-            <p className="text-gray-600">We're currently working on adding new video content. Please check back soon!</p>
+            <p className="text-gray-600">We&apos;re currently working on adding new video content. Please check back soon!</p>
           </div>
         </div>
       )}
