@@ -48,13 +48,13 @@ export function PerformanceMonitor() {
     // Cleanup observer
     return () => {
       if (process.env.NODE_ENV === 'development') {
-        PerformanceObserver.supportedEntryTypes.forEach((entryType) => {
+        PerformanceObserver.supportedEntryTypes.forEach(() => {
           performance.clearMarks();
           performance.clearMeasures();
         });
       }
     };
-  }, []);
+  }, [metrics]);
 
   if (process.env.NODE_ENV !== 'development') {
     return null;

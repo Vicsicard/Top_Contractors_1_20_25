@@ -51,7 +51,7 @@ export default function TradePageError({ error, reset }: ErrorProps) {
         <p className="text-gray-600 mb-8">
           We encountered an error while loading this page. This might be temporary, 
           so please try again. If the problem persists, our team has been notified 
-          and we're working to fix it.
+          and we&apos;re working to fix it.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
