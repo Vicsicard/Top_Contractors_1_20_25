@@ -4,23 +4,26 @@ const config = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
   distDir: 'build',
-  // Configure error page handling
-  async redirects() {
-    return [
-      {
-        source: '/_error',
-        destination: '/500',
-        permanent: true,
-      },
-    ];
-  },
+  // Configure error handling for Vercel deployment
   async rewrites() {
-    return [
-      {
-        source: '/manifest.json',
-        destination: '/api/manifest',
-      },
-    ];
+    return {
+      beforeFiles: [
+        {
+          source: '/manifest.json',
+          destination: '/api/manifest',
+        },
+      ],
+      fallback: [
+        {
+          source: '/_error',
+          destination: '/500',
+        },
+        {
+          source: '/404',
+          destination: '/not-found',
+        },
+      ],
+    };
   },
   async headers() {
     return [
