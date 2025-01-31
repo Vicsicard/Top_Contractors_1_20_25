@@ -83,11 +83,16 @@ export default async function BlogPost({ params }: Props) {
                     {post.feature_image && (
                         <div className="relative w-full h-[400px] mb-6 rounded-lg overflow-hidden">
                             <Image
-                                src="/images/denver-skyline.jpg"
+                                src={post.feature_image || "/images/denver-skyline.jpg"}
                                 alt={post.feature_image_alt || post.title}
                                 fill
                                 className="object-cover"
                                 priority
+                                onError={(e) => {
+                                    // Fallback to default image if feature image fails to load
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = "/images/denver-skyline.jpg";
+                                }}
                             />
                         </div>
                     )}
@@ -104,7 +109,31 @@ export default async function BlogPost({ params }: Props) {
                         )}
                     </div>
                 </header>
-                <div dangerouslySetInnerHTML={{ __html: processedHtml }} />
+                <div 
+                    className="blog-content"
+                    dangerouslySetInnerHTML={{ __html: processedHtml }} 
+                />
+                {/* Process Next.js images after render */}
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            document.querySelectorAll('.next-image-wrapper').forEach(wrapper => {
+                                const src = wrapper.getAttribute('data-image-src');
+                                const alt = wrapper.getAttribute('data-image-alt');
+                                if (src) {
+                                    const img = new Image();
+                                    img.src = src;
+                                    img.alt = alt || '';
+                                    img.className = 'object-cover w-full h-full';
+                                    img.onerror = function() {
+                                        this.src = '/images/denver-skyline.jpg';
+                                    };
+                                    wrapper.appendChild(img);
+                                }
+                            });
+                        `
+                    }}
+                />
             </article>
         </>
     );

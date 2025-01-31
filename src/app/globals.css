@@ -204,3 +204,52 @@ header > div {
   border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.1);
 }
+
+/* Blog content styles */
+.blog-content {
+  @apply prose prose-lg max-w-none;
+  overflow-x: hidden;
+}
+
+.blog-content img {
+  @apply max-w-full h-auto rounded-lg my-6;
+}
+
+.next-image-wrapper {
+  @apply relative w-full my-6 rounded-lg overflow-hidden;
+  min-height: 300px;
+}
+
+.next-image-wrapper img {
+  @apply w-full h-full object-cover rounded-lg;
+  aspect-ratio: 16/9;
+}
+
+/* Blog content typography */
+.blog-content h2 {
+  @apply text-2xl font-bold mt-8 mb-4;
+}
+
+.blog-content h3 {
+  @apply text-xl font-semibold mt-6 mb-3;
+}
+
+.blog-content p {
+  @apply mb-4 leading-relaxed;
+}
+
+.blog-content ul, .blog-content ol {
+  @apply my-4 ml-6;
+}
+
+.blog-content li {
+  @apply mb-2;
+}
+
+.blog-content a {
+  @apply text-primary hover:text-primary-dark underline;
+}
+
+.blog-content blockquote {
+  @apply pl-4 border-l-4 border-primary my-4 italic;
+}

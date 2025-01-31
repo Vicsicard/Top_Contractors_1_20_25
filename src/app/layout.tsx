@@ -60,6 +60,9 @@ export const metadata: Metadata = {
     follow: true,
   },
   manifest: '/manifest.json',
+  other: {
+    'manifest-crossorigin': 'use-credentials'
+  },
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png'
@@ -108,6 +111,11 @@ export default async function RootLayout({
           as="image" 
           type="image/png"
           fetchPriority="high"
+        />
+        <link 
+          rel="manifest" 
+          href="/manifest.json" 
+          crossOrigin="use-credentials"
         />
       </head>
       <body className={inter.className}>
