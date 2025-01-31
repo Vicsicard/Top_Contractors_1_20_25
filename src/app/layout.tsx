@@ -101,23 +101,13 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         
-        {/* Preload manifest */}
-        <link 
-          rel="preload" 
-          href="/manifest.json" 
-          as="fetch" 
-          type="application/manifest+json" 
-          crossOrigin="anonymous"
-        />
-        
         {/* Preload critical assets */}
         <link 
           rel="preload" 
-          href="https://top-contractors-1-20-25-git-html-rendering-vicsicards-projects.vercel.app/images/logo.png" 
+          href="/images/logo.png" 
           as="image" 
           type="image/png"
           fetchPriority="high"
-          crossOrigin="anonymous"
         />
       </head>
       <body className={inter.className}>
