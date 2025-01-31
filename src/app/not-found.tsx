@@ -1,17 +1,4 @@
 import Link from 'next/link';
-import { Metadata, Viewport } from 'next';
-
-export const metadata: Metadata = {
-  title: '404 - Page Not Found',
-  description: 'Sorry, the page you are looking for does not exist.',
-};
-
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  themeColor: [{ media: '(prefers-color-scheme: light)', color: '#ffffff' }],
-};
-
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
