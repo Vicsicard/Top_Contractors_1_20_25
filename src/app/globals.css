@@ -207,7 +207,7 @@ header > div {
 
 /* Blog content styles */
 .blog-content {
-  @apply prose prose-lg max-w-none;
+  @apply max-w-none text-lg leading-relaxed text-gray-800;
   overflow-x: hidden;
 }
 
@@ -222,34 +222,45 @@ header > div {
 
 .next-image-wrapper img {
   @apply w-full h-full object-cover rounded-lg;
-  aspect-ratio: 16/9;
 }
 
 /* Blog content typography */
 .blog-content h2 {
-  @apply text-2xl font-bold mt-8 mb-4;
+  @apply text-2xl font-bold mt-8 mb-4 text-gray-900;
 }
 
 .blog-content h3 {
-  @apply text-xl font-semibold mt-6 mb-3;
+  @apply text-xl font-semibold mt-6 mb-3 text-gray-900;
 }
 
 .blog-content p {
-  @apply mb-4 leading-relaxed;
+  @apply mb-4 leading-relaxed text-gray-800;
 }
 
-.blog-content ul, .blog-content ol {
-  @apply my-4 ml-6;
+.blog-content ul {
+  @apply my-4 ml-6 list-disc;
+}
+
+.blog-content ol {
+  @apply my-4 ml-6 list-decimal;
 }
 
 .blog-content li {
-  @apply mb-2;
+  @apply mb-2 text-gray-800;
 }
 
 .blog-content a {
-  @apply text-primary hover:text-primary-dark underline;
+  @apply text-blue-600 hover:text-blue-800 underline;
 }
 
 .blog-content blockquote {
-  @apply pl-4 border-l-4 border-primary my-4 italic;
+  @apply pl-4 border-l-4 border-blue-500 my-4 italic text-gray-700;
+}
+
+.blog-content pre {
+  @apply bg-gray-100 rounded-lg p-4 my-4 overflow-x-auto;
+}
+
+.blog-content code {
+  @apply bg-gray-100 px-1 py-0.5 rounded text-sm;
 }
