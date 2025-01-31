@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  manifest: '/api/manifest',
+  manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png'
@@ -101,17 +101,9 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         
-        {/* Preload critical assets */}
-        <link 
-          rel="preload" 
-          href="/images/logo.png" 
-          as="image" 
-          type="image/png"
-          fetchPriority="high"
-        />
         <link 
           rel="manifest" 
-          href="/api/manifest" 
+          href="/manifest.json" 
           type="application/manifest+json"
         />
       </head>
