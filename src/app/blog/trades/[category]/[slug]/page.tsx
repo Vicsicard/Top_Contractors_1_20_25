@@ -66,7 +66,7 @@ export default async function BlogPost({ params }: Props) {
             name: 'Top Contractors Denver',
             logo: {
                 '@type': 'ImageObject',
-                url: 'https://topcontractorsdenver.com/logo.png'
+                url: 'https://top-contractors-1-20-25-git-html-rendering-vicsicards-projects.vercel.app/images/logo.png'
             }
         },
         mainEntityOfPage: {

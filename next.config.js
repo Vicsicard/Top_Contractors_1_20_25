@@ -7,12 +7,6 @@ const config = {
   // Configure error handling for Vercel deployment
   async rewrites() {
     return {
-      beforeFiles: [
-        {
-          source: '/manifest.json',
-          destination: '/api/manifest'
-        }
-      ],
       fallback: [
         {
           source: '/_error',
