@@ -10,7 +10,7 @@ export function generateOrganizationSchema() {
     '@type': 'Organization',
     name: 'Top Contractors Denver',
     url: 'https://topcontractorsdenver.com',
-    logo: 'https://topcontractorsdenver.com/logo.png',
+    logo: 'https://top-contractors-1-20-25-git-html-rendering-vicsicards-projects.vercel.app/images/logo.png',
     description: 'Find the best local contractors in Denver. Compare verified reviews, ratings, and get free quotes.',
     address: {
       '@type': 'PostalAddress',
