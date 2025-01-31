@@ -138,43 +138,53 @@ export async function getPosts(page = 1, limit = POSTS_PER_PAGE): Promise<Pagina
  */
 export async function getPostBySlug(slug: string, trade?: string): Promise<Post | null> {
     try {
+        // Debug log the input parameters
+        console.log('Fetching post with slug:', slug, 'trade:', trade);
+
         // Validate connection first
         const isConnected = await validateSupabaseConnection();
         if (!isConnected) {
             throw new Error('Failed to connect to Supabase');
         }
 
-        let query = supabase
+        // First, try to find the post without trade category filter
+        const { data: posts, error } = await supabase
             .from('posts')
-            .select(`
-                id,
-                title,
-                slug,
-                html,
-                excerpt,
-                feature_image,
-                feature_image_alt,
-                published_at,
-                updated_at,
-                reading_time,
-                authors (*),
-                tags (*),
-                trade_category
-            `)
+            .select('*')
             .eq('slug', slug);
 
-        // If trade is provided, ensure the post belongs to that trade category
-        if (trade) {
-            query = query.ilike('trade_category', trade);
-        }
-
-        const { data: post, error } = await query.single();
+        // Debug log the query results
+        console.log('Query results:', { posts, error });
 
         if (error) {
             console.error('Error fetching post:', error);
             return null;
         }
-        if (!post) return null;
+
+        if (!posts || posts.length === 0) {
+            console.log('No posts found with slug:', slug);
+            return null;
+        }
+
+        // If trade is provided, filter by trade category with flexible matching
+        const post = trade 
+            ? posts.find(p => {
+                const postCategory = p.trade_category?.toLowerCase() || '';
+                const requestedTrade = trade.toLowerCase();
+                // Match exact or plural/singular variations
+                return postCategory === requestedTrade || 
+                       (postCategory === 'plumbing' && requestedTrade === 'plumbers') ||
+                       (postCategory === 'plumbers' && requestedTrade === 'plumbing');
+            })
+            : posts[0];
+
+        if (!post) {
+            console.log('No post found matching trade category:', trade);
+            return null;
+        }
+
+        // Debug log the final post
+        console.log('Found post:', post);
 
         // Transform post to match Post interface
         return transformPost(post);

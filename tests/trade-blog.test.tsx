@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import TradeBlogPage from '@/app/blog/trades/[trade]/page';
+import TradeBlogPage from '@/app/blog/trades/tradeType/page';
 import { notFound } from 'next/navigation';
 import * as supabaseBlog from '@/utils/supabase-blog';
 import { tradesData } from '@/lib/trades-data';

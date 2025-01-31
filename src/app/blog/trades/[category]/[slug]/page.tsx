@@ -57,11 +57,7 @@ export default async function BlogPost({ params }: Props) {
         image: post.feature_image || undefined,
         datePublished: post.published_at,
         dateModified: post.updated_at || post.published_at,
-        author: post.authors && post.authors[0] ? {
-            '@type': 'Person',
-            name: post.authors[0].name,
-            url: post.authors[0].url || undefined
-        } : {
+        author: {
             '@type': 'Organization',
             name: 'Top Contractors Denver'
         },
@@ -85,12 +81,13 @@ export default async function BlogPost({ params }: Props) {
             <article className="container mx-auto px-4 py-8 max-w-4xl">
                 <header className="mb-8">
                     {post.feature_image && (
-                        <div className="relative aspect-video mb-6 rounded-lg overflow-hidden">
+                        <div className="relative w-full h-[400px] mb-6 rounded-lg overflow-hidden">
                             <Image
-                                src={post.feature_image}
+                                src="/images/denver-skyline.jpg"
                                 alt={post.feature_image_alt || post.title}
                                 fill
                                 className="object-cover"
+                                priority
                             />
                         </div>
                     )}
