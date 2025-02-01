@@ -1,21 +1,109 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/utils/supabase';
 
 interface Props {
-    error: Error;
+    error: Error & { digest?: string };
     reset: () => void;
 }
 
 export function BlogPostErrorBoundary({ error, reset }: Props) {
+    const [retryCount, setRetryCount] = useState(0);
+    const [isRetrying, setIsRetrying] = useState(false);
+    const [errorDetails, setErrorDetails] = useState<string>('');
+
     useEffect(() => {
         // Log the error to console for debugging
         console.error('Blog Post Error:', {
             message: error.message,
             stack: error.stack,
+            digest: error.digest,
             timestamp: new Date().toISOString()
         });
+
+        // Set error details based on error type
+        if (error.message.includes('Authentication failed')) {
+            setErrorDetails('authentication');
+        } else if (error.message.includes('Failed to connect')) {
+            setErrorDetails('connection');
+        } else if (error.message.includes('not found')) {
+            setErrorDetails('not-found');
+        } else {
+            setErrorDetails('unknown');
+        }
+
+        // Check if it's an authentication error
+        if (error.message.includes('Authentication failed')) {
+            // Attempt to refresh the Supabase session
+            supabase.auth.refreshSession().catch(console.error);
+        }
     }, [error]);
+
+    const handleRetry = async () => {
+        setIsRetrying(true);
+        try {
+            // Check Supabase connection
+            const { data, error: connError } = await supabase
+                .from('posts')
+                .select('count')
+                .limit(1);
+
+            if (connError) {
+                throw connError;
+            }
+
+            // If connection is good, reset the error boundary
+            setRetryCount(prev => prev + 1);
+            reset();
+        } catch (e) {
+            console.error('Retry failed:', e);
+        } finally {
+            setIsRetrying(false);
+        }
+    };
+
+    const getErrorMessage = () => {
+        switch (errorDetails) {
+            case 'authentication':
+                return 'We\'re having trouble accessing the blog post. This might be due to an authentication issue.';
+            case 'connection':
+                return 'We\'re having trouble connecting to our servers. Please check your internet connection.';
+            case 'not-found':
+                return 'The requested blog post could not be found.';
+            default:
+                return 'We encountered an error while trying to load this blog post.';
+        }
+    };
+
+    const getErrorList = () => {
+        switch (errorDetails) {
+            case 'authentication':
+                return [
+                    'Our authentication token might have expired',
+                    'There might be a temporary server issue',
+                    'Try refreshing the page'
+                ];
+            case 'connection':
+                return [
+                    'Your internet connection might be unstable',
+                    'Our servers might be experiencing high load',
+                    'Try again in a few moments'
+                ];
+            case 'not-found':
+                return [
+                    'The post may have been moved or deleted',
+                    'The URL might be incorrect',
+                    'Check if you typed the URL correctly'
+                ];
+            default:
+                return [
+                    'The post may have been moved or deleted',
+                    'There might be a temporary connection issue',
+                    'The URL might be incorrect'
+                ];
+        }
+    };
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -24,12 +112,12 @@ export function BlogPostErrorBoundary({ error, reset }: Props) {
                     Unable to load blog post
                 </h1>
                 <p className="text-gray-600 mb-6">
-                    We encountered an error while trying to load this blog post. This might be because:
+                    {getErrorMessage()}
                 </p>
                 <ul className="text-left text-gray-600 mb-6 list-disc list-inside">
-                    <li>The post may have been moved or deleted</li>
-                    <li>There might be a temporary connection issue</li>
-                    <li>The URL might be incorrect</li>
+                    {getErrorList().map((item, index) => (
+                        <li key={index}>{item}</li>
+                    ))}
                 </ul>
                 <div className="space-x-4">
                     <button
@@ -39,10 +127,15 @@ export function BlogPostErrorBoundary({ error, reset }: Props) {
                         Return to Blog
                     </button>
                     <button
-                        onClick={() => reset()}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                        onClick={handleRetry}
+                        disabled={isRetrying || retryCount >= 3}
+                        className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md ${
+                            isRetrying || retryCount >= 3
+                                ? 'bg-gray-300 cursor-not-allowed'
+                                : 'text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500'
+                        }`}
                     >
-                        Try Again
+                        {isRetrying ? 'Retrying...' : retryCount >= 3 ? 'Too many retries' : 'Try Again'}
                     </button>
                 </div>
                 {process.env.NODE_ENV === 'development' && (
@@ -50,6 +143,14 @@ export function BlogPostErrorBoundary({ error, reset }: Props) {
                         <p className="text-sm font-mono text-gray-800">
                             Error: {error.message}
                         </p>
+                        <p className="text-sm font-mono text-gray-600 mt-2">
+                            Retry count: {retryCount}
+                        </p>
+                        {error.digest && (
+                            <p className="text-sm font-mono text-gray-600 mt-2">
+                                Error digest: {error.digest}
+                            </p>
+                        )}
                     </div>
                 )}
             </div>

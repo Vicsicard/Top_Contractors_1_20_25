@@ -46,26 +46,67 @@ export default async function BlogPost({ params }: Props) {
     console.log('DEBUG: BlogPost page rendered with params:', {
         category: params.category,
         slug: params.slug,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        url: typeof window !== 'undefined' ? window.location.href : 'server-side'
     });
 
     try {
-        const post = await getPostBySlug(params.slug, params.category);
-        
-        console.log('DEBUG: Post retrieval result:', {
-            found: !!post,
-            postId: post?.id,
-            postSlug: post?.slug,
-            postCategory: post?.trade_category
-        });
+        // Validate parameters
+        if (!params.slug || !params.category) {
+            console.error('DEBUG: Missing required parameters:', { params });
+            throw new Error('Missing required parameters');
+        }
+
+        // Attempt to fetch the post with retries
+        let post = null;
+        let attempts = 0;
+        const maxAttempts = 3;
+
+        while (!post && attempts < maxAttempts) {
+            try {
+                post = await getPostBySlug(params.slug, params.category);
+                console.log('DEBUG: Post retrieval attempt', {
+                    attempt: attempts + 1,
+                    found: !!post,
+                    postId: post?.id,
+                    postSlug: post?.slug,
+                    postCategory: post?.trade_category
+                });
+            } catch (fetchError) {
+                attempts++;
+                console.error('DEBUG: Post fetch attempt failed:', {
+                    attempt: attempts,
+                    error: fetchError,
+                    willRetry: attempts < maxAttempts
+                });
+                if (attempts === maxAttempts) throw fetchError;
+                await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+            }
+        }
 
         if (!post) {
             console.log('DEBUG: Post not found, redirecting to 404');
             notFound();
         }
 
-        const processedHtml = processHtml(post.html);
-        console.log('DEBUG: HTML processing complete, length:', processedHtml.length);
+        // Process HTML content
+        let processedHtml;
+        try {
+            processedHtml = processHtml(post.html);
+            console.log('DEBUG: HTML processing complete', {
+                originalLength: post.html.length,
+                processedLength: processedHtml.length,
+                hasContent: processedHtml.length > 0
+            });
+
+            if (!processedHtml || processedHtml.length === 0) {
+                console.error('DEBUG: Empty processed HTML');
+                throw new Error('Failed to process blog post content');
+            }
+        } catch (htmlError) {
+            console.error('DEBUG: HTML processing error:', htmlError);
+            throw new Error('Failed to process blog post content');
+        }
 
         const jsonLd = {
         '@context': 'https://schema.org',
