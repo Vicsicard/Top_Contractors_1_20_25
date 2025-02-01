@@ -1,14 +1,16 @@
 import { Post } from '@/types/blog';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getStandardCategory } from '@/utils/category-mapper';
 
 interface BlogPostCardProps {
   post: Post;
 }
 
 export function BlogPostCard({ post }: BlogPostCardProps) {
-  const postUrl = post.trade_category 
-    ? `/blog/trades/${post.trade_category}/${post.slug}` 
+  const standardCategory = getStandardCategory(post.trade_category);
+  const postUrl = standardCategory 
+    ? `/blog/trades/${standardCategory}/${post.slug}` 
     : `/blog/${post.slug}`;
 
   return (
