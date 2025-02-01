@@ -138,12 +138,16 @@ export async function getPosts(page = 1, limit = POSTS_PER_PAGE): Promise<Pagina
  */
 export async function getPostBySlug(slug: string, trade?: string): Promise<Post | null> {
     try {
-        // Debug log the input parameters
-        console.log('Fetching post with slug:', slug, 'trade:', trade);
+        console.log('DEBUG: getPostBySlug called with:', { 
+            slug, 
+            trade,
+            timestamp: new Date().toISOString()
+        });
 
         // Validate connection first
         const isConnected = await validateSupabaseConnection();
         if (!isConnected) {
+            console.error('DEBUG: Supabase connection failed');
             throw new Error('Failed to connect to Supabase');
         }
 
@@ -153,16 +157,32 @@ export async function getPostBySlug(slug: string, trade?: string): Promise<Post 
             .select('*')
             .eq('slug', slug);
 
-        // Debug log the query results
-        console.log('Query results:', { posts, error });
+        console.log('DEBUG: Database query result:', { 
+            postsFound: posts?.length || 0,
+            firstPostId: posts?.[0]?.id,
+            firstPostSlug: posts?.[0]?.slug,
+            firstPostCategory: posts?.[0]?.trade_category,
+            error: error ? {
+                message: error.message,
+                code: error.code,
+                details: error.details
+            } : null
+        });
 
         if (error) {
-            console.error('Error fetching post:', error);
+            console.error('DEBUG: Error fetching post:', {
+                error,
+                params: { slug, trade }
+            });
             return null;
         }
 
         if (!posts || posts.length === 0) {
-            console.log('No posts found with slug:', slug);
+            console.log('DEBUG: No posts found with slug:', {
+                slug,
+                trade,
+                timestamp: new Date().toISOString()
+            });
             return null;
         }
 
@@ -171,6 +191,14 @@ export async function getPostBySlug(slug: string, trade?: string): Promise<Post 
             ? posts.find(p => {
                 const postCategory = p.trade_category?.toLowerCase() || '';
                 const requestedTrade = trade.toLowerCase();
+                
+                console.log('DEBUG: Matching trade category:', {
+                    postCategory,
+                    requestedTrade,
+                    postId: p.id,
+                    postSlug: p.slug
+                });
+                
                 // Match exact or plural/singular variations
                 return postCategory === requestedTrade || 
                        (postCategory === 'plumbing' && requestedTrade === 'plumbers') ||
@@ -179,12 +207,19 @@ export async function getPostBySlug(slug: string, trade?: string): Promise<Post 
             : posts[0];
 
         if (!post) {
-            console.log('No post found matching trade category:', trade);
+            console.log('DEBUG: No post found matching trade category:', {
+                trade,
+                availableCategories: posts.map(p => p.trade_category)
+            });
             return null;
         }
 
-        // Debug log the final post
-        console.log('Found post:', post);
+        console.log('DEBUG: Found matching post:', {
+            id: post.id,
+            slug: post.slug,
+            category: post.trade_category,
+            requestedTrade: trade
+        });
 
         // Transform post to match Post interface
         return transformPost(post);

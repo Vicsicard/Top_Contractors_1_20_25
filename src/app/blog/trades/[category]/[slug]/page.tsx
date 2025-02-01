@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getPostBySlug } from '@/utils/supabase-blog';
 import { JsonLd } from '@/components/json-ld';
 import { processHtml } from '@/utils/html-processor';
+import { BlogPostErrorBoundary } from '@/components/BlogPostErrorBoundary';
 import Image from 'next/image';
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    console.log('DEBUG: Generating metadata for:', params);
     const post = await getPostBySlug(params.slug, params.category);
 
     if (!post) {
@@ -41,15 +43,31 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPost({ params }: Props) {
-    const post = await getPostBySlug(params.slug, params.category);
+    console.log('DEBUG: BlogPost page rendered with params:', {
+        category: params.category,
+        slug: params.slug,
+        timestamp: new Date().toISOString()
+    });
 
-    if (!post) {
-        notFound();
-    }
+    try {
+        const post = await getPostBySlug(params.slug, params.category);
+        
+        console.log('DEBUG: Post retrieval result:', {
+            found: !!post,
+            postId: post?.id,
+            postSlug: post?.slug,
+            postCategory: post?.trade_category
+        });
 
-    const processedHtml = processHtml(post.html);
+        if (!post) {
+            console.log('DEBUG: Post not found, redirecting to 404');
+            notFound();
+        }
 
-    const jsonLd = {
+        const processedHtml = processHtml(post.html);
+        console.log('DEBUG: HTML processing complete, length:', processedHtml.length);
+
+        const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
         headline: post.title,
@@ -75,10 +93,10 @@ export default async function BlogPost({ params }: Props) {
         }
     };
 
-    return (
-        <>
-            <JsonLd data={jsonLd} />
-            <article className="container mx-auto px-4 py-8 max-w-4xl">
+        return (
+            <>
+                <JsonLd data={jsonLd} />
+                <article className="container mx-auto px-4 py-8 max-w-4xl">
                 <header className="mb-8">
                     {post.feature_image && (
                         <div className="relative w-full h-[400px] mb-6 rounded-lg overflow-hidden">
@@ -134,7 +152,11 @@ export default async function BlogPost({ params }: Props) {
                         `
                     }}
                 />
-            </article>
-        </>
-    );
+                </article>
+            </>
+        );
+    } catch (error) {
+        console.error('DEBUG: Error in BlogPost page:', error);
+        throw error; // This will be caught by the error boundary
+    }
 }
