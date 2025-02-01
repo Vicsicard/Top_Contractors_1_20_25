@@ -9,131 +9,92 @@ interface Props {
 }
 
 export function BlogPostErrorBoundary({ error, reset }: Props) {
-    const [retryCount, setRetryCount] = useState(0);
     const [isRetrying, setIsRetrying] = useState(false);
-    const [errorDetails, setErrorDetails] = useState<string>('');
+    const [errorType, setErrorType] = useState<string>('unknown');
 
     useEffect(() => {
-        // Log the error to console for debugging
+        // Enhanced error logging with context
         console.error('Blog Post Error:', {
             message: error.message,
             stack: error.stack,
             digest: error.digest,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            type: typeof error
         });
 
-        // Set error details based on error type
-        if (error.message.includes('Authentication failed')) {
-            setErrorDetails('authentication');
-        } else if (error.message.includes('Failed to connect')) {
-            setErrorDetails('connection');
-        } else if (error.message.includes('not found')) {
-            setErrorDetails('not-found');
-        } else if (error.message.includes('Invalid URL parameters')) {
-            setErrorDetails('invalid-params');
-        } else if (error.message.includes('Unable to display blog post content')) {
-            setErrorDetails('content-error');
-        } else if (error.message.includes('Operation timed out')) {
-            setErrorDetails('timeout');
+        // Improved error categorization
+        const errorMessage = error.message.toLowerCase();
+        if (errorMessage.includes('failed to load blog post')) {
+            setErrorType('load-error');
+        } else if (errorMessage.includes('invalid url parameters')) {
+            setErrorType('invalid-url');
+        } else if (errorMessage.includes('unable to display blog post content')) {
+            setErrorType('content-error');
+        } else if (errorMessage.includes('post not found')) {
+            setErrorType('not-found');
         } else {
-            setErrorDetails('unknown');
-        }
-
-        // Check if it's an authentication error
-        if (error.message.includes('Authentication failed')) {
-            // Attempt to refresh the Supabase session
-            supabase.auth.refreshSession().catch(console.error);
+            setErrorType('unknown');
         }
     }, [error]);
 
-    const handleRetry = async () => {
+    const handleRetry = () => {
         setIsRetrying(true);
+        // Simple reset with loading state
         try {
-            // Add delay between retries
-            await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-
-            // Check Supabase connection
-            const { data, error: connError } = await supabase
-                .from('posts')
-                .select('count')
-                .limit(1);
-
-            if (connError) {
-                throw connError;
-            }
-
-            // If connection is good, reset the error boundary
-            setRetryCount(prev => prev + 1);
             reset();
         } catch (e) {
-            console.error('Retry failed:', e);
+            console.error('Error during retry:', e);
         } finally {
             setIsRetrying(false);
         }
     };
 
     const getErrorMessage = () => {
-        switch (errorDetails) {
-            case 'authentication':
-                return 'We\'re having trouble accessing the blog post. This might be due to an authentication issue.';
-            case 'connection':
-                return 'We\'re having trouble connecting to our servers. Please check your internet connection.';
-            case 'not-found':
-                return 'The requested blog post could not be found.';
-            case 'invalid-params':
-                return 'The blog post URL appears to be invalid or incomplete.';
+        switch (errorType) {
+            case 'load-error':
+                return 'We\'re having trouble loading this blog post. This might be temporary - please try again.';
+            case 'invalid-url':
+                return 'The URL you\'re trying to access appears to be invalid. Please check the link and try again.';
             case 'content-error':
-                return 'We\'re having trouble displaying the blog post content.';
-            case 'timeout':
-                return 'The blog post is taking too long to load.';
+                return 'We\'re having trouble displaying the content of this blog post. Please try refreshing the page.';
+            case 'not-found':
+                return 'We couldn\'t find the blog post you\'re looking for. It may have been moved or deleted.';
             default:
-                return 'We encountered an error while trying to load this blog post.';
+                return 'Something went wrong while trying to load this blog post. Please try again later.';
         }
     };
 
     const getErrorList = () => {
-        switch (errorDetails) {
-            case 'authentication':
+        switch (errorType) {
+            case 'load-error':
                 return [
-                    'Our authentication token might have expired',
-                    'There might be a temporary server issue',
-                    'Try refreshing the page'
-                ];
-            case 'connection':
-                return [
+                    'The server might be experiencing high load',
                     'Your internet connection might be unstable',
-                    'Our servers might be experiencing high load',
-                    'Try again in a few moments'
+                    'Try refreshing the page or coming back in a few minutes'
                 ];
-            case 'not-found':
+            case 'invalid-url':
                 return [
-                    'The post may have been moved or deleted',
-                    'The URL might be incorrect',
-                    'Check if you typed the URL correctly'
-                ];
-            case 'invalid-params':
-                return [
-                    'The URL might be missing required information',
-                    'Check if you copied the entire URL',
-                    'Try accessing the post from the blog listing page'
+                    'Check if you typed or copied the URL correctly',
+                    'The post might have been moved to a different location',
+                    'Try finding the post through our blog listing page'
                 ];
             case 'content-error':
                 return [
-                    'The post content might be temporarily unavailable',
-                    'Our content processing system might be experiencing issues',
-                    'Try refreshing the page'
+                    'Clear your browser cache and try again',
+                    'Try accessing the page in a different browser',
+                    'If the problem persists, the post might need maintenance'
                 ];
-            case 'timeout':
+            case 'not-found':
                 return [
-                    'The server is taking longer than expected to respond',
-                    'There might be high server load',
-                    'Try again in a few moments'
+                    'The post might have been removed or unpublished',
+                    'The URL might have changed',
+                    'Try searching for the post using our search feature'
                 ];
             default:
                 return [
-                    'The post may have been moved or deleted',
-                    'There might be a temporary connection issue',
-                    'The URL might be incorrect'
+                    'Try refreshing the page',
+                    'Clear your browser cache',
+                    'If the problem continues, please contact support'
                 ];
         }
     };
@@ -142,14 +103,14 @@ export function BlogPostErrorBoundary({ error, reset }: Props) {
         <div className="container mx-auto px-4 py-8">
             <div className="max-w-2xl mx-auto text-center">
                 <h1 className="text-2xl font-bold text-gray-900 mb-4">
-                    Unable to load blog post
+                    {errorType === 'not-found' ? 'Blog Post Not Found' : 'Unable to Load Blog Post'}
                 </h1>
                 <p className="text-gray-600 mb-6">
                     {getErrorMessage()}
                 </p>
                 <ul className="text-left text-gray-600 mb-6 list-disc list-inside">
                     {getErrorList().map((item, index) => (
-                        <li key={index}>{item}</li>
+                        <li key={index} className="mb-2">{item}</li>
                     ))}
                 </ul>
                 <div className="space-x-4">
@@ -159,31 +120,33 @@ export function BlogPostErrorBoundary({ error, reset }: Props) {
                     >
                         Return to Blog
                     </button>
-                    <button
-                        onClick={handleRetry}
-                        disabled={isRetrying || retryCount >= 3}
-                        className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md ${
-                            isRetrying || retryCount >= 3
-                                ? 'bg-gray-300 cursor-not-allowed'
-                                : 'text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500'
-                        }`}
-                    >
-                        {isRetrying ? 'Retrying...' : retryCount >= 3 ? 'Too many retries' : 'Try Again'}
-                    </button>
+                    {errorType !== 'not-found' && (
+                        <button
+                            onClick={handleRetry}
+                            disabled={isRetrying}
+                            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md ${
+                                isRetrying
+                                    ? 'bg-gray-300 cursor-not-allowed'
+                                    : 'text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500'
+                            }`}
+                        >
+                            {isRetrying ? 'Retrying...' : 'Try Again'}
+                        </button>
+                    )}
                 </div>
                 {process.env.NODE_ENV === 'development' && (
                     <div className="mt-8 p-4 bg-gray-100 rounded-lg text-left">
                         <p className="text-sm font-mono text-gray-800">
                             Error: {error.message}
                         </p>
-                        <p className="text-sm font-mono text-gray-600 mt-2">
-                            Retry count: {retryCount}
-                        </p>
                         {error.digest && (
                             <p className="text-sm font-mono text-gray-600 mt-2">
                                 Error digest: {error.digest}
                             </p>
                         )}
+                        <p className="text-sm font-mono text-gray-600 mt-2">
+                            Error type: {errorType}
+                        </p>
                     </div>
                 )}
             </div>

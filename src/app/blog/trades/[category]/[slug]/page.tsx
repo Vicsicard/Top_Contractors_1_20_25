@@ -47,41 +47,38 @@ export default async function BlogPost({ params }: Props) {
     try {
         // Validate parameters
         if (!params.slug || !params.category) {
-            console.error('Missing required parameters:', params);
-            throw new Error('Missing required parameters');
+            console.error('Invalid URL parameters:', params);
+            throw new Error('Invalid URL parameters');
         }
 
-        // Fetch post with retries
-        let post: Post | null = null;
-        let retries = 3;
-        
-        while (retries > 0) {
-            try {
-                post = await getPostBySlug(params.slug, params.category);
-                if (post) break; // Exit loop if post is found
-                
-                console.log('Post not found, retrying...', { 
-                    slug: params.slug, 
+        // Single attempt to fetch post with proper error handling
+        let postData: Post;
+        try {
+            const post = await getPostBySlug(params.slug, params.category);
+            if (!post) {
+                console.log('Post not found:', {
+                    slug: params.slug,
                     category: params.category,
-                    retriesLeft: retries - 1 
+                    timestamp: new Date().toISOString()
                 });
-                retries--;
-                if (retries === 0) {
+                notFound();
+            }
+            postData = post as Post;
+        } catch (error) {
+            console.error('Error fetching post:', {
+                error,
+                params,
+                timestamp: new Date().toISOString()
+            });
+            
+            if (error instanceof Error) {
+                if (error.message === 'Post not found') {
                     notFound();
                 }
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            } catch (error) {
-                console.error('Error fetching post:', error);
-                retries--;
-                if (retries === 0) {
-                    throw error;
-                }
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                throw new Error('Failed to load blog post');
             }
+            throw error;
         }
-
-        // At this point, post is guaranteed to be non-null because notFound() would have been called
-        const postData = post as Post;
 
         // Process HTML with error handling
         let processedHtml: string;

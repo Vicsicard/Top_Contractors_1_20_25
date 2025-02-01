@@ -154,7 +154,8 @@ export async function getPostBySlug(slug: string, trade?: string): Promise<Post 
         }
 
         // Only select the fields we need
-        const { data: posts, error } = await supabase
+        // Build query with case-insensitive slug matching
+        const query = supabase
             .from('posts')
             .select(`
                 id,
@@ -169,48 +170,33 @@ export async function getPostBySlug(slug: string, trade?: string): Promise<Post 
                 reading_time,
                 trade_category
             `)
-            .eq('slug', slug)
-            .limit(1);  // Limit to 1 since we only need one post
+            .ilike('slug', slug)
+            .limit(1);
 
-        // Handle database errors
-        if (error) {
-            console.error('DEBUG: Database error:', error);
-            throw error;
+        // Add trade category filter if provided
+        if (trade) {
+            const normalizedTrade = normalizeCategory(trade);
+            query.or(`trade_category.ilike.${trade},trade_category.ilike.${normalizedTrade}`);
         }
 
-        // Handle no posts found
+        const { data: posts, error } = await query;
+
+        // Enhanced error handling
+        if (error) {
+            console.error('DEBUG: Database error:', error);
+            throw new Error(`Failed to fetch post: ${error.message}`);
+        }
+
         if (!posts || posts.length === 0) {
-            console.log('DEBUG: No posts found with slug:', { slug, trade });
-            return null;
+            console.log('DEBUG: No posts found:', { 
+                slug,
+                trade,
+                timestamp: new Date().toISOString()
+            });
+            throw new Error('Post not found');
         }
 
         const post = posts[0];
-
-        // If trade category is provided, verify it matches
-        if (trade) {
-            const normalizedPostCategory = normalizeCategory(post.trade_category);
-            const normalizedRequestedTrade = normalizeCategory(trade);
-            
-            if (normalizedPostCategory !== normalizedRequestedTrade) {
-                console.log('DEBUG: Trade category mismatch:', {
-                    postCategory: normalizedPostCategory,
-                    requestedTrade: normalizedRequestedTrade
-                });
-                return null;
-            }
-        }
-
-        if (!post) {
-            console.log('DEBUG: No post found matching trade category:', {
-                trade: trade || null,
-                normalizedTrade: trade ? normalizeCategory(trade) : null,
-                availableCategories: posts?.map((p: Post) => ({
-                    original: p.trade_category,
-                    normalized: normalizeCategory(p.trade_category)
-                }))
-            });
-            return null;
-        }
 
         console.log('DEBUG: Found matching post:', {
             id: post.id,
