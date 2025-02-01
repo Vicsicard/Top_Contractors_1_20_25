@@ -29,6 +29,12 @@ export function BlogPostErrorBoundary({ error, reset }: Props) {
             setErrorDetails('connection');
         } else if (error.message.includes('not found')) {
             setErrorDetails('not-found');
+        } else if (error.message.includes('Invalid URL parameters')) {
+            setErrorDetails('invalid-params');
+        } else if (error.message.includes('Unable to display blog post content')) {
+            setErrorDetails('content-error');
+        } else if (error.message.includes('Operation timed out')) {
+            setErrorDetails('timeout');
         } else {
             setErrorDetails('unknown');
         }
@@ -43,6 +49,9 @@ export function BlogPostErrorBoundary({ error, reset }: Props) {
     const handleRetry = async () => {
         setIsRetrying(true);
         try {
+            // Add delay between retries
+            await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+
             // Check Supabase connection
             const { data, error: connError } = await supabase
                 .from('posts')
@@ -71,6 +80,12 @@ export function BlogPostErrorBoundary({ error, reset }: Props) {
                 return 'We\'re having trouble connecting to our servers. Please check your internet connection.';
             case 'not-found':
                 return 'The requested blog post could not be found.';
+            case 'invalid-params':
+                return 'The blog post URL appears to be invalid or incomplete.';
+            case 'content-error':
+                return 'We\'re having trouble displaying the blog post content.';
+            case 'timeout':
+                return 'The blog post is taking too long to load.';
             default:
                 return 'We encountered an error while trying to load this blog post.';
         }
@@ -95,6 +110,24 @@ export function BlogPostErrorBoundary({ error, reset }: Props) {
                     'The post may have been moved or deleted',
                     'The URL might be incorrect',
                     'Check if you typed the URL correctly'
+                ];
+            case 'invalid-params':
+                return [
+                    'The URL might be missing required information',
+                    'Check if you copied the entire URL',
+                    'Try accessing the post from the blog listing page'
+                ];
+            case 'content-error':
+                return [
+                    'The post content might be temporarily unavailable',
+                    'Our content processing system might be experiencing issues',
+                    'Try refreshing the page'
+                ];
+            case 'timeout':
+                return [
+                    'The server is taking longer than expected to respond',
+                    'There might be high server load',
+                    'Try again in a few moments'
                 ];
             default:
                 return [

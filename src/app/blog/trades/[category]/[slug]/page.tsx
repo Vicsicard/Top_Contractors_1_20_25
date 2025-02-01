@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getPostBySlug } from '@/utils/supabase-blog';
 import { JsonLd } from '@/components/json-ld';
-import { processHtml } from '@/utils/html-processor';
+import { processHtml, sanitizeHtml } from '@/utils/html-processor';
 import { BlogPostErrorBoundary } from '@/components/BlogPostErrorBoundary';
 import Image from 'next/image';
 import type { Post } from '@/types/blog';
@@ -45,48 +45,67 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogPost({ params }: Props) {
     try {
-        // Set a timeout for the entire operation
-        const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error('Operation timed out')), 5000);
-        });
+        // Validate parameters
+        if (!params.slug || !params.category) {
+            console.error('Missing required parameters:', params);
+            throw new Error('Missing required parameters');
+        }
 
-        // Fetch and process post with timeout
-        const postPromise = (async () => {
-            // Quick validation
-            if (!params.slug || !params.category) {
-                throw new Error('Missing required parameters');
+        // Fetch post with retries
+        let post: Post | null = null;
+        let retries = 3;
+        
+        while (retries > 0) {
+            try {
+                post = await getPostBySlug(params.slug, params.category);
+                if (post) break; // Exit loop if post is found
+                
+                console.log('Post not found, retrying...', { 
+                    slug: params.slug, 
+                    category: params.category,
+                    retriesLeft: retries - 1 
+                });
+                retries--;
+                if (retries === 0) {
+                    notFound();
+                }
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            } catch (error) {
+                console.error('Error fetching post:', error);
+                retries--;
+                if (retries === 0) {
+                    throw error;
+                }
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
+        }
 
-            // Fetch post
-            const post = await getPostBySlug(params.slug, params.category);
-            if (!post) {
-                notFound();
-            }
+        // At this point, post is guaranteed to be non-null because notFound() would have been called
+        const postData = post as Post;
 
-            // Process HTML
-            const processedHtml = processHtml(post.html);
-            if (!processedHtml) {
+        // Process HTML with error handling
+        let processedHtml: string;
+        try {
+            const processed = processHtml(postData.html);
+            if (!processed) {
                 throw new Error('Failed to process blog post content');
             }
-
-            return { post, processedHtml };
-        })();
-
-        // Race between the operation and timeout
-        const { post, processedHtml } = await Promise.race([
-            postPromise,
-            timeoutPromise
-        ]) as { post: Post; processedHtml: string };
+            processedHtml = processed;
+        } catch (error) {
+            console.error('Error processing HTML:', error);
+            // Fallback to sanitized but unprocessed HTML
+            processedHtml = postData.html ? sanitizeHtml(postData.html) : '<p>Error processing content</p>';
+        }
 
         // Prepare JSON-LD data
         const jsonLd = {
             '@context': 'https://schema.org',
             '@type': 'BlogPosting',
-            headline: post.title,
-            description: post.excerpt || undefined,
-            image: post.feature_image || undefined,
-            datePublished: post.published_at,
-            dateModified: post.updated_at || post.published_at,
+            headline: postData.title,
+            description: postData.excerpt || undefined,
+            image: postData.feature_image || undefined,
+            datePublished: postData.published_at,
+            dateModified: postData.updated_at || postData.published_at,
             author: {
                 '@type': 'Organization',
                 name: 'Top Contractors Denver'
@@ -101,7 +120,7 @@ export default async function BlogPost({ params }: Props) {
             },
             mainEntityOfPage: {
                 '@type': 'WebPage',
-                '@id': `/blog/trades/${params.category}/${post.slug}`
+                '@id': `/blog/trades/${params.category}/${postData.slug}`
             }
         };
 
@@ -111,11 +130,11 @@ export default async function BlogPost({ params }: Props) {
                 <JsonLd data={jsonLd} />
                 <article className="container mx-auto px-4 py-8 max-w-4xl">
                     <header className="mb-8">
-                        {post.feature_image && (
+                        {postData.feature_image && (
                             <div className="relative w-full h-[400px] mb-6 rounded-lg overflow-hidden">
                                 <Image
-                                    src={post.feature_image}
-                                    alt={post.feature_image_alt || post.title}
+                                    src={postData.feature_image}
+                                    alt={postData.feature_image_alt || postData.title}
                                     fill
                                     className="object-cover"
                                     priority
@@ -126,15 +145,15 @@ export default async function BlogPost({ params }: Props) {
                                 />
                             </div>
                         )}
-                        <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+                        <h1 className="text-4xl font-bold mb-4">{postData.title}</h1>
                         <div className="flex items-center gap-4 text-gray-600 mb-4">
-                            <time dateTime={post.published_at}>
-                                {new Date(post.published_at).toLocaleDateString()}
+                            <time dateTime={postData.published_at}>
+                                {new Date(postData.published_at).toLocaleDateString()}
                             </time>
-                            {post.reading_time && (
+                            {postData.reading_time && (
                                 <>
                                     <span>·</span>
-                                    <span>{post.reading_time} min read</span>
+                                    <span>{postData.reading_time} min read</span>
                                 </>
                             )}
                         </div>
@@ -147,10 +166,15 @@ export default async function BlogPost({ params }: Props) {
             </>
         );
     } catch (error) {
-        if (error instanceof Error && error.message === 'Operation timed out') {
-            throw new Error('The blog post is taking too long to load. Please try again.');
-        }
         console.error('Error in BlogPost page:', error);
-        throw error;
+        // Enhanced error handling with user-friendly messages
+        if (error instanceof Error) {
+            if (error.message.includes('Missing required parameters')) {
+                throw new Error('Unable to load blog post: Invalid URL parameters');
+            } else if (error.message.includes('Failed to process')) {
+                throw new Error('Unable to display blog post content. Please try refreshing the page.');
+            }
+        }
+        throw new Error('An error occurred while loading the blog post. Please try again later.');
     }
 }
