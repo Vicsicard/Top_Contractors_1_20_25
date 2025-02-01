@@ -5,6 +5,7 @@ import { JsonLd } from '@/components/json-ld';
 import { processHtml } from '@/utils/html-processor';
 import { BlogPostErrorBoundary } from '@/components/BlogPostErrorBoundary';
 import Image from 'next/image';
+import type { Post } from '@/types/blog';
 
 interface Props {
     params: {
@@ -43,161 +44,113 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPost({ params }: Props) {
-    console.log('DEBUG: BlogPost page rendered with params:', {
-        category: params.category,
-        slug: params.slug,
-        timestamp: new Date().toISOString(),
-        url: typeof window !== 'undefined' ? window.location.href : 'server-side'
-    });
-
     try {
-        // Validate parameters
-        if (!params.slug || !params.category) {
-            console.error('DEBUG: Missing required parameters:', { params });
-            throw new Error('Missing required parameters');
-        }
+        // Set a timeout for the entire operation
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Operation timed out')), 5000);
+        });
 
-        // Attempt to fetch the post with retries
-        let post = null;
-        let attempts = 0;
-        const maxAttempts = 3;
-
-        while (!post && attempts < maxAttempts) {
-            try {
-                post = await getPostBySlug(params.slug, params.category);
-                console.log('DEBUG: Post retrieval attempt', {
-                    attempt: attempts + 1,
-                    found: !!post,
-                    postId: post?.id,
-                    postSlug: post?.slug,
-                    postCategory: post?.trade_category
-                });
-            } catch (fetchError) {
-                attempts++;
-                console.error('DEBUG: Post fetch attempt failed:', {
-                    attempt: attempts,
-                    error: fetchError,
-                    willRetry: attempts < maxAttempts
-                });
-                if (attempts === maxAttempts) throw fetchError;
-                await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
+        // Fetch and process post with timeout
+        const postPromise = (async () => {
+            // Quick validation
+            if (!params.slug || !params.category) {
+                throw new Error('Missing required parameters');
             }
-        }
 
-        if (!post) {
-            console.log('DEBUG: Post not found, redirecting to 404');
-            notFound();
-        }
+            // Fetch post
+            const post = await getPostBySlug(params.slug, params.category);
+            if (!post) {
+                notFound();
+            }
 
-        // Process HTML content
-        let processedHtml;
-        try {
-            processedHtml = processHtml(post.html);
-            console.log('DEBUG: HTML processing complete', {
-                originalLength: post.html.length,
-                processedLength: processedHtml.length,
-                hasContent: processedHtml.length > 0
-            });
-
-            if (!processedHtml || processedHtml.length === 0) {
-                console.error('DEBUG: Empty processed HTML');
+            // Process HTML
+            const processedHtml = processHtml(post.html);
+            if (!processedHtml) {
                 throw new Error('Failed to process blog post content');
             }
-        } catch (htmlError) {
-            console.error('DEBUG: HTML processing error:', htmlError);
-            throw new Error('Failed to process blog post content');
-        }
 
+            return { post, processedHtml };
+        })();
+
+        // Race between the operation and timeout
+        const { post, processedHtml } = await Promise.race([
+            postPromise,
+            timeoutPromise
+        ]) as { post: Post; processedHtml: string };
+
+        // Prepare JSON-LD data
         const jsonLd = {
-        '@context': 'https://schema.org',
-        '@type': 'BlogPosting',
-        headline: post.title,
-        description: post.excerpt || undefined,
-        image: post.feature_image || undefined,
-        datePublished: post.published_at,
-        dateModified: post.updated_at || post.published_at,
-        author: {
-            '@type': 'Organization',
-            name: 'Top Contractors Denver'
-        },
-        publisher: {
-            '@type': 'Organization',
-            name: 'Top Contractors Denver',
-            logo: {
-                '@type': 'ImageObject',
-                url: 'https://top-contractors-1-20-25-git-html-rendering-vicsicards-projects.vercel.app/images/logo.png'
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: post.title,
+            description: post.excerpt || undefined,
+            image: post.feature_image || undefined,
+            datePublished: post.published_at,
+            dateModified: post.updated_at || post.published_at,
+            author: {
+                '@type': 'Organization',
+                name: 'Top Contractors Denver'
+            },
+            publisher: {
+                '@type': 'Organization',
+                name: 'Top Contractors Denver',
+                logo: {
+                    '@type': 'ImageObject',
+                    url: '/images/logo.png'
+                }
+            },
+            mainEntityOfPage: {
+                '@type': 'WebPage',
+                '@id': `/blog/trades/${params.category}/${post.slug}`
             }
-        },
-        mainEntityOfPage: {
-            '@type': 'WebPage',
-            '@id': `https://topcontractorsdenver.com/blog/trades/${params.category}/${post.slug}`
-        }
-    };
+        };
 
+        // Return optimized component
         return (
             <>
                 <JsonLd data={jsonLd} />
                 <article className="container mx-auto px-4 py-8 max-w-4xl">
-                <header className="mb-8">
-                    {post.feature_image && (
-                        <div className="relative w-full h-[400px] mb-6 rounded-lg overflow-hidden">
-                            <Image
-                                src={post.feature_image || "/images/denver-skyline.jpg"}
-                                alt={post.feature_image_alt || post.title}
-                                fill
-                                className="object-cover"
-                                priority
-                                onError={(e) => {
-                                    // Fallback to default image if feature image fails to load
-                                    const target = e.target as HTMLImageElement;
-                                    target.src = "/images/denver-skyline.jpg";
-                                }}
-                            />
-                        </div>
-                    )}
-                    <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-                    <div className="flex items-center gap-4 text-gray-600 mb-4">
-                        <time dateTime={post.published_at}>
-                            {new Date(post.published_at).toLocaleDateString()}
-                        </time>
-                        {post.reading_time && (
-                            <>
-                                <span>·</span>
-                                <span>{post.reading_time} min read</span>
-                            </>
+                    <header className="mb-8">
+                        {post.feature_image && (
+                            <div className="relative w-full h-[400px] mb-6 rounded-lg overflow-hidden">
+                                <Image
+                                    src={post.feature_image}
+                                    alt={post.feature_image_alt || post.title}
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                    onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.src = "/images/denver-skyline.jpg";
+                                    }}
+                                />
+                            </div>
                         )}
-                    </div>
-                </header>
-                <div 
-                    className="blog-content"
-                    dangerouslySetInnerHTML={{ __html: processedHtml }} 
-                />
-                {/* Process Next.js images after render */}
-                <script
-                    dangerouslySetInnerHTML={{
-                        __html: `
-                            document.querySelectorAll('.next-image-wrapper').forEach(wrapper => {
-                                const src = wrapper.getAttribute('data-image-src');
-                                const alt = wrapper.getAttribute('data-image-alt');
-                                if (src) {
-                                    const img = new Image();
-                                    img.src = src;
-                                    img.alt = alt || '';
-                                    img.className = 'object-cover w-full h-full';
-                                    img.onerror = function() {
-                                        this.src = '/images/denver-skyline.jpg';
-                                    };
-                                    wrapper.appendChild(img);
-                                }
-                            });
-                        `
-                    }}
-                />
+                        <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+                        <div className="flex items-center gap-4 text-gray-600 mb-4">
+                            <time dateTime={post.published_at}>
+                                {new Date(post.published_at).toLocaleDateString()}
+                            </time>
+                            {post.reading_time && (
+                                <>
+                                    <span>·</span>
+                                    <span>{post.reading_time} min read</span>
+                                </>
+                            )}
+                        </div>
+                    </header>
+                    <div 
+                        className="blog-content prose prose-lg max-w-none"
+                        dangerouslySetInnerHTML={{ __html: processedHtml }} 
+                    />
                 </article>
             </>
         );
     } catch (error) {
-        console.error('DEBUG: Error in BlogPost page:', error);
-        throw error; // This will be caught by the error boundary
+        if (error instanceof Error && error.message === 'Operation timed out') {
+            throw new Error('The blog post is taking too long to load. Please try again.');
+        }
+        console.error('Error in BlogPost page:', error);
+        throw error;
     }
 }

@@ -137,32 +137,6 @@ export async function getPosts(page = 1, limit = POSTS_PER_PAGE): Promise<Pagina
 /**
  * Gets a single post by slug and optionally filters by trade category.
  */
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000; // 1 second
-
-async function retryOperation<T>(
-    operation: () => Promise<T>,
-    retries: number = MAX_RETRIES,
-    delay: number = RETRY_DELAY
-): Promise<T> {
-    try {
-        const result = await operation();
-        return result;
-    } catch (error) {
-        if (retries > 0) {
-            console.log(`Retrying operation, ${retries} attempts remaining`);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            return retryOperation(operation, retries - 1, delay * 2);
-        }
-        throw error;
-    }
-}
-
-interface SupabaseQueryResult<T> {
-    data: T[] | null;
-    error: any;
-}
-
 export async function getPostBySlug(slug: string, trade?: string): Promise<Post | null> {
     try {
         console.log('DEBUG: getPostBySlug called with:', { 
@@ -179,76 +153,52 @@ export async function getPostBySlug(slug: string, trade?: string): Promise<Post 
             }
         }
 
-        // Validate connection with retries
-        const isConnected = await retryOperation(validateSupabaseConnection);
-        if (!isConnected) {
-            console.error('DEBUG: Supabase connection failed after retries');
-            throw new Error('Failed to connect to Supabase after multiple attempts');
-        }
+        // Only select the fields we need
+        const { data: posts, error } = await supabase
+            .from('posts')
+            .select(`
+                id,
+                title,
+                slug,
+                html,
+                excerpt,
+                feature_image,
+                feature_image_alt,
+                published_at,
+                updated_at,
+                reading_time,
+                trade_category
+            `)
+            .eq('slug', slug)
+            .limit(1);  // Limit to 1 since we only need one post
 
-        // First, try to find the post without trade category filter
-        const { data: posts, error } = await retryOperation<SupabaseQueryResult<Post>>(async () => {
-            const result = await supabase
-                .from('posts')
-                .select('*')
-                .eq('slug', slug);
-            return result as SupabaseQueryResult<Post>;
-        });
-
+        // Handle database errors
         if (error) {
-            if (error.code === 'PGRST301') {
-                console.error('DEBUG: Authentication error:', error);
-                throw new Error('Authentication failed. Please check your Supabase credentials.');
-            }
             console.error('DEBUG: Database error:', error);
             throw error;
         }
 
-        console.log('DEBUG: Database query result:', { 
-            postsFound: posts?.length || 0,
-            firstPostId: posts?.[0]?.id,
-            firstPostSlug: posts?.[0]?.slug,
-            firstPostCategory: posts?.[0]?.trade_category,
-            error: error ? {
-                message: error.message,
-                code: error.code,
-                details: error.details
-            } : null
-        });
-
-        if (error) {
-            console.error('DEBUG: Error fetching post:', {
-                error,
-                params: { slug, trade }
-            });
-            return null;
-        }
-
+        // Handle no posts found
         if (!posts || posts.length === 0) {
-            console.log('DEBUG: No posts found with slug:', {
-                slug,
-                trade,
-                timestamp: new Date().toISOString()
-            });
+            console.log('DEBUG: No posts found with slug:', { slug, trade });
             return null;
         }
 
-        // If trade is provided, filter by normalized trade category
-        const post = trade 
-            ? posts?.find((p: Post) => {
-                const normalizedPostCategory = normalizeCategory(p.trade_category);
-                const normalizedRequestedTrade = normalizeCategory(trade);
-                
-                console.log('DEBUG: Matching trade category:', {
-                    normalizedPostCategory,
-                    normalizedRequestedTrade,
-                    postId: p.id,
-                    postSlug: p.slug
+        const post = posts[0];
+
+        // If trade category is provided, verify it matches
+        if (trade) {
+            const normalizedPostCategory = normalizeCategory(post.trade_category);
+            const normalizedRequestedTrade = normalizeCategory(trade);
+            
+            if (normalizedPostCategory !== normalizedRequestedTrade) {
+                console.log('DEBUG: Trade category mismatch:', {
+                    postCategory: normalizedPostCategory,
+                    requestedTrade: normalizedRequestedTrade
                 });
-                
-                return normalizedPostCategory === normalizedRequestedTrade;
-            })
-            : posts?.[0];
+                return null;
+            }
+        }
 
         if (!post) {
             console.log('DEBUG: No post found matching trade category:', {
