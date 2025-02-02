@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import type { Post } from '@/types/blog';
 
 interface BlogPostDisplayProps {
@@ -21,12 +22,15 @@ export function BlogPostDisplay({ post }: BlogPostDisplayProps) {
         <article className="container mx-auto px-4 py-8 max-w-4xl">
             <header className="mb-8">
                 {post.feature_image && (
-                    <div className="relative w-full h-[400px] mb-6 rounded-lg overflow-hidden">
-                        <img
+                    <div className="relative aspect-[16/9] mb-6 rounded-lg overflow-hidden">
+                        <Image
                             src={imageError ? fallbackImage : post.feature_image}
                             alt={post.feature_image_alt || post.title}
-                            className="absolute inset-0 w-full h-full object-cover"
+                            fill
+                            className="object-cover"
                             onError={handleImageError}
+                            sizes="(max-width: 1024px) 100vw, 1024px"
+                            priority
                         />
                     </div>
                 )}

@@ -1,30 +1,34 @@
 'use client';
 
-import { useRef } from 'react';
+import Image from 'next/image';
+import { useState } from 'react';
 
 interface BlogImageProps {
     src: string;
     alt: string;
     className?: string;
+    width?: number;
+    height?: number;
 }
 
-export function BlogImage({ src, alt, className = '' }: BlogImageProps) {
-    const imgRef = useRef<HTMLImageElement>(null);
+export function BlogImage({ src, alt, className = '', width = 800, height = 600 }: BlogImageProps) {
+    const [imgSrc, setImgSrc] = useState(src);
     const fallbackImage = '/images/denver-skyline.jpg';
 
     const handleError = () => {
-        if (imgRef.current) {
-            imgRef.current.src = fallbackImage;
-        }
+        setImgSrc(fallbackImage);
     };
 
     return (
-        <img
-            ref={imgRef}
-            src={src}
-            alt={alt}
-            className={className}
-            onError={handleError}
-        />
+        <div className="relative">
+            <Image
+                src={imgSrc}
+                alt={alt}
+                width={width}
+                height={height}
+                className={className}
+                onError={handleError}
+            />
+        </div>
     );
 }
