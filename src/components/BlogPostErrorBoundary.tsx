@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/utils/supabase';
 
 interface Props {
     error: Error & { digest?: string };
@@ -100,6 +99,7 @@ export function BlogPostErrorBoundary({ error, reset }: Props) {
     };
 
     return (
+        <div className="container mx-auto px-4 py-8">
         <div className="container mx-auto px-4 py-8">
             <div className="max-w-2xl mx-auto text-center">
                 <h1 className="text-2xl font-bold text-gray-900 mb-4">
