@@ -4,7 +4,7 @@ import { NextRequest } from 'next/server';
 // Enable caching with revalidation every hour
 export const revalidate = 3600;
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
     const supabase = createClient();
     

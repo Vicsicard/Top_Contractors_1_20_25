@@ -36,7 +36,7 @@ export default function Error({
             let retries = 2;
             while (retries >= 0) {
                 try {
-                    const { data, error: connError } = await supabase
+                    const { error: connError } = await supabase
                         .from('posts')
                         .select('count')
                         .limit(1);
