@@ -57,35 +57,56 @@ export function processHtml(html: string | null): string {
         // Process external links
         document.querySelectorAll('a').forEach(link => {
             try {
-                const url = new URL(link.href);
+                // Handle relative URLs
+                const href = link.href;
+                if (href.startsWith('/')) {
+                    // Internal link, keep as is
+                    return;
+                }
+
+                // Try to decode the URL if it's encoded
+                let decodedUrl = href;
+                try {
+                    decodedUrl = decodeURIComponent(href);
+                } catch (e) {
+                    // If decoding fails, use the original URL
+                    console.warn('Failed to decode URL:', href);
+                }
+
+                const url = new URL(decodedUrl);
                 if (url.host !== 'topcontractorsdenver.com') {
                     link.setAttribute('target', '_blank');
                     link.setAttribute('rel', 'noopener noreferrer');
                 }
             } catch (error) {
-                // Log invalid URL errors but continue processing
-                console.warn('Invalid URL in link:', error);
+                // For invalid URLs, try to clean and encode
+                try {
+                    const cleanUrl = link.href
+                        .trim()
+                        .replace(/\s+/g, '-')
+                        .replace(/[^\w\-\:\/\?\=\&\#\.]/g, '');
+                    link.href = cleanUrl;
+                } catch (e) {
+                    // If all attempts fail, remove the href
+                    console.warn('Invalid URL, removing href:', link.href);
+                    link.removeAttribute('href');
+                }
             }
         });
 
         // Process images for Next.js compatibility
         document.querySelectorAll('img').forEach(img => {
-            // Convert img to a div that will be transformed into a Next.js Image
+            // Convert img to a BlogImage component placeholder
             const src = img.getAttribute('src');
             const alt = img.getAttribute('alt') || '';
             
-            // Create a wrapper div
-            const wrapper = document.createElement('div');
-            wrapper.className = 'next-image-wrapper relative w-full aspect-video mb-4';
+            // Create a placeholder element
+            const placeholder = document.createElement('blog-image');
+            placeholder.setAttribute('data-src', src || '');
+            placeholder.setAttribute('data-alt', alt);
             
-            // Set data attributes that will be used by the page component
-            wrapper.setAttribute('data-image-src', src || '');
-            wrapper.setAttribute('data-image-alt', alt);
-            wrapper.setAttribute('data-image-width', '1200');
-            wrapper.setAttribute('data-image-height', '675');
-            
-            // Replace the img with our wrapper
-            img.parentNode?.replaceChild(wrapper, img);
+            // Replace the img with our placeholder
+            img.parentNode?.replaceChild(placeholder, img);
         });
 
         // Add styling to tables

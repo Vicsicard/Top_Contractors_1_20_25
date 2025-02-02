@@ -1,43 +1,25 @@
 'use client';
 
-import { useEffect } from 'react';
-import Link from 'next/link';
-
-export default function BlogError({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string };
+interface ErrorProps {
+  error: Error;
   reset: () => void;
-}) {
-  useEffect(() => {
-    // Log the error to an error reporting service
-    console.error(error);
-  }, [error]);
+}
 
+export default function BlogError({ error, reset }: ErrorProps) {
   return (
-    <div className="min-h-[400px] flex items-center justify-center px-4">
-      <div className="text-center">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-4">Something went wrong!</h2>
-        <p className="text-gray-600 mb-8">
-          We encountered an error while loading the blog content.
-          Please try again later or return to the main blog page.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button
-            onClick={reset}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-          >
-            Try again
-          </button>
-          <Link
-            href="/blog"
-            className="inline-flex items-center px-4 py-2 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
-          >
-            Return to Blog
-          </Link>
-        </div>
-      </div>
+    <div className="container mx-auto px-4 py-16 text-center">
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        Something went wrong!
+      </h2>
+      <p className="text-gray-600 mb-8">
+        {error.message || 'An error occurred while loading the blog posts.'}
+      </p>
+      <button
+        onClick={reset}
+        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+      >
+        Try again
+      </button>
     </div>
   );
 }

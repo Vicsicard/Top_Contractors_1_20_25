@@ -2,7 +2,7 @@
     "name": "Top Contractors Denver",
     "short_name": "Denver Contractors",
     "description": "Find the best local contractors in Denver. Compare verified reviews, ratings, and get free quotes.",
-    "start_url": ".",
+    "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#3366FF",
@@ -17,6 +17,6 @@
     "orientation": "portrait",
     "categories": ["business", "utilities"],
     "scope": "/",
-    "id": "topcontractorsdenver",
+    "id": "/topcontractorsdenver",
     "lang": "en-US"
 }

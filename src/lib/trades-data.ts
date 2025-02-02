@@ -10,7 +10,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Professional Licensed Plumbers for All Your Needs",
     description: "Our network of licensed plumbers in Denver provides comprehensive plumbing services for both residential and commercial properties. From emergency repairs to new installations, our experienced professionals deliver quality workmanship and reliable service.",
     shortDescription: "Professional plumbing services for residential and commercial properties in Denver.",
-    icon: "🔧",
+    icon: "/icons/plumbing.svg",
     benefits: [
       "24/7 Emergency Services",
       "Licensed & Insured Professionals",
@@ -47,7 +47,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Connect with certified electrical professionals for all your residential and commercial needs",
     description: "Our directory connects you with licensed, insured, and experienced electricians throughout the Denver metropolitan area. From emergency repairs to new installations, our verified professionals deliver quality electrical services.",
     shortDescription: "Certified electricians providing professional electrical services in Denver.",
-    icon: "💡",
+    icon: "/icons/electrician.svg",
     benefits: [
       "Licensed and certified professionals",
       "24/7 emergency electrical services",
@@ -86,7 +86,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Expert heating, cooling, and ventilation services for your home or business",
     description: "Connect with skilled HVAC professionals who understand Denver's unique climate challenges. Our verified contractors provide comprehensive heating, cooling, and ventilation services.",
     shortDescription: "Expert HVAC services for heating, cooling, and ventilation in Denver.",
-    icon: "❄️",
+    icon: "/icons/hvac.svg",
     benefits: [
       "NATE-certified technicians",
       "24/7 emergency HVAC service",
@@ -125,7 +125,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Expert roofing services for residential and commercial properties",
     description: "Connect with experienced roofing professionals who understand Colorado's unique weather challenges. Our verified contractors provide comprehensive roofing services with quality materials and workmanship.",
     shortDescription: "Expert roofing services for residential and commercial properties in Denver.",
-    icon: "🏠",
+    icon: "/icons/roofer.svg",
     benefits: [
       "Licensed and insured contractors",
       "Free roof inspections",
@@ -164,7 +164,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Expert carpentry and woodworking services for your home or business",
     description: "Connect with skilled carpenters who bring craftsmanship and attention to detail to every project. Our verified professionals handle everything from custom woodworking to structural repairs.",
     shortDescription: "Expert carpentry and woodworking services for residential and commercial properties in Denver.",
-    icon: "🛠️",
+    icon: "/icons/carpenter.svg",
     benefits: [
       "Experienced craftsmen",
       "Custom design services",
@@ -203,7 +203,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Expert interior and exterior painting services",
     description: "Connect with skilled painters who deliver beautiful, lasting results. Our verified professionals provide comprehensive painting services with attention to detail and quality materials.",
     shortDescription: "Expert interior and exterior painting services for residential and commercial properties in Denver.",
-    icon: "🎨",
+    icon: "/icons/painter.svg",
     benefits: [
       "Professional color consultation",
       "Quality paint and materials",
@@ -242,7 +242,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Expert landscape design and maintenance services",
     description: "Connect with skilled landscapers who understand Colorado's unique climate and soil conditions. Our verified professionals create and maintain beautiful outdoor spaces.",
     shortDescription: "Expert landscape design and maintenance services for residential and commercial properties in Denver.",
-    icon: "🌳",
+    icon: "/icons/landscaper.svg",
     benefits: [
       "Licensed and insured professionals",
       "Drought-resistant design expertise",
@@ -281,7 +281,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Transform your home with Denver's top remodeling experts",
     description: "Connect with experienced home remodeling contractors in Denver who can turn your vision into reality. Our verified professionals specialize in full home renovations, kitchen remodels, bathroom updates, and more.",
     shortDescription: "Professional home remodeling and renovation services in Denver.",
-    icon: "🏠",
+    icon: "/icons/home-remodeling.svg",
     benefits: [
       "Licensed & Insured Contractors",
       "Custom Design Services",
@@ -320,7 +320,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Transform your bathroom with Denver's top remodeling experts",
     description: "Connect with experienced bathroom remodeling contractors in Denver who can turn your vision into reality. Our verified professionals specialize in complete bathroom renovations with attention to detail.",
     shortDescription: "Professional bathroom remodeling and renovation services in Denver.",
-    icon: "🚿",
+    icon: "/icons/bathroom-remodeling.svg",
     benefits: [
       "Licensed & Insured Contractors",
       "Custom Design Services",
@@ -359,7 +359,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Expert kitchen renovation and design services",
     description: "Connect with specialized kitchen remodeling contractors who can create your dream kitchen. Our verified professionals handle complete kitchen renovations with quality craftsmanship.",
     shortDescription: "Expert kitchen remodeling services for residential properties in Denver.",
-    icon: "🍳",
+    icon: "/icons/kitchen-remodeling.svg",
     benefits: [
       "Custom kitchen design",
       "Quality cabinets and countertops",
@@ -398,7 +398,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Expert siding installation and gutter services",
     description: "Connect with experienced siding and gutter professionals who provide quality installation and repairs. Our verified contractors work with all types of siding and gutter materials.",
     shortDescription: "Expert siding and gutter services for residential and commercial properties in Denver.",
-    icon: "🏠",
+    icon: "/icons/siding-gutters.svg",
     benefits: [
       "Licensed contractors",
       "Quality materials",
@@ -437,7 +437,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Expert brick, stone, and concrete work",
     description: "Connect with skilled masonry professionals who bring craftsmanship to every project. Our verified contractors handle all types of stone, brick, and concrete work.",
     shortDescription: "Expert masonry services for residential and commercial properties in Denver.",
-    icon: "🏗️",
+    icon: "/icons/masonry.svg",
     benefits: [
       "Experienced craftsmen",
       "Quality materials",
@@ -476,7 +476,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Expert deck design and construction services",
     description: "Connect with experienced deck builders who create beautiful outdoor living spaces. Our verified contractors provide custom design and quality construction services.",
     shortDescription: "Expert deck services for residential properties in Denver.",
-    icon: "🌳",
+    icon: "/icons/decks.svg",
     benefits: [
       "Custom design services",
       "Quality materials",
@@ -515,7 +515,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Expert flooring installation and repair services",
     description: "Connect with skilled flooring professionals who handle all types of flooring materials. Our verified contractors provide quality installation and repair services.",
     shortDescription: "Expert flooring services for residential and commercial properties in Denver.",
-    icon: "🛋️",
+    icon: "/icons/flooring.svg",
     benefits: [
       "Experienced installers",
       "Quality materials",
@@ -554,7 +554,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Expert window installation and replacement services",
     description: "Connect with experienced window professionals who understand energy efficiency and style. Our verified contractors provide quality installation and replacement services.",
     shortDescription: "Expert window services for residential and commercial properties in Denver.",
-    icon: "🌆",
+    icon: "/icons/windows.svg",
     benefits: [
       "Energy efficiency experts",
       "Quality window brands",
@@ -593,7 +593,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Expert fence installation and repair services",
     description: "Connect with experienced fence professionals who provide quality installation and repairs. Our verified contractors work with all types of fencing materials.",
     shortDescription: "Expert fence services for residential and commercial properties in Denver.",
-    icon: "🚪",
+    icon: "/icons/fencing.svg",
     benefits: [
       "Licensed contractors",
       "Quality materials",
@@ -632,7 +632,7 @@ export const tradesData: Record<string, TradeData> = {
     subheading: "Expert garage floor coating and finishing services",
     description: "Connect with specialized epoxy flooring professionals who deliver durable, attractive results. Our verified contractors provide quality garage floor coating services.",
     shortDescription: "Expert epoxy garage services for residential properties in Denver.",
-    icon: "🚗",
+    icon: "/icons/epoxy-garage.svg",
     benefits: [
       "Professional preparation",
       "Quality epoxy products",
