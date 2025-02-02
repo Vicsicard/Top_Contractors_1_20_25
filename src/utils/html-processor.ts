@@ -70,7 +70,7 @@ export function processHtml(html: string | null): string {
                     decodedUrl = decodeURIComponent(href);
                 } catch (e) {
                     // If decoding fails, use the original URL
-                    console.warn('Failed to decode URL:', href);
+                    console.warn('Failed to decode URL:', href, e);
                 }
 
                 const url = new URL(decodedUrl);
@@ -78,8 +78,9 @@ export function processHtml(html: string | null): string {
                     link.setAttribute('target', '_blank');
                     link.setAttribute('rel', 'noopener noreferrer');
                 }
-            } catch (error) {
-                // For invalid URLs, try to clean and encode
+                } catch (error) {
+                    // For invalid URLs, try to clean and encode
+                    console.warn('Invalid URL, attempting cleanup:', error);
                 try {
                     const cleanUrl = link.href
                         .trim()
@@ -88,7 +89,7 @@ export function processHtml(html: string | null): string {
                     link.href = cleanUrl;
                 } catch (e) {
                     // If all attempts fail, remove the href
-                    console.warn('Invalid URL, removing href:', link.href);
+                    console.warn('Invalid URL, removing href:', link.href, e);
                     link.removeAttribute('href');
                 }
             }

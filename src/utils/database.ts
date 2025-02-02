@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
 import type { CategoryRecord, SubregionRecord, ContractorRecord } from '@/types/database';
 
-import { PostgrestResponse, PostgrestSingleResponse, PostgrestError } from '@supabase/supabase-js';
+import { PostgrestError } from '@supabase/supabase-js';
 
 type SupabaseResult<T> = {
   data: T | null;

@@ -1,6 +1,6 @@
 import { Post, PaginatedPosts, Author, Tag } from '@/types/blog';
 import { supabase } from '@/utils/supabase';
-import { normalizeCategory, getStandardCategory, isValidCategory } from '@/utils/category-mapper';
+import { normalizeCategory, isValidCategory } from '@/utils/category-mapper';
 
 const POSTS_PER_PAGE = 12; // Standardized posts per page across the site - optimized for 3-column grid
 
