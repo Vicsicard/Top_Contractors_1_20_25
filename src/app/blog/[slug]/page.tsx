@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { hashnode } from '@/lib/hashnode';
+import { getPostBySlug } from '@/utils/posts';
 import { PostContent } from '@/components/blog/PostContent';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = await hashnode.getPost(params.slug);
+  const post = await getPostBySlug(params.slug);
 
   if (!post) {
     return {
@@ -22,13 +22,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${post.title} | Top Contractors Denver Blog`,
-    description: post.brief,
+    description: post.excerpt || undefined,
     openGraph: {
       title: post.title,
-      description: post.brief,
+      description: post.excerpt || undefined,
       type: 'article',
-      publishedTime: post.datePublished,
-      images: post.coverImage ? [post.coverImage] : undefined,
+      publishedTime: post.published_at,
+      images: post.feature_image ? [{ url: post.feature_image }] : undefined,
     },
     alternates: {
       canonical: `/blog/${post.slug}`
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export const revalidate = 3600; // Revalidate every hour
 
 export default async function BlogPostPage({ params }: Props) {
-  const post = await hashnode.getPost(params.slug);
+  const post = await getPostBySlug(params.slug);
 
   if (!post) {
     notFound();

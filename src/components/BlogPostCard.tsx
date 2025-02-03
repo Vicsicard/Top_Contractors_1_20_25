@@ -5,9 +5,10 @@ import { getStandardCategory } from '@/utils/category-mapper';
 
 interface BlogPostCardProps {
   post: Post;
+  showTags?: boolean;
 }
 
-export function BlogPostCard({ post }: BlogPostCardProps) {
+export function BlogPostCard({ post, showTags = false }: BlogPostCardProps) {
   const standardCategory = getStandardCategory(post.trade_category);
   const postUrl = standardCategory 
     ? `/blog/trades/${standardCategory}/${post.slug}` 
@@ -108,6 +109,19 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
             </span>
           )}
         </div>
+
+        {showTags && post.tags && Array.isArray(post.tags) && post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-4">
+            {post.tags.map((tag) => (
+              <span 
+                key={tag.id}
+                className="text-sm bg-gray-100 text-gray-600 px-2 py-1 rounded"
+              >
+                {tag.name}
+              </span>
+            ))}
+          </div>
+        )}
 
         {/* Hidden metadata for SEO */}
         <meta itemProp="author" content="Top Contractors Denver" />

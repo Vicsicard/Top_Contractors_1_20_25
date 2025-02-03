@@ -1,0 +1,3 @@
+@echo off
+echo Starting Hashnode to Supabase migration...
+npx tsx scripts/migrate-hashnode-to-supabase.ts

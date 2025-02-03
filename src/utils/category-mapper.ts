@@ -110,7 +110,20 @@ export function isValidCategory(category: string): boolean {
 
 // Utility function to get standard category from any variation
 export function getStandardCategory(category: string | null): ValidCategory | null {
-  if (!category) return null;
+  if (!category) {
+    console.log('getStandardCategory: category is null');
+    return null;
+  }
+  
+  console.log('getStandardCategory input:', category);
   const normalized = normalizeCategory(category);
-  return isValidCategory(normalized) ? normalized as ValidCategory : null;
+  console.log('getStandardCategory normalized:', normalized);
+  
+  if (isValidCategory(normalized)) {
+    console.log('getStandardCategory found valid category:', normalized);
+    return normalized as ValidCategory;
+  }
+  
+  console.log('getStandardCategory no valid category found');
+  return null;
 }

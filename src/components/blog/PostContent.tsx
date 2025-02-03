@@ -1,8 +1,8 @@
 import Image from 'next/image';
-import type { HashnodePost } from '@/lib/hashnode/types';
+import type { Post } from '@/types/blog';
 
 interface PostContentProps {
-  post: HashnodePost;
+  post: Post;
 }
 
 export function PostContent({ post }: PostContentProps) {
@@ -15,17 +15,17 @@ export function PostContent({ post }: PostContentProps) {
         <div className="flex items-center justify-between mb-6">
           <div>
             <div className="font-medium text-gray-900">
-              {post.author.name}
+              {post.authors?.[0]?.name || 'Top Contractors Denver'}
             </div>
             <time className="text-sm text-gray-500">
-              {new Date(post.publishedAt).toLocaleDateString('en-US', {
+              {new Date(post.published_at).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
               })}
             </time>
           </div>
-          {post.tags.length > 0 && (
+          {post.tags && post.tags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {post.tags.map((tag) => (
                 <span
@@ -38,11 +38,11 @@ export function PostContent({ post }: PostContentProps) {
             </div>
           )}
         </div>
-        {post.coverImage?.url && (
+        {post.feature_image && (
           <div className="relative w-full h-[400px] mb-8 rounded-lg overflow-hidden">
             <Image
-              src={post.coverImage.url}
-              alt={post.title}
+              src={post.feature_image}
+              alt={post.feature_image_alt || post.title}
               fill
               className="object-cover"
               priority
@@ -53,7 +53,7 @@ export function PostContent({ post }: PostContentProps) {
       </header>
       <div 
         className="prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: post.content }}
+        dangerouslySetInnerHTML={{ __html: post.html }}
       />
     </article>
   );
