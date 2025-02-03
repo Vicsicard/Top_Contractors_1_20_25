@@ -1,7 +1,7 @@
 import Parser from 'rss-parser';
 import fetch from 'node-fetch';
 import { scriptSupabase } from './script-supabase';
-import { normalizeCategory, getStandardCategory } from './category-mapper';
+import { getStandardCategory } from './category-mapper';
 import { Post } from '@/types/blog';
 
 // Extend the Parser.Item type to include Hashnode-specific fields
