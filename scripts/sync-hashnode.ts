@@ -121,7 +121,7 @@ async function syncHashnodePosts() {
       published_at: new Date(edge.node.publishedAt).toISOString(),
       tags: edge.node.tags.map(t => t.name),
       updated_at: new Date().toISOString()
-    }));
+    })) as HashnodePost[];
 
     console.log(`Found ${posts.length} posts to sync`);
 

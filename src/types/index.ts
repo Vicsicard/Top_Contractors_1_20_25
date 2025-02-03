@@ -1,4 +1,4 @@
-export interface Post {
+export interface HashnodePost {
   id: number
   hashnode_id: string
   title: string

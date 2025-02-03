@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getPostBySlug } from '@/utils/posts';
 import { PostContent } from '@/components/blog/PostContent';
-import { Post } from '@/types';
+import { Post } from '@/types/blog';
 
 interface Props {
   params: {
@@ -15,33 +15,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!post) {
     return {
-      title: 'Post Not Found | Top Contractors Denver Blog',
-      description: 'The requested blog post could not be found.',
+      title: 'Not Found',
+      description: 'The page you are looking for does not exist.',
       robots: 'noindex, nofollow'
     };
   }
 
-  const typedPost = post as Post;
-
   return {
-    title: `${typedPost.title} | Top Contractors Denver Blog`,
-    description: typedPost.excerpt || undefined,
+    title: `${post.title} | Top Contractors Denver Blog`,
+    description: post.excerpt || undefined,
     openGraph: {
-      title: typedPost.title,
-      description: typedPost.excerpt || undefined,
+      title: post.title,
+      description: post.excerpt || undefined,
       type: 'article',
-      publishedTime: typedPost.published_at,
+      publishedTime: post.published_at,
       images: [
         {
-          url: typedPost.cover_image || '/images/default-post.svg', // Fallback to default image
-          alt: typedPost.cover_image_alt || typedPost.title,
+          url: post.feature_image || '/images/default-post.svg',
+          alt: post.feature_image_alt || post.title,
           width: 1200,
           height: 630
         }
       ],
     },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.excerpt || undefined,
+      images: [post.feature_image || '/images/default-post.svg']
+    },
     alternates: {
-      canonical: `/blog/${typedPost.slug}`
+      canonical: `/blog/${post.slug}`
     }
   };
 }
@@ -55,7 +59,5 @@ export default async function BlogPostPage({ params }: Props) {
     notFound();
   }
 
-  const typedPost = post as Post;
-
-  return <PostContent post={typedPost} />;
+  return <PostContent post={post} />;
 }
