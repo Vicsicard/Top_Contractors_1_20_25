@@ -1,6 +1,6 @@
 import { Post, PaginatedPosts, Author, Tag } from '@/types/blog';
 import { supabase } from '@/utils/supabase';
-import { normalizeCategory, isValidCategory } from '@/utils/category-mapper';
+import { getStandardCategory, isValidCategory } from '@/utils/category-mapper';
 
 const POSTS_PER_PAGE = 12; // Standardized posts per page across the site - optimized for 3-column grid
 
@@ -175,8 +175,8 @@ export async function getPostBySlug(slug: string, trade?: string): Promise<Post 
 
         // Add trade category filter if provided
         if (trade) {
-            const normalizedTrade = normalizeCategory(trade);
-            query.or(`trade_category.ilike.${trade},trade_category.ilike.${normalizedTrade}`);
+            const standardizedTrade = getStandardCategory(trade);
+            query.or(`trade_category.ilike.${trade},trade_category.ilike.${standardizedTrade}`);
         }
 
         const { data: posts, error } = await query;
@@ -202,9 +202,9 @@ export async function getPostBySlug(slug: string, trade?: string): Promise<Post 
             id: post.id,
             slug: post.slug,
             originalCategory: post.trade_category,
-            normalizedCategory: normalizeCategory(post.trade_category),
+            standardizedCategory: getStandardCategory(post.trade_category),
             requestedTrade: trade,
-            normalizedTrade: trade ? normalizeCategory(trade) : null
+            standardizedTrade: trade ? getStandardCategory(trade) : null
         });
 
         // Transform post to match Post interface
@@ -262,7 +262,7 @@ export async function getPostsByCategory(
             throw new Error('Category is required');
         }
 
-        // Validate and normalize the category
+        // Validate and standardize the category
         if (!isValidCategory(category)) {
             console.log('DEBUG: Invalid category requested:', category);
             return {
@@ -274,10 +274,10 @@ export async function getPostsByCategory(
             };
         }
 
-        const normalizedCategory = normalizeCategory(category);
-        console.log('DEBUG: Fetching posts for normalized category:', {
+        const standardizedCategory = getStandardCategory(category);
+        console.log('DEBUG: Fetching posts for standardized category:', {
             original: category,
-            normalized: normalizedCategory
+            standardized: standardizedCategory
         });
 
         // Calculate pagination
@@ -288,7 +288,7 @@ export async function getPostsByCategory(
         const countResult = await supabase
             .from('posts')
             .select('*', { count: 'exact', head: true })
-            .or(`trade_category.ilike.${category},trade_category.ilike.${normalizedCategory}`)
+            .or(`trade_category.ilike.${category},trade_category.ilike.${standardizedCategory}`)
             .not('trade_category', 'is', null)
             .not('published_at', 'is', null)
             .lt('published_at', new Date().toISOString());
@@ -311,7 +311,7 @@ export async function getPostsByCategory(
                 reading_time,
                 trade_category
             `)
-            .or(`trade_category.ilike.${category},trade_category.ilike.${normalizedCategory}`)
+            .or(`trade_category.ilike.${category},trade_category.ilike.${standardizedCategory}`)
             .not('trade_category', 'is', null)
             .not('published_at', 'is', null)
             .lt('published_at', new Date().toISOString())
@@ -320,7 +320,7 @@ export async function getPostsByCategory(
 
         console.log('DEBUG: Posts query result:', {
             category,
-            normalizedCategory,
+            standardizedCategory,
             postsFound: postsResult.data?.length || 0,
             error: postsResult.error
         });
