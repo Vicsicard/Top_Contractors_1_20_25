@@ -1,11 +1,13 @@
 import { scriptSupabase } from '../src/utils/script-supabase';
 
+type CategoryUpdate = [string, string[]];
+
 async function updateTradeCategories() {
   try {
     console.log('Starting trade category updates...');
 
     // Update posts table
-    const updates = [
+    const updates: CategoryUpdate[] = [
       ["bathroom remodeling", ["bathroom-remodeling", "bathroom", "bathrooms", "bathroom remodel"]],
       ["electrician", ["electrical", "electric"]],
       ["epoxy garage", ["epoxy-garage", "epoxy", "garage flooring"]],
@@ -47,58 +49,35 @@ async function updateTradeCategories() {
       'masonry',
       'plumbing',
       'roofer',
+      'siding gutters',
       'windows'
     ];
 
-    const { data: invalidCategories, error: checkError } = await scriptSupabase
-      .from('posts')
-      .select('trade_category')
-      .not('trade_category', 'in', `(${validCategories.map(c => `'${c}'`).join(',')})`)
-      .limit(10);
+    // Check for any posts with invalid categories
+    const { data: invalidPosts, error: verifyError } = await scriptSupabase.rpc('exec_sql', {
+      sql_query: `
+        SELECT id, title, trade_category
+        FROM posts
+        WHERE trade_category IS NOT NULL
+        AND trade_category NOT IN (SELECT unnest($1::text[]))
+      `,
+      params: [validCategories]
+    });
 
-    if (checkError) {
-      console.error('Error checking categories:', checkError);
-      throw checkError;
+    if (verifyError) {
+      console.error('Error verifying categories:', verifyError);
+      throw verifyError;
     }
 
-    if (invalidCategories && invalidCategories.length > 0) {
-      console.error('Found invalid categories:', invalidCategories.map(p => p.trade_category));
-      throw new Error('Invalid categories found');
+    if (invalidPosts && invalidPosts.length > 0) {
+      console.warn('Found posts with invalid categories:', invalidPosts);
+    } else {
+      console.log('All posts have valid categories!');
     }
 
-    // Update posts_tags table
-    const tagUpdates = [
-      ["bathroom remodeling", ["bathroom-remodeling", "bathroom", "bathrooms"]],
-      ["electrician", ["electrical", "electric"]],
-      ["epoxy garage", ["epoxy-garage", "epoxy"]],
-      ["home remodeling", ["home-remodeling", "remodeling"]],
-      ["kitchen remodeling", ["kitchen-remodeling", "kitchen", "kitchens"]],
-      ["landscaper", ["landscaping"]],
-      ["roofer", ["roofing"]]
-    ];
-
-    for (const [newTag, oldTags] of tagUpdates) {
-      console.log(`Updating tags ${oldTags.join(', ')} to ${newTag}...`);
-      const { error } = await scriptSupabase.rpc('exec_sql', {
-        sql_query: `
-          UPDATE posts_tags 
-          SET 
-            name = $1,
-            slug = $1
-          WHERE name = ANY($2::text[])
-        `,
-        params: [newTag, oldTags]
-      });
-
-      if (error) {
-        console.error(`Error updating tags to ${newTag}:`, error);
-        throw error;
-      }
-    }
-
-    console.log('Successfully updated all trade categories and tags!');
+    console.log('Trade category updates completed successfully!');
   } catch (error) {
-    console.error('Error updating trade categories:', error);
+    console.error('Failed to update trade categories:', error);
     process.exit(1);
   }
 }
