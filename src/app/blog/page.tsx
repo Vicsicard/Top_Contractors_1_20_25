@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export const revalidate = 3600; // Revalidate every hour
 
 interface BlogPageProps {
-  params: {};
+  params: Record<never, never>;
   searchParams: {
     category?: string;
   };

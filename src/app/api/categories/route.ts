@@ -1,5 +1,4 @@
 import { createClient } from '@/utils/supabase-server';
-import { NextRequest } from 'next/server';
 
 // Enable caching with revalidation every hour
 export const revalidate = 3600;
