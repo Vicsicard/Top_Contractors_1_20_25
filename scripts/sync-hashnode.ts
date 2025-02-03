@@ -3,21 +3,14 @@ import { scriptSupabase } from '../src/utils/script-supabase';
 const HASHNODE_API_URL = 'https://gql.hashnode.com';
 
 interface HashnodePost {
-  id: string;
+  hashnode_id: string;
   title: string;
   slug: string;
-  content: {
-    html: string;
-  };
-  brief: string;
-  coverImage: {
-    url: string;
-  } | null;
-  publishedAt: string;
-  tags: Array<{
-    name: string;
-    slug: string;
-  }>;
+  excerpt?: string;
+  content: string;
+  cover_image?: string | null;
+  published_at: string | null;
+  tags: string[] | null;
 }
 
 interface HashnodeResponse {
@@ -30,7 +23,22 @@ interface HashnodeResponse {
             title: string;
             posts: {
               edges: Array<{
-                node: HashnodePost;
+                node: {
+                  id: string;
+                  title: string;
+                  slug: string;
+                  brief: string;
+                  content: {
+                    html: string;
+                  };
+                  coverImage?: {
+                    url: string;
+                  };
+                  publishedAt: string;
+                  tags: Array<{
+                    name: string;
+                  }>;
+                };
               }>;
             };
           };
@@ -69,18 +77,17 @@ async function syncHashnodePosts() {
                         node {
                           id
                           title
+                          slug
+                          brief
                           content {
                             html
                           }
-                          brief
-                          slug
                           coverImage {
                             url
                           }
                           publishedAt
                           tags {
                             name
-                            slug
                           }
                         }
                       }
@@ -111,17 +118,16 @@ async function syncHashnodePosts() {
       throw new Error('No posts found in publication');
     }
 
-    const posts = publication.posts.edges.map(edge => ({
+    const posts: HashnodePost[] = publication.posts.edges.map(edge => ({
       hashnode_id: edge.node.id,
       title: edge.node.title,
       slug: edge.node.slug,
+      excerpt: edge.node.brief,
       content: edge.node.content.html,
-      brief: edge.node.brief,
       cover_image: edge.node.coverImage?.url || null,
-      published_at: new Date(edge.node.publishedAt).toISOString(),
-      tags: edge.node.tags.map(t => t.name),
-      updated_at: new Date().toISOString()
-    })) as HashnodePost[];
+      published_at: edge.node.publishedAt,
+      tags: edge.node.tags.map(tag => tag.name)
+    }));
 
     console.log(`Found ${posts.length} posts to sync`);
 
@@ -132,8 +138,14 @@ async function syncHashnodePosts() {
         .from('posts')
         .upsert(
           {
-            ...post,
-            hashnode_id: post.hashnode_id
+            hashnode_id: post.hashnode_id,
+            title: post.title,
+            slug: post.slug,
+            excerpt: post.excerpt,
+            content: post.content,
+            cover_image: post.cover_image,
+            published_at: post.published_at,
+            tags: post.tags
           },
           {
             onConflict: 'hashnode_id'
