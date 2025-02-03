@@ -24,11 +24,10 @@ export async function getPosts(limit = 6, category?: string) {
 
     if (category) {
       console.log('Filtering by category:', category);
-      // Try both the exact category and any variations
       const variations = [
         category,
-        category.replace('-', ' '),  // e.g., "bathroom-remodeling" -> "bathroom remodeling"
-        category.split('-')[0],      // e.g., "bathroom-remodeling" -> "bathroom"
+        category.replace('-', ' '),
+        category.split('-')[0],
       ];
       console.log('Using category variations:', variations);
       query = query.in('trade_category', variations);
@@ -43,43 +42,58 @@ export async function getPosts(limit = 6, category?: string) {
     }
 
     console.log('Found posts:', posts?.length || 0);
-    console.log('First post trade_category:', posts?.[0]?.trade_category);
-    console.log('Raw posts from Supabase:', JSON.stringify(posts, null, 2));
 
-    // Transform to match the Post type format
-    const transformedPosts = {
-      edges: posts.map(post => {
-        // Extract first image from content if no feature image
-        const firstImage = !post.feature_image && post.html ? extractFirstImage(post.html) : null;
-        
-        return {
-          node: {
-            id: post.id,
-            title: post.title,
-            slug: post.slug,
-            html: post.html,
-            excerpt: post.excerpt || post.html?.substring(0, 150) + '...',
-            feature_image: post.feature_image || firstImage?.url,
-            feature_image_alt: post.feature_image_alt || firstImage?.alt || post.title,
-            published_at: post.published_at,
-            updated_at: post.updated_at,
-            reading_time: post.reading_time || Math.ceil((post.html?.length || 0) / 1500),
-            trade_category: post.trade_category,
-            authors: post.authors || [{
-              id: 'default',
-              name: 'Top Contractors Denver',
-              slug: 'top-contractors-denver',
-              profile_image: null,
-              bio: null,
-              url: null
-            }],
-            tags: post.tags || []
-          } as Post
-        }})
+    // Transform posts and parse JSONB fields
+    const transformedPosts = posts.map(post => {
+      let authors = [];
+      try {
+        authors = typeof post.authors === 'string' ? JSON.parse(post.authors) : post.authors || [];
+      } catch (e) {
+        console.error('Error parsing authors for post:', post.title, e);
+        authors = [{
+          id: 'default',
+          name: 'Top Contractors Denver',
+          slug: 'top-contractors-denver',
+          profile_image: null,
+          bio: null,
+          url: null
+        }];
+      }
+
+      let tags = [];
+      try {
+        tags = typeof post.tags === 'string' ? JSON.parse(post.tags) : post.tags || [];
+      } catch (e) {
+        console.error('Error parsing tags for post:', post.title, e);
+        tags = [];
+      }
+
+      const firstImage = !post.feature_image && post.html ? extractFirstImage(post.html) : null;
+
+      return {
+        id: post.id,
+        title: post.title,
+        slug: post.slug,
+        html: post.html || '',
+        excerpt: post.excerpt || post.html?.substring(0, 150) + '...',
+        feature_image: post.feature_image || firstImage?.url || null,
+        feature_image_alt: post.feature_image_alt || firstImage?.alt || post.title,
+        published_at: post.published_at,
+        updated_at: post.updated_at,
+        reading_time: post.reading_time || Math.ceil((post.html?.length || 0) / 1500),
+        trade_category: post.trade_category,
+        authors: authors,
+        tags: tags
+      };
+    });
+
+    return {
+      posts: transformedPosts,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPrevPage: false,
+      totalPosts: transformedPosts.length
     };
-
-    console.log('Transformed posts:', JSON.stringify(transformedPosts, null, 2));
-    return transformedPosts;
   } catch (error) {
     console.error('Error in getPosts:', error);
     return null;
@@ -100,32 +114,54 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     return null;
   }
 
+  if (!post) {
+    console.log('No post found with slug:', slug);
+    return null;
+  }
+
   console.log('Raw post data from Supabase:', JSON.stringify(post, null, 2));
 
   // Extract first image from content if no feature image
   const firstImage = !post.feature_image && post.html ? extractFirstImage(post.html) : null;
 
-  // Transform to match the Post type format
-  return {
-    id: post.id,
-    title: post.title,
-    slug: post.slug,
-    html: post.html,
-    excerpt: post.excerpt || post.html?.substring(0, 150) + '...',
-    feature_image: post.feature_image || firstImage?.url,
-    feature_image_alt: post.feature_image_alt || firstImage?.alt || post.title,
-    published_at: post.published_at,
-    updated_at: post.updated_at,
-    reading_time: post.reading_time || Math.ceil((post.html?.length || 0) / 1500),
-    trade_category: post.trade_category,
-    authors: post.authors || [{
+  // Parse JSONB fields
+  let authors = [];
+  try {
+    authors = typeof post.authors === 'string' ? JSON.parse(post.authors) : post.authors || [];
+  } catch (e) {
+    console.error('Error parsing authors:', e);
+    authors = [{
       id: 'default',
       name: 'Top Contractors Denver',
       slug: 'top-contractors-denver',
       profile_image: null,
       bio: null,
       url: null
-    }],
-    tags: post.tags || []
+    }];
+  }
+
+  let tags = [];
+  try {
+    tags = typeof post.tags === 'string' ? JSON.parse(post.tags) : post.tags || [];
+  } catch (e) {
+    console.error('Error parsing tags:', e);
+    tags = [];
+  }
+
+  // Transform to match the Post type format
+  return {
+    id: post.id,
+    title: post.title,
+    slug: post.slug,
+    html: post.html || '',
+    excerpt: post.excerpt || post.html?.substring(0, 150) + '...',
+    feature_image: post.feature_image || firstImage?.url || null,
+    feature_image_alt: post.feature_image_alt || firstImage?.alt || post.title,
+    published_at: post.published_at,
+    updated_at: post.updated_at,
+    reading_time: post.reading_time || Math.ceil((post.html?.length || 0) / 1500),
+    trade_category: post.trade_category,
+    authors: authors,
+    tags: tags
   };
 }

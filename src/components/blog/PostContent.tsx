@@ -1,11 +1,15 @@
 import Image from 'next/image';
 import type { Post } from '@/types/blog';
+import defaultPostImage from '@/public/images/default-post.svg';
 
 interface PostContentProps {
   post: Post;
 }
 
 export function PostContent({ post }: PostContentProps) {
+  const authorName = post.authors?.[0]?.name || 'Top Contractors Denver';
+  const featureImage = post.feature_image || defaultPostImage;
+
   return (
     <article className="max-w-4xl mx-auto px-4 py-8">
       <header className="mb-8">
@@ -15,7 +19,7 @@ export function PostContent({ post }: PostContentProps) {
         <div className="flex items-center justify-between mb-6">
           <div>
             <div className="font-medium text-gray-900">
-              {post.authors?.[0]?.name || 'Top Contractors Denver'}
+              {authorName}
             </div>
             <time className="text-sm text-gray-500">
               {new Date(post.published_at).toLocaleDateString('en-US', {
@@ -38,10 +42,10 @@ export function PostContent({ post }: PostContentProps) {
             </div>
           )}
         </div>
-        {post.feature_image && (
+        {featureImage && (
           <div className="relative w-full h-[400px] mb-8 rounded-lg overflow-hidden">
             <Image
-              src={post.feature_image}
+              src={featureImage}
               alt={post.feature_image_alt || post.title}
               fill
               className="object-cover"
@@ -51,10 +55,24 @@ export function PostContent({ post }: PostContentProps) {
           </div>
         )}
       </header>
-      <div 
-        className="prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: post.html }}
-      />
+      
+      {post.html && (
+        <div 
+          className="prose prose-lg max-w-none"
+          dangerouslySetInnerHTML={{ __html: post.html }}
+        />
+      )}
+
+      <footer className="mt-8 pt-8 border-t border-gray-200">
+        <div className="flex items-center">
+          <div>
+            <div className="font-medium text-gray-900">Written by {authorName}</div>
+            {post.authors?.[0]?.bio && (
+              <p className="text-gray-600 mt-1">{post.authors[0].bio}</p>
+            )}
+          </div>
+        </div>
+      </footer>
     </article>
   );
 }
