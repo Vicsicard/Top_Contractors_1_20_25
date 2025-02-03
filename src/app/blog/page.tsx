@@ -11,6 +11,14 @@ export const metadata: Metadata = {
     title: 'Blog | Top Contractors Denver',
     description: 'Read the latest articles about home improvement, contractors, and construction tips.',
     type: 'website',
+    images: [
+      {
+        url: 'https://6be7e0906f1487fecf0b9cbd301defd6.cdn.bubble.io/f1738570015825x940388143865540100/FLUX.1-schnell',
+        width: 1200,
+        height: 630,
+        alt: 'Top Contractors Denver Blog'
+      }
+    ]
   },
 };
 

@@ -1,6 +1,18 @@
 import { supabase } from '@/lib/supabase';
 import type { Post } from '@/types/blog';
 
+function extractFirstImage(html: string): { url: string; alt: string } | null {
+  const imgRegex = /<img[^>]+src="([^">]+)"[^>]*alt="([^">]*)"[^>]*>/i;
+  const match = html.match(imgRegex);
+  if (match && match[1]) {
+    return {
+      url: match[1],
+      alt: match[2] || ''
+    };
+  }
+  return null;
+}
+
 export async function getPosts(limit = 6, category?: string) {
   console.log('Fetching posts from Supabase...', { limit, category });
   
@@ -36,30 +48,34 @@ export async function getPosts(limit = 6, category?: string) {
 
     // Transform to match the Post type format
     const transformedPosts = {
-      edges: posts.map(post => ({
-        node: {
-          id: post.id,
-          title: post.title,
-          slug: post.slug,
-          html: post.html,
-          excerpt: post.excerpt || post.html?.substring(0, 150) + '...',
-          feature_image: post.feature_image,
-          feature_image_alt: post.feature_image_alt,
-          published_at: post.published_at,
-          updated_at: post.updated_at,
-          reading_time: post.reading_time || Math.ceil((post.html?.length || 0) / 1500),
-          trade_category: post.trade_category,
-          authors: post.authors || [{
-            id: 'default',
-            name: 'Top Contractors Denver',
-            slug: 'top-contractors-denver',
-            profile_image: null,
-            bio: null,
-            url: null
-          }],
-          tags: post.tags || []
-        } as Post
-      }))
+      edges: posts.map(post => {
+        // Extract first image from content if no feature image
+        const firstImage = !post.feature_image && post.html ? extractFirstImage(post.html) : null;
+        
+        return {
+          node: {
+            id: post.id,
+            title: post.title,
+            slug: post.slug,
+            html: post.html,
+            excerpt: post.excerpt || post.html?.substring(0, 150) + '...',
+            feature_image: post.feature_image || firstImage?.url,
+            feature_image_alt: post.feature_image_alt || firstImage?.alt || post.title,
+            published_at: post.published_at,
+            updated_at: post.updated_at,
+            reading_time: post.reading_time || Math.ceil((post.html?.length || 0) / 1500),
+            trade_category: post.trade_category,
+            authors: post.authors || [{
+              id: 'default',
+              name: 'Top Contractors Denver',
+              slug: 'top-contractors-denver',
+              profile_image: null,
+              bio: null,
+              url: null
+            }],
+            tags: post.tags || []
+          } as Post
+        }})
     };
 
     console.log('Transformed posts:', JSON.stringify(transformedPosts, null, 2));
@@ -86,6 +102,9 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 
   console.log('Raw post data from Supabase:', JSON.stringify(post, null, 2));
 
+  // Extract first image from content if no feature image
+  const firstImage = !post.feature_image && post.html ? extractFirstImage(post.html) : null;
+
   // Transform to match the Post type format
   return {
     id: post.id,
@@ -93,8 +112,8 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     slug: post.slug,
     html: post.html,
     excerpt: post.excerpt || post.html?.substring(0, 150) + '...',
-    feature_image: post.feature_image,
-    feature_image_alt: post.feature_image_alt,
+    feature_image: post.feature_image || firstImage?.url,
+    feature_image_alt: post.feature_image_alt || firstImage?.alt || post.title,
     published_at: post.published_at,
     updated_at: post.updated_at,
     reading_time: post.reading_time || Math.ceil((post.html?.length || 0) / 1500),
