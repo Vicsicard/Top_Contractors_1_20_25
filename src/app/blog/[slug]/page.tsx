@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getPostBySlug } from '@/utils/posts';
 import { PostContent } from '@/components/blog/PostContent';
+import { Post } from '@/types';
 
 interface Props {
   params: {
@@ -20,25 +21,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const typedPost = post as Post;
+
   return {
-    title: `${post.title} | Top Contractors Denver Blog`,
-    description: post.excerpt || undefined,
+    title: `${typedPost.title} | Top Contractors Denver Blog`,
+    description: typedPost.excerpt || undefined,
     openGraph: {
-      title: post.title,
-      description: post.excerpt || undefined,
+      title: typedPost.title,
+      description: typedPost.excerpt || undefined,
       type: 'article',
-      publishedTime: post.published_at,
+      publishedTime: typedPost.published_at,
       images: [
         {
-          url: post.cover_image || '/images/default-post.svg', // Fallback to default image
-          alt: post.cover_image_alt || post.title,
+          url: typedPost.cover_image || '/images/default-post.svg', // Fallback to default image
+          alt: typedPost.cover_image_alt || typedPost.title,
           width: 1200,
           height: 630
         }
       ],
     },
     alternates: {
-      canonical: `/blog/${post.slug}`
+      canonical: `/blog/${typedPost.slug}`
     }
   };
 }
@@ -52,5 +55,7 @@ export default async function BlogPostPage({ params }: Props) {
     notFound();
   }
 
-  return <PostContent post={post} />;
+  const typedPost = post as Post;
+
+  return <PostContent post={typedPost} />;
 }
