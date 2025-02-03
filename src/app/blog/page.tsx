@@ -34,8 +34,19 @@ interface BlogPageProps {
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   try {
     const { category } = searchParams;
-    const posts = await getPosts(6, category); // Fetch 6 most recent posts
-    console.log('Fetched posts:', posts, { category }); // Debug log
+    const result = await getPosts(6, category); // Fetch 6 most recent posts
+    console.log('Fetched posts:', result, { category }); // Debug log
+
+    if (!result) {
+      return (
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="text-3xl font-bold mb-8">Top Contractors Denver Blog</h1>
+          <p className="text-gray-600">Error loading posts. Please try again later.</p>
+        </div>
+      );
+    }
+
+    const { posts, totalPosts } = result;
 
     return (
       <div className="container mx-auto px-4 py-8">
@@ -49,28 +60,35 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         {/* Recent Posts Section */}
         <section>
           <h2 className="text-2xl font-semibold mb-6">Recent Posts</h2>
-          {!posts?.edges.length ? (
+          {!posts?.length ? (
             <p className="text-gray-600">No recent posts found.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {posts.edges.map(({ node: post }: { node: Post }) => (
+              {posts.map((post: Post) => (
                 <BlogPostCard 
                   key={post.id} 
                   post={post}
-                  showTags={true}
                 />
               ))}
             </div>
           )}
         </section>
+
+        {totalPosts > posts.length && (
+          <div className="mt-8 text-center">
+            <p className="text-gray-600">
+              Showing {posts.length} of {totalPosts} posts
+            </p>
+          </div>
+        )}
       </div>
     );
   } catch (error) {
-    console.error('Error fetching blog posts:', error);
+    console.error('Error in BlogPage:', error);
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Top Contractors Denver Blog</h1>
-        <p className="text-red-600">Error loading blog posts. Please try again later.</p>
+        <p className="text-gray-600">Error loading posts. Please try again later.</p>
       </div>
     );
   }
