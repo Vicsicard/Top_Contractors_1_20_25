@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Post } from '@/types/blog';
-import defaultPostImage from '@/public/images/default-post.svg';
+import defaultPostImage from '../../public/images/default-post.svg';
 
 interface BlogPostCardProps {
   post: Post;

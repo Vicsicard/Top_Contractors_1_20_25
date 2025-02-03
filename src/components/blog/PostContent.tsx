@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import type { Post } from '@/types/blog';
-import defaultPostImage from '@/public/images/default-post.svg';
+import defaultPostImage from '../../../public/images/default-post.svg';
 
 interface PostContentProps {
   post: Post;
