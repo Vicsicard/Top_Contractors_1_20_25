@@ -12,14 +12,15 @@ interface HashnodeRSSItem extends Parser.Item {
   coverImage?: string;
   brief?: string;
   content?: string;
+  description?: string[];
 }
 
 // Create a custom parser with the fields we need
 const parser = new Parser<{item: HashnodeRSSItem}>({
   customFields: {
     item: [
-      ['content:encoded', 'content'],
-      ['content:encodedSnippet', 'brief'],
+      'content:encoded',
+      'content:encodedSnippet',
       'coverImage'
     ]
   }
@@ -72,7 +73,7 @@ function transformRSSItem(item: HashnodeRSSItem): Partial<Post> {
     id,
     title: item.title || '',
     slug: slug,
-    html: item.content || '',
+    html: item.description?.[0] || '',
     excerpt: item.brief || item['content:encodedSnippet'] || null,
     feature_image: item.coverImage || null,
     feature_image_alt: null, // Hashnode RSS doesn't provide alt text

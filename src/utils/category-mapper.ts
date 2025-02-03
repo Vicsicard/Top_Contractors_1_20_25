@@ -43,6 +43,9 @@ export const categoryMappings: Record<string, ValidCategory> = {
   'bathroom': 'bathroom-remodeling',
   'bathroom remodeling': 'bathroom-remodeling',
   'bathroom-remodeling': 'bathroom-remodeling',
+  'bathtub': 'bathroom-remodeling',
+  'shower': 'bathroom-remodeling',
+  'tub': 'bathroom-remodeling',
 
   // Kitchen variations
   'kitchen': 'kitchen-remodeling',
@@ -53,43 +56,65 @@ export const categoryMappings: Record<string, ValidCategory> = {
   'remodeling': 'home-remodeling',
   'home-remodeling': 'home-remodeling',
   'general': 'home-remodeling',
+  'renovation': 'home-remodeling',
 
   // Electrical variations
   'electrical': 'electrical',
 
   // HVAC variations
   'hvac': 'hvac',
+  'heating': 'hvac',
+  'cooling': 'hvac',
+  'air conditioning': 'hvac',
 
   // Roofing variations
   'roofing': 'roofing',
+  'roof': 'roofing',
+  'shingles': 'roofing',
+  'shingle': 'roofing',
 
   // Painting variations
   'painting': 'painting',
+  'paint': 'painting',
 
   // Landscaping variations
   'landscaping': 'landscaping',
+  'landscape': 'landscaping',
+  'yard': 'landscaping',
 
   // Masonry variations
   'masonry': 'masonry',
+  'stone': 'masonry',
+  'brick': 'masonry',
 
   // Decks variations
   'decks': 'decks',
+  'deck': 'decks',
+  'decking': 'decks',
 
   // Flooring variations
   'flooring': 'flooring',
+  'floor': 'flooring',
+  'tile': 'flooring',
 
   // Windows variations
   'windows': 'windows',
+  'window': 'windows',
 
   // Fencing variations
   'fencing': 'fencing',
+  'fence': 'fencing',
 
   // Epoxy garage variations
   'epoxy-garage': 'epoxy-garage',
+  'epoxy': 'epoxy-garage',
+  'garage': 'epoxy-garage',
 
   // Siding variations
   'siding': 'siding-gutters',
-  'siding-gutters': 'siding-gutters'
+  'siding-gutters': 'siding-gutters',
+  'vinyl': 'siding-gutters',
+  'gutters': 'siding-gutters'
 };
 
 export function normalizeCategory(category: string | null): ValidCategory | string {

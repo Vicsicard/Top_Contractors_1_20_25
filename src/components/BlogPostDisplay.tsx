@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import type { Post } from '@/types/blog';
 
@@ -11,6 +11,15 @@ interface BlogPostDisplayProps {
 export function BlogPostDisplay({ post }: BlogPostDisplayProps) {
     const [imageError, setImageError] = useState(false);
     const fallbackImage = '/images/denver-skyline.jpg';
+
+    useEffect(() => {
+        console.log('BlogPostDisplay received post:', {
+            title: post.title,
+            htmlLength: post.html?.length || 0,
+            htmlPreview: post.html?.substring(0, 500),
+            hasHtml: !!post.html
+        });
+    }, [post]);
 
     const handleImageError = () => {
         if (!imageError) {

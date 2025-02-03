@@ -1,8 +1,9 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getPostBySlug } from '@/utils/posts';
-import { isValidCategory, getStandardCategory } from '@/utils/category-mapper';
-import { formatCategoryTitle, getCategoryMetadata } from '@/utils/category-utils';
+import { BlogPostDisplay } from '@/components/BlogPostDisplay';
+import { isValidCategory } from '@/utils/category-mapper';
+import { Suspense } from 'react';
 
 interface Props {
   params: {
@@ -12,15 +13,6 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  // Validate category first
-  if (!isValidCategory(params.category)) {
-    return {
-      title: 'Category Not Found | Top Contractors Denver Blog',
-      description: 'The requested blog category could not be found.',
-      robots: 'noindex, nofollow'
-    };
-  }
-
   const post = await getPostBySlug(params.slug);
 
   if (!post) {
@@ -31,105 +23,70 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  // Verify the post belongs to the correct category
-  const standardCategory = getStandardCategory(post.trade_category);
-  if (standardCategory !== params.category) {
-    return {
-      title: 'Post Not Found | Top Contractors Denver Blog',
-      description: 'The requested blog post could not be found in this category.',
-      robots: 'noindex, nofollow'
-    };
-  }
-
   return {
     title: `${post.title} | Top Contractors Denver Blog`,
-    description: post.excerpt || '',
-    openGraph: {
-      title: post.title,
-      description: post.excerpt || '',
-      type: 'article',
-      publishedTime: post.published_at,
-      images: post.feature_image ? [post.feature_image] : undefined,
-    },
-    alternates: {
-      canonical: `/blog/trades/${params.category}/${post.slug}`
+    description: post.excerpt || `Read about ${post.title} on Top Contractors Denver Blog`,
+    robots: {
+      index: true,
+      follow: true
     }
   };
 }
 
 export const revalidate = 3600; // Revalidate every hour
 
-export default async function TradeBlogPost({ params }: Props) {
-  // Validate category first
+export default async function BlogPostPage({ params }: Props) {
+  console.log('Rendering blog post page:', params);
+
   if (!isValidCategory(params.category)) {
+    console.log('Invalid category:', params.category);
     notFound();
   }
 
+  console.log('Attempting to fetch post with slug:', params.slug);
   const post = await getPostBySlug(params.slug);
-
+  
   if (!post) {
+    console.log('Post not found:', params.slug);
     notFound();
   }
+
+  console.log('Post data received:', {
+    title: post.title,
+    category: post.trade_category,
+    htmlLength: post.html?.length || 0,
+    excerpt: post.excerpt?.substring(0, 100),
+    htmlPreview: post.html?.substring(0, 500)
+  });
 
   // Verify the post belongs to the correct category
-  const standardCategory = getStandardCategory(post.trade_category);
-  if (standardCategory !== params.category) {
+  const postCategory = post.trade_category?.toLowerCase().replace(' ', '-');
+  console.log('Category comparison:', {
+    postCategory,
+    urlCategory: params.category,
+    match: postCategory === params.category
+  });
+
+  if (postCategory !== params.category) {
+    console.log('Category mismatch:', { postCategory, urlCategory: params.category });
     notFound();
   }
 
   return (
-    <article className="container mx-auto px-4 py-8">
-      {/* Post Header */}
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-        {post.excerpt && (
-          <p className="text-xl text-gray-600 mb-4">{post.excerpt}</p>
-        )}
-        <div className="flex items-center text-sm text-gray-500">
-          <time dateTime={post.published_at}>
-            {new Date(post.published_at).toLocaleDateString()}
-          </time>
-          {post.reading_time && (
-            <>
-              <span className="mx-2">•</span>
-              <span>{post.reading_time} min read</span>
-            </>
-          )}
-        </div>
-      </header>
-
-      {/* Featured Image */}
-      {post.feature_image && (
-        <div className="mb-8">
-          <img
-            src={post.feature_image}
-            alt={post.feature_image_alt || `Featured image for ${post.title}`}
-            className="w-full rounded-lg"
-          />
-        </div>
-      )}
-
-      {/* Post Content */}
-      <div 
-        className="prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: post.html }}
-      />
-
-      {/* Tags */}
-      {post.tags && post.tags.length > 0 && (
-        <div className="mt-8 pt-4 border-t">
-          <div className="flex flex-wrap gap-2">
-            {post.tags.map(tag => (
-              <span
-                key={tag.id}
-                className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
-              >
-                {tag.name}
-              </span>
-            ))}
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/4 mb-8"></div>
+          <div className="space-y-4">
+            <div className="h-4 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-gray-200 rounded w-5/6"></div>
           </div>
         </div>
-      )}
-    </article>
+      </div>
+    }>
+      <BlogPostDisplay post={post} />
+    </Suspense>
   );
 }

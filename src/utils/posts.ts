@@ -71,6 +71,8 @@ export async function getPosts(limit = 6, category?: string) {
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
+  console.log('Fetching post by slug:', slug);
+  
   const { data: post, error } = await supabase
     .from('posts')
     .select('*')
@@ -81,6 +83,8 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     console.error('Error fetching post:', error);
     return null;
   }
+
+  console.log('Raw post data from Supabase:', JSON.stringify(post, null, 2));
 
   // Transform to match the Post type format
   return {
