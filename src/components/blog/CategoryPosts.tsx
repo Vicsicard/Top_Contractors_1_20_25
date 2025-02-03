@@ -2,82 +2,62 @@
 
 import { useState, useEffect } from 'react';
 import { Post } from '@/types/blog';
-import { BlogPostCard } from '../BlogPostCard';
+import { BlogPostCard } from '@/components/BlogPostCard';
 import { PostCardSkeleton } from './PostCardSkeleton';
-import { formatCategoryTitle, getCategoryError } from '@/utils/category-utils';
-import { ValidCategory } from '@/utils/category-mapper';
+import { getPosts } from '@/utils/posts';
 
 interface CategoryPostsProps {
-  category: ValidCategory;
-  initialPosts?: Post[];
+  category: string;
 }
 
-export function CategoryPosts({ category, initialPosts }: CategoryPostsProps) {
-  const [posts, setPosts] = useState<Post[]>(initialPosts || []);
-  const [isLoading, setIsLoading] = useState(!initialPosts);
-  const [error, setError] = useState<string | null>(null);
+export async function CategoryPosts({ category }: CategoryPostsProps) {
+  console.log('Fetching posts for category:', category);
+  
+  // Try different variations of the category
+  const variations = [
+    category,
+    category.replace('-', ' '),
+    category.split('-')[0]
+  ];
 
-  useEffect(() => {
-    if (!initialPosts) {
-      fetchPosts();
-    }
-  }, [category, initialPosts]);
-
-  async function fetchPosts() {
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      const response = await fetch(`/api/posts/category/${category}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      setPosts(data.posts);
-    } catch (err) {
-      setError(getCategoryError(err));
-      console.error('Error fetching posts:', err);
-    } finally {
-      setIsLoading(false);
+  let result = null;
+  for (const variation of variations) {
+    console.log('Trying category variation:', variation);
+    result = await getPosts(undefined, variation);
+    if (result?.posts.length) {
+      console.log('Found posts with variation:', variation);
+      break;
     }
   }
 
-  if (error) {
+  if (!result || !result.posts.length) {
     return (
-      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-        {error}
+      <div className="text-center py-8">
+        <p className="text-gray-600">No posts found in this category.</p>
       </div>
     );
   }
 
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {[...Array(6)].map((_, i) => (
-          <PostCardSkeleton key={i} />
-        ))}
-      </div>
-    );
-  }
-
-  if (!posts.length) {
-    return (
-      <p className="text-gray-600">
-        No posts found in {formatCategoryTitle(category)}.
-      </p>
-    );
-  }
+  const { posts, totalPosts } = result;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {posts.map((post) => (
-        <BlogPostCard 
-          key={post.id} 
-          post={post}
-          showTags={true}
-        />
-      ))}
+    <div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {posts.map((post: Post) => (
+          <BlogPostCard 
+            key={post.id} 
+            post={post}
+          />
+        ))}
+      </div>
+
+      {totalPosts > posts.length && (
+        <div className="mt-8 text-center">
+          <p className="text-gray-600">
+            Showing {posts.length} of {totalPosts} posts
+          </p>
+        </div>
+      )}
     </div>
   );
 }
