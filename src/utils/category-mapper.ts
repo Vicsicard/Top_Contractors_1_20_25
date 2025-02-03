@@ -173,19 +173,25 @@ export const categoryMappings: Record<string, ValidCategory> = {
 };
 
 // Utility function to normalize text for comparison
-function normalizeText(text: string): string {
+export function normalizeText(text: string): string {
   return text.toLowerCase().trim();
 }
 
 // Utility function to check if a category is valid
 export function isValidCategory(category: string): boolean {
-  return standardCategories[category as ValidCategory] || false;
+  return standardCategories[category as ValidCategory] === true;
+}
+
+// Utility function to normalize category name
+export function normalizeCategory(category: string | null): string | null {
+  if (!category) return null;
+  return normalizeText(category);
 }
 
 // Utility function to get standard category from any variation
 export function getStandardCategory(category: string | null): ValidCategory | null {
   if (!category) return null;
-  
-  const normalizedCategory = normalizeText(category);
-  return categoryMappings[normalizedCategory] || null;
+  const normalized = normalizeCategory(category);
+  if (!normalized) return null;
+  return categoryMappings[normalized] || null;
 }
