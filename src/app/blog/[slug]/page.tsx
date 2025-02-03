@@ -30,8 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.published_at,
       images: [
         {
-          url: post.feature_image,
-          alt: post.feature_image_alt || post.title,
+          url: post.cover_image || '/images/default-post.svg', // Fallback to default image
+          alt: post.cover_image_alt || post.title,
           width: 1200,
           height: 630
         }
