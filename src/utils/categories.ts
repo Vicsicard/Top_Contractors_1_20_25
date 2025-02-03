@@ -1,17 +1,18 @@
 const TRADE_CATEGORIES = [
-  'bathroom-remodeling',
+  'bathroom remodeling',
   'decks',
   'electrician',
-  'epoxy-garage',
+  'epoxy garage',
   'fencing',
   'flooring',
-  'home-remodeling',
+  'home remodeling',
   'hvac',
-  'kitchen-remodeling',
+  'kitchen remodeling',
   'landscaper',
   'masonry',
   'plumbing',
   'roofer',
+  'siding gutters',
   'windows'
 ];
 
@@ -20,8 +21,14 @@ export function getAllCategories(): string[] {
 }
 
 export function categoryToTitle(category: string): string {
+  // Split by space or hyphen to handle both formats
   return category
-    .split('-')
+    .split(/[-\s]/)
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
+}
+
+export function categoryToSlug(category: string): string {
+  // Convert spaces to hyphens for URL-friendly slugs
+  return category.toLowerCase().replace(/\s+/g, '-');
 }

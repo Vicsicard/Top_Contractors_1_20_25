@@ -13,22 +13,11 @@ interface CategoryPostsProps {
 export async function CategoryPosts({ category }: CategoryPostsProps) {
   console.log('Fetching posts for category:', category);
   
-  // Try different variations of the category
-  const variations = [
-    category,
-    category.replace('-', ' '),
-    category.split('-')[0]
-  ];
-
-  let result = null;
-  for (const variation of variations) {
-    console.log('Trying category variation:', variation);
-    result = await getPosts(undefined, variation);
-    if (result?.posts.length) {
-      console.log('Found posts with variation:', variation);
-      break;
-    }
-  }
+  // Convert URL slug to space-separated category
+  const normalizedCategory = category.replace(/-/g, ' ');
+  console.log('Normalized category:', normalizedCategory);
+  
+  const result = await getPosts(undefined, normalizedCategory);
 
   if (!result || !result.posts.length) {
     return (

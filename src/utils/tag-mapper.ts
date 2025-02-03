@@ -1,5 +1,5 @@
-// Define valid category type
-export type ValidCategory = 
+// Standard tags that match our trade categories
+export type ValidTag = 
   | 'bathroom remodeling'
   | 'decks'
   | 'electrician'
@@ -16,46 +16,30 @@ export type ValidCategory =
   | 'siding gutters'
   | 'windows';
 
-// Standard categories from tradesData
-export const standardCategories: Record<ValidCategory, boolean> = {
-  'bathroom remodeling': true,
-  'decks': true,
-  'electrician': true,
-  'epoxy garage': true,
-  'fencing': true,
-  'flooring': true,
-  'home remodeling': true,
-  'hvac': true,
-  'kitchen remodeling': true,
-  'landscaper': true,
-  'masonry': true,
-  'plumbing': true,
-  'roofer': true,
-  'siding gutters': true,
-  'windows': true
-};
-
-// Map all variations to standard categories
-export const categoryMappings: Record<string, ValidCategory> = {
+// Map variations of tag names to our standard tags
+const tagMappings: Record<string, ValidTag> = {
   // Bathroom variations
   'bathroom': 'bathroom remodeling',
+  'bathrooms': 'bathroom remodeling',
   'bathroom remodeling': 'bathroom remodeling',
-  'bathroom-remodeling': 'bathroom remodeling',
   'bathroom remodel': 'bathroom remodeling',
   'bathroom renovation': 'bathroom remodeling',
+  'bathroom renovations': 'bathroom remodeling',
+  'bathroom update': 'bathroom remodeling',
+  'bathroom upgrade': 'bathroom remodeling',
+  'bathroom makeover': 'bathroom remodeling',
   'bathtub': 'bathroom remodeling',
   'shower': 'bathroom remodeling',
   'showerhead': 'bathroom remodeling',
   'shower head': 'bathroom remodeling',
   'tub': 'bathroom remodeling',
   'walk-in shower': 'bathroom remodeling',
-  'walk-in bathtub': 'bathroom remodeling',
-  'bath': 'bathroom remodeling',
+  'walk in shower': 'bathroom remodeling',
 
-  // Decks variations
-  'decks': 'decks',
+  // Deck variations
   'deck': 'decks',
-  'deck builder': 'decks',
+  'decks': 'decks',
+  'deck building': 'decks',
   'deck installation': 'decks',
   'deck repair': 'decks',
   'patio': 'decks',
@@ -70,24 +54,23 @@ export const categoryMappings: Record<string, ValidCategory> = {
   'electrical service': 'electrician',
 
   // Epoxy garage variations
-  'epoxy garage': 'epoxy garage',
-  'epoxy-garage': 'epoxy garage',
   'epoxy': 'epoxy garage',
+  'epoxy garage': 'epoxy garage',
   'garage floor': 'epoxy garage',
   'garage flooring': 'epoxy garage',
   'epoxy flooring': 'epoxy garage',
 
   // Fencing variations
-  'fencing': 'fencing',
   'fence': 'fencing',
+  'fencing': 'fencing',
   'fence installation': 'fencing',
   'fence repair': 'fencing',
   'fence contractor': 'fencing',
   'privacy fence': 'fencing',
 
   // Flooring variations
-  'flooring': 'flooring',
   'floor': 'flooring',
+  'flooring': 'flooring',
   'floors': 'flooring',
   'floor installation': 'flooring',
   'hardwood': 'flooring',
@@ -96,10 +79,10 @@ export const categoryMappings: Record<string, ValidCategory> = {
 
   // Home remodeling variations
   'home remodeling': 'home remodeling',
-  'home-remodeling': 'home remodeling',
   'home remodel': 'home remodeling',
   'home renovation': 'home remodeling',
   'house remodeling': 'home remodeling',
+  'house renovation': 'home remodeling',
   'remodeling': 'home remodeling',
   'renovation': 'home remodeling',
 
@@ -114,11 +97,13 @@ export const categoryMappings: Record<string, ValidCategory> = {
 
   // Kitchen variations
   'kitchen': 'kitchen remodeling',
+  'kitchens': 'kitchen remodeling',
   'kitchen remodeling': 'kitchen remodeling',
-  'kitchen-remodeling': 'kitchen remodeling',
   'kitchen remodel': 'kitchen remodeling',
   'kitchen renovation': 'kitchen remodeling',
-  'kitchen cabinets': 'kitchen remodeling',
+  'kitchen renovations': 'kitchen remodeling',
+  'kitchen update': 'kitchen remodeling',
+  'kitchen upgrade': 'kitchen remodeling',
 
   // Landscaper variations
   'landscaper': 'landscaper',
@@ -164,8 +149,8 @@ export const categoryMappings: Record<string, ValidCategory> = {
   'gutter installation': 'siding gutters',
 
   // Windows variations
-  'windows': 'windows',
   'window': 'windows',
+  'windows': 'windows',
   'window installation': 'windows',
   'window replacement': 'windows',
   'window repair': 'windows',
@@ -177,15 +162,31 @@ function normalizeText(text: string): string {
   return text.toLowerCase().trim();
 }
 
-// Utility function to check if a category is valid
-export function isValidCategory(category: string): boolean {
-  return standardCategories[category as ValidCategory] || false;
+// Get standard tag from any variation
+export function getStandardTag(tag: string | null): ValidTag | null {
+  if (!tag) return null;
+  
+  const normalizedTag = normalizeText(tag);
+  return tagMappings[normalizedTag] || null;
 }
 
-// Utility function to get standard category from any variation
-export function getStandardCategory(category: string | null): ValidCategory | null {
-  if (!category) return null;
-  
-  const normalizedCategory = normalizeText(category);
-  return categoryMappings[normalizedCategory] || null;
+// Get multiple standard tags from a title or description
+export function getStandardTags(text: string): ValidTag[] {
+  const words = text.toLowerCase().split(/\s+/);
+  const tags = new Set<ValidTag>();
+
+  // Try pairs of words first (e.g., "bathroom remodeling")
+  for (let i = 0; i < words.length - 1; i++) {
+    const pair = words[i] + ' ' + words[i + 1];
+    const tag = getStandardTag(pair);
+    if (tag) tags.add(tag);
+  }
+
+  // Try individual words
+  for (const word of words) {
+    const tag = getStandardTag(word);
+    if (tag) tags.add(tag);
+  }
+
+  return Array.from(tags);
 }
