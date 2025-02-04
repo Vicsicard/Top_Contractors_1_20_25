@@ -29,37 +29,30 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
             className="object-cover transform group-hover:scale-105 transition-transform duration-500"
             priority={false}
           />
-          {post.trade_category && (
-            <div className="absolute top-4 right-4 bg-blue-600/90 backdrop-blur-sm text-white text-sm px-3 py-1 rounded-full shadow-md">
-              {post.trade_category}
-            </div>
-          )}
         </div>
 
         <div className="p-6">
-          <div className="flex items-center mb-4">
-            {/* Icon based on trade category */}
-            <div className="w-10 h-10 flex items-center justify-center bg-blue-50 rounded-lg mr-4">
-              <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
-                {post.title}
-              </h2>
-              {post.trade_category && (
-                <div className="text-sm text-gray-600">
-                  {post.trade_category}
-                </div>
-              )}
-            </div>
-          </div>
+          {/* Trade Category */}
+          {post.trade_category && (
+            <Link 
+              href={`/blog?category=${post.trade_category.toLowerCase().replace(/\s+/g, '-')}`}
+              className="inline-block mb-4 text-sm font-medium text-blue-600 hover:text-blue-700"
+            >
+              {post.trade_category}
+            </Link>
+          )}
+
+          {/* Title */}
+          <h2 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 mb-3">
+            {post.title}
+          </h2>
           
+          {/* Excerpt */}
           <div className="text-gray-600 text-sm mb-4 line-clamp-2">
             {post.excerpt || `Preview coming soon for "${post.title}"`}
           </div>
 
+          {/* Author and Date */}
           <div className="flex items-center text-sm text-gray-500 justify-between mt-4 pt-4 border-t border-gray-100">
             <div className="flex items-center">
               {post.authors && post.authors[0] && (

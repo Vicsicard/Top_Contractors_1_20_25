@@ -13,51 +13,21 @@ function extractFirstImage(html: string): { url: string; alt: string } | null {
   return null;
 }
 
-export async function getPosts(limit = 12, category?: string, offset = 0) {
-  console.log('🔍 Fetching posts from Supabase...', { limit, category, offset });
+export async function getPosts(limit?: number, category?: string) {
+  console.log('🔍 Fetching posts from Supabase...', { limit, category });
   
   try {
-    // First, get total count
-    let countQuery = supabase
-      .from('posts')
-      .select('id', { count: 'exact' });
-
-    if (category) {
-      console.log('📂 Filtering by category:', category);
-      const variations = [
-        category,
-        category.replace(/-/g, ' '),
-        category.split('-')[0],
-      ];
-      console.log('🔄 Using category variations:', variations);
-      countQuery = countQuery.or(`trade_category.eq.${variations.join('},trade_category.eq.{')}`);
-    }
-
-    const { count: totalPosts, error: countError } = await countQuery;
-
-    if (countError) {
-      console.error('❌ Count query error:', countError);
-      return null;
-    }
-
-    // Then, get paginated posts
     let query = supabase
       .from('posts')
       .select('*, authors, tags')
       .order('published_at', { ascending: false });
 
     if (category) {
-      const variations = [
-        category,
-        category.replace(/-/g, ' '),
-        category.split('-')[0],
-      ];
-      query = query.or(`trade_category.eq.${variations.join('},trade_category.eq.{')}`);
+      console.log('📂 Filtering by category:', category);
+      query = query.eq('trade_category', category);
     }
 
-    if (offset) {
-      query = query.range(offset, offset + limit - 1);
-    } else {
+    if (limit) {
       query = query.limit(limit);
     }
 
@@ -119,8 +89,7 @@ export async function getPosts(limit = 12, category?: string, offset = 0) {
     });
 
     return {
-      posts: processedPosts || [],
-      totalPosts: totalPosts || 0
+      posts: processedPosts || []
     };
   } catch (error) {
     console.error('❌ Error fetching posts:', error);

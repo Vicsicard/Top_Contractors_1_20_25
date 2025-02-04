@@ -14,19 +14,13 @@ export const revalidate = 3600; // Revalidate every hour
 interface BlogPageProps {
   searchParams: {
     category?: string;
-    page?: string;
   };
 }
 
-const POSTS_PER_PAGE = 12;
-
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   try {
-    const { category, page = '1' } = searchParams;
-    const currentPage = parseInt(page, 10);
-    const offset = (currentPage - 1) * POSTS_PER_PAGE;
-    
-    const result = await getPosts(POSTS_PER_PAGE, category, offset);
+    const { category } = searchParams;
+    const result = await getPosts(undefined, category);
 
     if (!result) {
       return (
@@ -42,8 +36,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       );
     }
 
-    const { posts, totalPosts } = result;
-    const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
+    const { posts } = result;
 
     return (
       <div className="min-h-screen bg-gray-50">
@@ -55,7 +48,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           <div className="relative container mx-auto px-4 py-16 sm:py-24">
             <div className="text-center">
               <h1 className="text-4xl sm:text-5xl font-bold mb-6">
-                Top Contractors Denver Blog
+                {category 
+                  ? `${category.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} Articles`
+                  : 'Top Contractors Denver Blog'
+                }
               </h1>
               <p className="text-xl text-blue-50/90 max-w-2xl mx-auto">
                 Expert tips and insights for your home improvement projects in Denver
@@ -80,51 +76,26 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 </p>
               </div>
             ) : (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {posts.map((post: Post) => (
-                    <BlogPostCard 
-                      key={post.id} 
-                      post={{
-                        ...post,
-                        html: post.html || `<p>Content coming soon for "${post.title}"</p>`,
-                        excerpt: post.excerpt?.replace('undefined...', '') || `Preview coming soon for "${post.title}"`,
-                        authors: post.authors?.length ? post.authors : [{
-                          id: 'default',
-                          name: 'Top Contractors Denver',
-                          slug: 'top-contractors-denver',
-                          profile_image: null,
-                          bio: null,
-                          url: null
-                        }]
-                      }}
-                    />
-                  ))}
-                </div>
-
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="mt-12 flex items-center justify-center gap-2">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                      <a
-                        key={pageNum}
-                        href={`/blog?page=${pageNum}${category ? `&category=${category}` : ''}`}
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                          currentPage === pageNum
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-white text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        {pageNum}
-                      </a>
-                    ))}
-                  </div>
-                )}
-
-                <div className="mt-8 text-center text-gray-600">
-                  Showing {offset + 1}-{Math.min(offset + posts.length, totalPosts)} of {totalPosts} posts
-                </div>
-              </>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {posts.map((post: Post) => (
+                  <BlogPostCard 
+                    key={post.id} 
+                    post={{
+                      ...post,
+                      html: post.html || `<p>Content coming soon for "${post.title}"</p>`,
+                      excerpt: post.excerpt?.replace('undefined...', '') || `Preview coming soon for "${post.title}"`,
+                      authors: post.authors?.length ? post.authors : [{
+                        id: 'default',
+                        name: 'Top Contractors Denver',
+                        slug: 'top-contractors-denver',
+                        profile_image: null,
+                        bio: null,
+                        url: null
+                      }]
+                    }}
+                  />
+                ))}
+              </div>
             )}
           </div>
         </div>
