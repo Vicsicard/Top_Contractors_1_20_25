@@ -17,8 +17,25 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
   const imageAlt = post.feature_image_alt || post.title;
 
   return (
-    <article className="group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+    <article className="group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
       <Link href={postUrl} className="block">
+        {/* Feature Image */}
+        <div className="relative h-48 w-full overflow-hidden">
+          <Image
+            src={imageUrl}
+            alt={imageAlt}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transform group-hover:scale-105 transition-transform duration-500"
+            priority={false}
+          />
+          {post.trade_category && (
+            <div className="absolute top-4 right-4 bg-blue-600/90 backdrop-blur-sm text-white text-sm px-3 py-1 rounded-full shadow-md">
+              {post.trade_category}
+            </div>
+          )}
+        </div>
+
         <div className="p-6">
           <div className="flex items-center mb-4">
             {/* Icon based on trade category */}
@@ -28,7 +45,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
               </svg>
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+              <h2 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
                 {post.title}
               </h2>
               {post.trade_category && (
@@ -43,7 +60,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
             {post.excerpt || `Preview coming soon for "${post.title}"`}
           </div>
 
-          <div className="flex items-center text-sm text-gray-500 justify-between">
+          <div className="flex items-center text-sm text-gray-500 justify-between mt-4 pt-4 border-t border-gray-100">
             <div className="flex items-center">
               {post.authors && post.authors[0] && (
                 <>
