@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getPostBySlug } from '@/utils/posts';
 import { PostContent } from '@/components/blog/PostContent';
-import { Post } from '@/types/blog';
 
 interface Props {
   params: {

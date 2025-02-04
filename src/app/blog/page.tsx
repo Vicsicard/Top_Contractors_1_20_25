@@ -71,7 +71,11 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             
             <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {posts.map((post: Post) => (
-                <BlogPostCard key={post.id} post={post} />
+                <BlogPostCard key={post.id} post={{
+                  ...post,
+                  html: post.html || `<p>Content coming soon for &quot;${post.title}&quot;</p>`,
+                  excerpt: post.excerpt?.replace('undefined...', '') || `Preview coming soon for &quot;${post.title}&quot;`,
+                }} />
               ))}
             </div>
 
@@ -144,7 +148,11 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {postsByCategory[category].slice(0, 3).map((post: Post) => (
-                    <BlogPostCard key={post.id} post={post} />
+                    <BlogPostCard key={post.id} post={{
+                      ...post,
+                      html: post.html || `<p>Content coming soon for &quot;${post.title}&quot;</p>`,
+                      excerpt: post.excerpt?.replace('undefined...', '') || `Preview coming soon for &quot;${post.title}&quot;`,
+                    }} />
                   ))}
                 </div>
               </div>

@@ -16,7 +16,7 @@ export class BlogPostWrapper extends Component<Props, State> {
     };
 
     // We only need to know that an error occurred, not the error details
-    public static getDerivedStateFromError(error: Error): State {
+    public static getDerivedStateFromError(): State {
         return { hasError: true };
     }
 
