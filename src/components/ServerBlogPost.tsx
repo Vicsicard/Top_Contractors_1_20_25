@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { Post } from '@/types/blog';
 
 interface ServerBlogPostProps {
@@ -10,10 +11,11 @@ export function ServerBlogPost({ post }: ServerBlogPostProps) {
             <header className="mb-8">
                 {post.feature_image && (
                     <div className="relative w-full h-[400px] mb-6 rounded-lg overflow-hidden">
-                        <img
+                        <Image
                             src={post.feature_image}
                             alt={post.feature_image_alt || post.title}
-                            className="absolute inset-0 w-full h-full object-cover"
+                            fill
+                            className="object-cover"
                         />
                     </div>
                 )}

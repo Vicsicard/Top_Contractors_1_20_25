@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import type { Post } from '@/types/blog';
 
@@ -16,10 +17,11 @@ export function ClientBlogPost({ post }: ClientBlogPostProps) {
             <header className="mb-8">
                 {post.feature_image && (
                     <div className="relative w-full h-[400px] mb-6 rounded-lg overflow-hidden">
-                        <img
+                        <Image
                             src={imageError ? fallbackImage : post.feature_image}
                             alt={post.feature_image_alt || post.title}
-                            className="absolute inset-0 w-full h-full object-cover"
+                            fill
+                            className="object-cover"
                             onError={() => setImageError(true)}
                         />
                     </div>
