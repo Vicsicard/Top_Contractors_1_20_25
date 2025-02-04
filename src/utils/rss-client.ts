@@ -69,18 +69,22 @@ function transformRSSItem(item: HashnodeRSSItem): Partial<Post> {
   const slug = item.guid?.split('/').pop() || '';
   // Generate a deterministic UUID based on the slug
   const id = uuidv5(slug, HASHNODE_NAMESPACE);
+  
+  // Use content:encoded for full HTML content, fallback to description
+  const html = item['content:encoded'] || item.description?.[0] || '';
+  
   return {
     id,
     title: item.title || '',
     slug: slug,
-    html: item.description?.[0] || '',
+    html,
     excerpt: item.brief || item['content:encodedSnippet'] || null,
     feature_image: item.coverImage || null,
     feature_image_alt: null, // Hashnode RSS doesn't provide alt text
     published_at: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
     updated_at: item.pubDate ? new Date(item.pubDate).toISOString() : null,
     trade_category: extractTradeCategory(item.categories),
-    reading_time: Math.ceil((item.content?.length || 0) / 1500), // Rough estimate: 1500 chars ≈ 1 minute
+    reading_time: Math.ceil((html.length || 0) / 1500), // Rough estimate: 1500 chars ≈ 1 minute
     authors: item.creator ? [{
       id: `hashnode_author_${item.creator}`,
       name: item.creator,

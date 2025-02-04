@@ -1,6 +1,3 @@
--- Enable UUID extension if not already enabled
-create extension if not exists "uuid-ossp";
-
 -- Drop existing tables with CASCADE to handle dependencies
 drop table if exists posts cascade;
 
@@ -46,10 +43,3 @@ comment on column posts.trade_category is 'Category of trade this post belongs t
 comment on column posts.published_at is 'When the post was published';
 comment on column posts.updated_at is 'When the post was last updated';
 comment on column posts.created_at is 'When the post was created';
-
--- Recreate posts_tags table if needed
-create table if not exists posts_tags (
-    post_id uuid references posts(id) on delete cascade,
-    tag_id text not null,
-    primary key (post_id, tag_id)
-);

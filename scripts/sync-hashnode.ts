@@ -142,10 +142,24 @@ async function syncHashnodePosts() {
             title: post.title,
             slug: post.slug,
             excerpt: post.excerpt,
-            content: post.content,
-            cover_image: post.cover_image,
+            html: post.content,
+            feature_image: post.cover_image,
             published_at: post.published_at,
-            tags: post.tags
+            tags: post.tags ? post.tags.map(tag => ({
+              id: `hashnode_tag_${tag.toLowerCase().replace(/\s+/g, '_')}`,
+              name: tag,
+              slug: tag.toLowerCase().replace(/\s+/g, '-'),
+              description: null
+            })) : [],
+            authors: [{
+              id: 'default',
+              name: 'Top Contractors Denver',
+              slug: 'top-contractors-denver',
+              profile_image: null,
+              bio: null,
+              url: null
+            }],
+            updated_at: new Date().toISOString()
           },
           {
             onConflict: 'hashnode_id'
