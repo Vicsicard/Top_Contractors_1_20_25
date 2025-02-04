@@ -1,21 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import type { Post } from '@/types/blog';
-import { BlogPostCard } from '@/components/BlogPostCard';
-import { PostCardSkeleton } from './PostCardSkeleton';
 import { getPosts } from '@/utils/posts';
+import { BlogPostCard } from '@/components/BlogPostCard';
+import type { Post } from '@/types/blog';
 
 interface CategoryPostsProps {
   category: string;
 }
 
 export async function CategoryPosts({ category }: CategoryPostsProps) {
-  console.log('Fetching posts for category:', category);
-  
-  // Convert URL slug to space-separated category
-  const normalizedCategory = category.replace(/-/g, ' ');
-  console.log('Normalized category:', normalizedCategory);
+  const normalizedCategory = category.toLowerCase().replace(/\s+/g, '-');
   
   const result = await getPosts(undefined, normalizedCategory);
 

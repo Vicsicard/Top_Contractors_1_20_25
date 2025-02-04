@@ -27,7 +27,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
 });
 
 // Add error event listener
-supabase.auth.onAuthStateChange((event, session) => {
+supabase.auth.onAuthStateChange((event) => {
   console.log('Supabase auth event:', event);
   if (event === 'SIGNED_OUT') {
     console.log('User signed out, attempting to refresh session');
