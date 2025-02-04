@@ -14,13 +14,19 @@ export const revalidate = 3600; // Revalidate every hour
 interface BlogPageProps {
   searchParams: {
     category?: string;
+    page?: string;
   };
 }
 
+const POSTS_PER_PAGE = 12;
+
 export default async function BlogPage({ searchParams }: BlogPageProps) {
   try {
-    const { category } = searchParams;
-    const result = await getPosts(6, category);
+    const { category, page = '1' } = searchParams;
+    const currentPage = parseInt(page, 10);
+    const offset = (currentPage - 1) * POSTS_PER_PAGE;
+    
+    const result = await getPosts(POSTS_PER_PAGE, category, offset);
 
     if (!result) {
       return (
@@ -37,6 +43,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     }
 
     const { posts, totalPosts } = result;
+    const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
 
     return (
       <div className="min-h-screen bg-gray-50">
@@ -80,11 +87,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                       key={post.id} 
                       post={{
                         ...post,
-                        // Ensure we have valid HTML content
                         html: post.html || `<p>Content coming soon for "${post.title}"</p>`,
-                        // Fix undefined excerpt
                         excerpt: post.excerpt?.replace('undefined...', '') || `Preview coming soon for "${post.title}"`,
-                        // Set default author if none exists
                         authors: post.authors?.length ? post.authors : [{
                           id: 'default',
                           name: 'Top Contractors Denver',
@@ -98,16 +102,28 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                   ))}
                 </div>
 
-                {totalPosts > posts.length && (
-                  <div className="mt-12 text-center">
-                    <p className="text-gray-600 mb-6">
-                      Showing {posts.length} of {totalPosts} posts
-                    </p>
-                    <button className="inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 bg-white rounded-full hover:bg-blue-50 transition-colors duration-200">
-                      Load More Posts
-                    </button>
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="mt-12 flex items-center justify-center gap-2">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                      <a
+                        key={pageNum}
+                        href={`/blog?page=${pageNum}${category ? `&category=${category}` : ''}`}
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                          currentPage === pageNum
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-white text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        {pageNum}
+                      </a>
+                    ))}
                   </div>
                 )}
+
+                <div className="mt-8 text-center text-gray-600">
+                  Showing {offset + 1}-{Math.min(offset + posts.length, totalPosts)} of {totalPosts} posts
+                </div>
               </>
             )}
           </div>
