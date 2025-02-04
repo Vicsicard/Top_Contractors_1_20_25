@@ -96,7 +96,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     );
   }
 
-  const { posts, totalPosts } = result;
+  const { posts } = result;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -119,10 +119,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         </div>
       </section>
 
-      {totalPosts > posts.length && (
+      {posts.length > 0 && (
         <div className="mt-8 text-center">
           <p className="text-gray-600">
-            Showing {posts.length} of {totalPosts} posts in {categoryTitle}
+            Showing {posts.length} posts in {categoryTitle}
           </p>
         </div>
       )}
