@@ -2,20 +2,22 @@ import { scriptSupabase } from '../src/utils/script-supabase';
 
 const HASHNODE_API_URL = 'https://gql.hashnode.com';
 const TRADE_CATEGORIES = [
-  'Bathroom Remodeling',
-  'Decks',
-  'Electrician',
-  'Epoxy Garage',
-  'Fencing',
-  'Flooring',
-  'Home Remodeling',
-  'HVAC',
-  'Kitchen Remodeling',
-  'Landscaping',
-  'Painting',
-  'Plumbing',
-  'Roofing',
-  'Windows'
+  'bathroom remodeling',
+  'decks',
+  'electrician',
+  'epoxy garage',
+  'fencing',
+  'flooring',
+  'home remodeling',
+  'hvac',
+  'kitchen remodeling',
+  'landscaper',
+  'masonry',
+  'plumbing',
+  'roofer',
+  'siding gutters',
+  'windows',
+  'siding'  // Added to match vinyl siding posts
 ];
 
 interface HashnodePost {
@@ -31,12 +33,10 @@ interface HashnodePost {
 
 interface HashnodeResponse {
   data?: {
-    me?: {
+    user?: {
       publications?: {
-        edges?: Array<{
+        edges: Array<{
           node: {
-            id: string;
-            title: string;
             posts: {
               edges: Array<{
                 node: {
@@ -67,34 +67,62 @@ interface HashnodeResponse {
   }>;
 }
 
+interface PostEdge {
+  node: {
+    id: string;
+    title: string;
+    slug: string;
+    brief: string;
+    content: {
+      html: string;
+    };
+    coverImage?: {
+      url: string;
+    };
+    publishedAt: string;
+    tags: Array<{
+      name: string;
+    }>;
+  };
+}
+
 function findTradeCategory(tags: string[]): string | null {
-  // First try exact match
-  for (const tag of tags) {
-    const normalizedTag = tag.toLowerCase().trim();
-    for (const category of TRADE_CATEGORIES) {
-      if (normalizedTag === category.toLowerCase()) {
-        return category;
-      }
-    }
+  // Convert tags to lowercase for comparison
+  const normalizedTags = tags.map(tag => tag.toLowerCase().trim());
+  
+  // Special case for bathroom remodeling
+  if (normalizedTags.includes('bathroom') || 
+      normalizedTags.includes('bathroomremodeling') ||
+      normalizedTags.includes('bathroom remodeling')) {
+    console.log('Found bathroom remodeling match');
+    return 'bathroom remodeling';
   }
 
-  // Then try partial match
-  for (const tag of tags) {
-    const normalizedTag = tag.toLowerCase().trim();
-    for (const category of TRADE_CATEGORIES) {
-      if (normalizedTag.includes(category.toLowerCase()) || 
-          category.toLowerCase().includes(normalizedTag)) {
-        return category;
-      }
-    }
+  // Direct match with our trade categories
+  const matchedCategory = TRADE_CATEGORIES.find(category => 
+    normalizedTags.includes(category.toLowerCase())
+  );
+  
+  if (matchedCategory) {
+    console.log(`Found exact trade category match: ${matchedCategory}`);
+    return matchedCategory;
   }
-
+  
+  console.log('No trade category match found for tags:', normalizedTags);
   return null;
 }
 
 async function syncHashnodePosts() {
   try {
     console.log('Starting Hashnode sync...');
+    
+    // Check environment variables
+    console.log('Environment check:', {
+      hashnodeApiKey: !!process.env.HASHNODE_API_KEY,
+      hashnodePublicationId: !!process.env.HASHNODE_PUBLICATION_ID,
+      supabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      supabaseKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY
+    });
     
     // 1. Fetch posts from Hashnode
     console.log('Fetching posts from Hashnode...');
@@ -107,12 +135,10 @@ async function syncHashnodePosts() {
       body: JSON.stringify({
         query: `
           query {
-            me {
-              publications(first: 10) {
+            user(username: "topcontractorsdenver") {
+              publications(first: 1) {
                 edges {
                   node {
-                    id
-                    title
                     posts(first: 50) {
                       edges {
                         node {
@@ -148,35 +174,61 @@ async function syncHashnodePosts() {
       throw new Error(`Hashnode API Error: ${result.errors[0].message}`);
     }
     
-    if (!result.data?.me?.publications?.edges?.length) {
-      throw new Error('No publications found');
+    if (!result.data?.user?.publications?.edges?.length) {
+      throw new Error('Publication not found');
     }
 
-    const publication = result.data.me.publications.edges[0].node;
-    console.log(`Found publication: ${publication.title}`);
+    const publication = result.data.user.publications.edges[0].node;
+    console.log('Found publication, checking for posts...');
 
     if (!publication.posts?.edges?.length) {
       throw new Error('No posts found in publication');
     }
 
-    const posts: HashnodePost[] = publication.posts.edges.map(edge => ({
-      hashnode_id: edge.node.id,
-      title: edge.node.title,
-      slug: edge.node.slug,
-      excerpt: edge.node.brief,
-      content: edge.node.content.html,
-      cover_image: edge.node.coverImage?.url || null,
-      published_at: edge.node.publishedAt,
-      tags: edge.node.tags.map(tag => tag.name)
-    }));
+    // Track sync statistics
+    const stats = {
+      totalPosts: publication.posts.edges.length,
+      postsWithTags: 0,
+      postsWithTradeCategory: 0,
+      uniqueTags: new Set<string>(),
+      categories: new Set<string>()
+    };
 
+    const posts: HashnodePost[] = publication.posts.edges.map((edge: PostEdge) => {
+      // Track tag statistics
+      if (edge.node.tags.length > 0) {
+        stats.postsWithTags++;
+        edge.node.tags.forEach(tag => stats.uniqueTags.add(tag.name));
+      }
+
+      return {
+        hashnode_id: edge.node.id,
+        title: edge.node.title,
+        slug: edge.node.slug,
+        excerpt: edge.node.brief,
+        content: edge.node.content.html,
+        cover_image: edge.node.coverImage?.url || null,
+        published_at: edge.node.publishedAt,
+        tags: edge.node.tags.map((tag: { name: string }) => tag.name)
+      };
+    });
+
+    console.log('\nSync Statistics:', {
+      totalPosts: stats.totalPosts,
+      postsWithTags: stats.postsWithTags,
+      uniqueTags: Array.from(stats.uniqueTags),
+    });
     console.log(`Found ${posts.length} posts to sync`);
 
     // 2. Sync posts to Supabase
     console.log('\nSyncing posts to Supabase...');
     for (const post of posts) {
       const tradeCategory = post.tags ? findTradeCategory(post.tags) : null;
-      console.log(`Post "${post.title}" - Category: ${tradeCategory || 'None'}`);
+      if (tradeCategory) {
+        stats.postsWithTradeCategory++;
+        stats.categories.add(tradeCategory);
+      }
+      console.log(`Post "${post.title}" - Category: ${tradeCategory || 'None'} - Tags: ${post.tags?.join(', ') || 'None'}`);
 
       const { error } = await scriptSupabase
         .from('posts')
@@ -218,6 +270,14 @@ async function syncHashnodePosts() {
       }
     }
 
+    // Log final statistics
+    console.log('\nFinal Sync Statistics:');
+    console.log('---------------------');
+    console.log(`Total Posts: ${stats.totalPosts}`);
+    console.log(`Posts with Tags: ${stats.postsWithTags}`);
+    console.log(`Posts with Trade Category: ${stats.postsWithTradeCategory}`);
+    console.log('Trade Categories Found:', Array.from(stats.categories));
+    console.log('All Unique Tags:', Array.from(stats.uniqueTags));
     console.log('\nSync completed successfully! ✅');
 
   } catch (error) {

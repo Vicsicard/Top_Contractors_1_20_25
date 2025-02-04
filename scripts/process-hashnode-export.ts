@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { scriptSupabase } from '../src/utils/script-supabase';
 import { getStandardCategory } from '../src/utils/category-mapper';
+import { getStandardTag, getStandardTags, ValidTag } from '../src/utils/tag-mapper';
 import { v5 as uuidv5 } from 'uuid';
 
 // Create a UUID namespace for Hashnode posts
@@ -79,6 +80,32 @@ function extractTradeCategory(post: HashnodePost): string | null {
   return null;
 }
 
+function extractTags(post: HashnodePost): Array<{ id: string; name: ValidTag; slug: string; description: string | null }> {
+  const tags = new Set<ValidTag>();
+
+  // First, try to get tags from Hashnode tags
+  if (post.tags) {
+    for (const tag of post.tags) {
+      const standardTag = getStandardTag(tag.name);
+      if (standardTag) {
+        tags.add(standardTag);
+      }
+    }
+  }
+
+  // Then, extract tags from title
+  const titleTags = getStandardTags(post.title);
+  titleTags.forEach(tag => tags.add(tag));
+
+  // Convert tags to the format expected by our database
+  return Array.from(tags).map(tag => ({
+    id: `tag_${tag}`,
+    name: tag,
+    slug: tag,
+    description: null
+  }));
+}
+
 async function processHashnodeExport(filePath: string) {
   try {
     console.log('Reading Hashnode export file:', filePath);
@@ -99,6 +126,9 @@ async function processHashnodeExport(filePath: string) {
         console.log(`Skipping post without trade category: ${post.title}`);
         continue;
       }
+
+      // Extract and standardize tags
+      const standardTags = extractTags(post);
 
       // Transform to match our Post schema
       const transformedPost = {
@@ -121,12 +151,7 @@ async function processHashnodeExport(filePath: string) {
           bio: null,
           url: null
         }],
-        tags: post.tags ? post.tags.map(tag => ({
-          id: `hashnode_tag_${tag._id}`,
-          name: tag.name,
-          slug: tag.slug,
-          description: null
-        })) : []
+        tags: standardTags
       };
 
       // Insert or update in Supabase
@@ -134,7 +159,7 @@ async function processHashnodeExport(filePath: string) {
         const { error } = await scriptSupabase
           .from('posts')
           .upsert(transformedPost, {
-            onConflict: 'slug',
+            onConflict: 'id',
             ignoreDuplicates: false
           });
 
@@ -145,6 +170,7 @@ async function processHashnodeExport(filePath: string) {
         }
 
         console.log('Successfully processed post:', transformedPost.title);
+        console.log('Tags:', transformedPost.tags.map(t => t.name).join(', '));
       } catch (error) {
         console.error('Error upserting post:', error);
         console.error('Failed post data:', transformedPost);
@@ -165,7 +191,7 @@ processHashnodeExport(exportPath)
     console.log('Migration completed successfully');
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('Migration failed:', error);
     process.exit(1);
   });
