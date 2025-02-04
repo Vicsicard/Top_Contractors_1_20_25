@@ -1,6 +1,22 @@
 import { scriptSupabase } from '../src/utils/script-supabase';
 
 const HASHNODE_API_URL = 'https://gql.hashnode.com';
+const TRADE_CATEGORIES = [
+  'Bathroom Remodeling',
+  'Decks',
+  'Electrician',
+  'Epoxy Garage',
+  'Fencing',
+  'Flooring',
+  'Home Remodeling',
+  'HVAC',
+  'Kitchen Remodeling',
+  'Landscaping',
+  'Painting',
+  'Plumbing',
+  'Roofing',
+  'Windows'
+];
 
 interface HashnodePost {
   hashnode_id: string;
@@ -14,10 +30,10 @@ interface HashnodePost {
 }
 
 interface HashnodeResponse {
-  data: {
-    me: {
-      publications: {
-        edges: Array<{
+  data?: {
+    me?: {
+      publications?: {
+        edges?: Array<{
           node: {
             id: string;
             title: string;
@@ -49,6 +65,31 @@ interface HashnodeResponse {
   errors?: Array<{
     message: string;
   }>;
+}
+
+function findTradeCategory(tags: string[]): string | null {
+  // First try exact match
+  for (const tag of tags) {
+    const normalizedTag = tag.toLowerCase().trim();
+    for (const category of TRADE_CATEGORIES) {
+      if (normalizedTag === category.toLowerCase()) {
+        return category;
+      }
+    }
+  }
+
+  // Then try partial match
+  for (const tag of tags) {
+    const normalizedTag = tag.toLowerCase().trim();
+    for (const category of TRADE_CATEGORIES) {
+      if (normalizedTag.includes(category.toLowerCase()) || 
+          category.toLowerCase().includes(normalizedTag)) {
+        return category;
+      }
+    }
+  }
+
+  return null;
 }
 
 async function syncHashnodePosts() {
@@ -134,6 +175,9 @@ async function syncHashnodePosts() {
     // 2. Sync posts to Supabase
     console.log('\nSyncing posts to Supabase...');
     for (const post of posts) {
+      const tradeCategory = post.tags ? findTradeCategory(post.tags) : null;
+      console.log(`Post "${post.title}" - Category: ${tradeCategory || 'None'}`);
+
       const { error } = await scriptSupabase
         .from('posts')
         .upsert(
@@ -145,6 +189,7 @@ async function syncHashnodePosts() {
             html: post.content,
             feature_image: post.cover_image,
             published_at: post.published_at,
+            trade_category: tradeCategory,
             tags: post.tags ? post.tags.map(tag => ({
               id: `hashnode_tag_${tag.toLowerCase().replace(/\s+/g, '_')}`,
               name: tag,
