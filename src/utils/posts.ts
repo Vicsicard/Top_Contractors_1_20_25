@@ -13,6 +13,13 @@ function extractFirstImage(html: string): { url: string; alt: string } | null {
   return null;
 }
 
+function normalizeCategory(category: string): string {
+  return category
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 export async function getPosts(limit?: number, category?: string) {
   console.log('🔍 Fetching posts from Supabase...', { limit, category });
   
@@ -23,8 +30,9 @@ export async function getPosts(limit?: number, category?: string) {
       .order('published_at', { ascending: false });
 
     if (category) {
-      console.log('📂 Filtering by category:', category);
-      query = query.eq('trade_category', category);
+      const normalizedCategory = normalizeCategory(category);
+      console.log('📂 Filtering by category:', normalizedCategory);
+      query = query.eq('trade_category', normalizedCategory);
     }
 
     if (limit) {
