@@ -26,11 +26,11 @@ export async function getPosts(limit = 12, category?: string, offset = 0) {
       console.log('📂 Filtering by category:', category);
       const variations = [
         category,
-        category.replace('-', ' '),
+        category.replace(/-/g, ' '),
         category.split('-')[0],
       ];
       console.log('🔄 Using category variations:', variations);
-      countQuery = countQuery.in('trade_category', variations);
+      countQuery = countQuery.or(`trade_category.eq.${variations.join('},trade_category.eq.{')}`);
     }
 
     const { count: totalPosts, error: countError } = await countQuery;
@@ -43,16 +43,16 @@ export async function getPosts(limit = 12, category?: string, offset = 0) {
     // Then, get paginated posts
     let query = supabase
       .from('posts')
-      .select('*')
+      .select('*, authors, tags')
       .order('published_at', { ascending: false });
 
     if (category) {
       const variations = [
         category,
-        category.replace('-', ' '),
+        category.replace(/-/g, ' '),
         category.split('-')[0],
       ];
-      query = query.in('trade_category', variations);
+      query = query.or(`trade_category.eq.${variations.join('},trade_category.eq.{')}`);
     }
 
     if (offset) {
@@ -88,6 +88,33 @@ export async function getPosts(limit = 12, category?: string, offset = 0) {
           post.feature_image_alt = firstImage.alt;
         }
       }
+
+      // Parse authors and tags if they're strings
+      try {
+        if (typeof post.authors === 'string') {
+          post.authors = JSON.parse(post.authors);
+        }
+      } catch (e) {
+        console.error('Error parsing authors:', e);
+        post.authors = [{
+          id: 'default',
+          name: 'Top Contractors Denver',
+          slug: 'top-contractors-denver',
+          profile_image: null,
+          bio: null,
+          url: null
+        }];
+      }
+
+      try {
+        if (typeof post.tags === 'string') {
+          post.tags = JSON.parse(post.tags);
+        }
+      } catch (e) {
+        console.error('Error parsing tags:', e);
+        post.tags = [];
+      }
+
       return post;
     });
 
@@ -105,7 +132,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
   try {
     const { data: posts, error } = await supabase
       .from('posts')
-      .select('*')
+      .select('*, authors, tags')
       .eq('slug', slug)
       .limit(1);
 
@@ -127,6 +154,32 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
         post.feature_image = firstImage.url;
         post.feature_image_alt = firstImage.alt;
       }
+    }
+
+    // Parse authors and tags if they're strings
+    try {
+      if (typeof post.authors === 'string') {
+        post.authors = JSON.parse(post.authors);
+      }
+    } catch (e) {
+      console.error('Error parsing authors:', e);
+      post.authors = [{
+        id: 'default',
+        name: 'Top Contractors Denver',
+        slug: 'top-contractors-denver',
+        profile_image: null,
+        bio: null,
+        url: null
+      }];
+    }
+
+    try {
+      if (typeof post.tags === 'string') {
+        post.tags = JSON.parse(post.tags);
+      }
+    } catch (e) {
+      console.error('Error parsing tags:', e);
+      post.tags = [];
     }
 
     return post;
