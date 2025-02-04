@@ -4,13 +4,14 @@ on:
   schedule:
     - cron: '0 */6 * * *'  # Run every 6 hours
   workflow_dispatch:  # Allow manual triggering
-  
+
 jobs:
   sync:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -22,8 +23,38 @@ jobs:
         run: npm ci
         
       - name: Run sync script
-        run: npm run sync-hashnode
+        id: sync
+        run: |
+          echo "Starting sync at $(date)"
+          echo "Environment check:"
+          echo "HASHNODE_API_KEY exists: ${{ secrets.HASHNODE_API_KEY != '' }}"
+          echo "HASHNODE_PUBLICATION_ID exists: ${{ secrets.HASHNODE_PUBLICATION_ID != '' }}"
+          echo "SUPABASE_URL exists: ${{ secrets.SUPABASE_URL != '' }}"
+          echo "SUPABASE_KEY exists: ${{ secrets.SUPABASE_KEY != '' }}"
+          
+          npm run sync-hashnode
+          
+          echo "Completed sync at $(date)"
         env:
           HASHNODE_API_KEY: ${{ secrets.HASHNODE_API_KEY }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          HASHNODE_PUBLICATION_ID: ${{ secrets.HASHNODE_PUBLICATION_ID }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_KEY }}
+          
+      - name: Report sync statistics
+        if: always()
+        run: |
+          if [ $? -eq 0 ]; then
+            echo "✅ Sync completed successfully"
+          else
+            echo "❌ Sync failed"
+            exit 1
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Hashnode sync failed. Check the logs for details."
+          echo "Time of failure: $(date)"
+          echo "Last few lines of npm output:"
+          tail -n 50 ~/.npm/_logs/$(ls -t ~/.npm/_logs | head -n1)

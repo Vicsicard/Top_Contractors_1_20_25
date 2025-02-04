@@ -142,7 +142,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                       href={`/blog/trades/${category.toLowerCase().replace(/\s+/g, '-')}`}
                       className="text-blue-600 hover:text-blue-700 font-medium"
                     >
-                      View All {category} Articles →
+                      View All {category} Articles &rarr;
                     </a>
                   )}
                 </div>
