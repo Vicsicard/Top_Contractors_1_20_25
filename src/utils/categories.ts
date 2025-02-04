@@ -28,7 +28,7 @@ const TRADE_CATEGORIES: TradeCategory[] = [
   {
     id: 'fencing',
     title: 'Fencing',
-    description: 'Custom fence installation and repair services to enhance your property's security and curb appeal.'
+    description: 'Custom fence installation and repair services to enhance your property\'s security and curb appeal.'
   },
   {
     id: 'flooring',
@@ -38,7 +38,7 @@ const TRADE_CATEGORIES: TradeCategory[] = [
   {
     id: 'home-remodeling',
     title: 'Home Remodeling',
-    description: 'Comprehensive home renovation services to transform your living spaces and increase your home's value.'
+    description: 'Comprehensive home renovation services to transform your living spaces and increase your home\'s value.'
   },
   {
     id: 'hvac',
@@ -63,7 +63,7 @@ const TRADE_CATEGORIES: TradeCategory[] = [
   {
     id: 'plumbing',
     title: 'Plumbing',
-    description: 'Reliable plumbing services for repairs, installations, and maintenance of your home's water systems.'
+    description: 'Reliable plumbing services for repairs, installations, and maintenance of your home\'s water systems.'
   },
   {
     id: 'roofer',
@@ -73,12 +73,12 @@ const TRADE_CATEGORIES: TradeCategory[] = [
   {
     id: 'siding-gutters',
     title: 'Siding & Gutters',
-    description: 'Quality siding installation and gutter services to protect and beautify your home's exterior.'
+    description: 'Quality siding installation and gutter services to protect and beautify your home\'s exterior.'
   },
   {
     id: 'windows',
     title: 'Windows',
-    description: 'Expert window installation and replacement services to improve your home's efficiency and appearance.'
+    description: 'Expert window installation and replacement services to improve your home\'s efficiency and appearance.'
   }
 ];
 
