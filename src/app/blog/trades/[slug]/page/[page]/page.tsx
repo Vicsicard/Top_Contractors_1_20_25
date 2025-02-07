@@ -8,13 +8,13 @@ import Breadcrumb from '@/components/breadcrumb';
 
 interface Props {
   params: { 
-    slug: string;
+    category: string;
     page: string;
   }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const trade = await getTradeBySlug(params.slug);
+  const trade = await getTradeBySlug(params.category);
   if (!trade) {
     throw new Error('Trade not found');
   }
@@ -35,10 +35,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       type: 'website',
-      url: `https://topcontractorsdenver.com/blog/trades/${params.slug}/page/${page}`,
+      url: `https://topcontractorsdenver.com/blog/trades/${params.category}/page/${page}`,
     },
     alternates: {
-      canonical: `https://topcontractorsdenver.com/blog/trades/${params.slug}/page/${page}`,
+      canonical: `https://topcontractorsdenver.com/blog/trades/${params.category}/page/${page}`,
     }
   };
 }
@@ -49,12 +49,12 @@ export default async function TradeBlogPage({ params }: Props) {
     notFound();
   }
 
-  const trade = await getTradeBySlug(params.slug);
+  const trade = await getTradeBySlug(params.category);
   if (!trade) {
     notFound();
   }
 
-  const { posts, totalPages } = await getPostsByCategory(params.slug, page);
+  const { posts, totalPages } = await getPostsByCategory(params.category, page);
   
   if (page > totalPages) {
     notFound();
@@ -64,9 +64,9 @@ export default async function TradeBlogPage({ params }: Props) {
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: tradeName, href: `/trades/${params.slug}` },
-    { label: 'Blog', href: `/blog/trades/${params.slug}` },
-    { label: `Page ${page}`, href: `/blog/trades/${params.slug}/page/${page}` }
+    { label: tradeName, href: `/trades/${params.category}` },
+    { label: 'Blog', href: `/blog/trades/${params.category}` },
+    { label: `Page ${page}`, href: `/blog/trades/${params.category}/page/${page}` }
   ];
 
   return (
@@ -91,7 +91,7 @@ export default async function TradeBlogPage({ params }: Props) {
           <Pagination
             currentPage={page}
             totalPages={totalPages}
-            baseUrl={`/blog/trades/${params.slug}`}
+            baseUrl={`/blog/trades/${params.category}`}
           />
         </>
       ) : (

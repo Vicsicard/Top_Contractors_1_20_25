@@ -14,7 +14,7 @@ import { Suspense } from 'react';
 interface Props {
     params: {
         trade: string;
-        slug: string;
+        category: string;
     };
 }
 
@@ -30,7 +30,7 @@ function isValidImageUrl(url: string | undefined): boolean {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const post = await getPostBySlug(params.slug, params.trade);
+    const post = await getPostBySlug(params.category, params.trade);
     const trade = tradesData[params.trade];
 
     if (!post || !trade) {
@@ -113,7 +113,7 @@ function BlogImages() {
 }
 
 export default async function TradeBlogPost({ params }: Props) {
-    const post = await getPostBySlug(params.slug, params.trade);
+    const post = await getPostBySlug(params.category, params.trade);
     const trade = tradesData[params.trade];
 
     if (!post || !trade) {

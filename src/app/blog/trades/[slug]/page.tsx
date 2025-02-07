@@ -2,10 +2,10 @@ import { redirect } from 'next/navigation';
 
 interface Props {
   params: { 
-    slug: string;
+    category: string;
   }
 }
 
 export default async function TradeBlogPage({ params }: Props) {
-  redirect(`/blog/trades/${params.slug}/page/1`);
+  redirect(`/blog/trades/${params.category}/page/1`);
 }
