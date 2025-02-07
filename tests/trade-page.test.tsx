@@ -5,6 +5,7 @@ import * as database from '@/utils/database';
 import * as supabaseBlog from '@/utils/supabase-blog';
 import * as faqs from '@/data/faqs';
 import * as schema from '@/utils/schema';
+import { notFound } from 'next/navigation';
 
 // Mock the database utilities
 jest.mock('@/utils/database', () => ({
@@ -100,7 +101,7 @@ describe('TradePage', () => {
       const params = { slug: 'bathroom-remodelers' };
       const metadata = await generateMetadata({ params });
 
-      expect(metadata.title).toBe('Bathroom Remodelers in Denver | Find Local Contractors');
+      expect(metadata.title).toBe('Bathroom Remodelers in Denver | Top-Rated Local Contractors');
       expect(metadata.description).toContain('Find trusted Bathroom Remodelers in the Denver area');
     });
 
@@ -117,28 +118,48 @@ describe('TradePage', () => {
       const params = { slug: 'bathroom-remodelers' };
       render(await TradePage({ params }));
 
-      // Verify trade name is displayed
-      expect(screen.getByText('Bathroom Remodelers')).toBeInTheDocument();
+      // Verify main heading
+      expect(screen.getByRole('heading', { 
+        name: 'Bathroom Remodelers Services in Denver',
+        level: 1 
+      })).toBeInTheDocument();
 
-      // Verify subregions are displayed
+      // Verify subregions section
+      expect(screen.getByRole('navigation', { name: 'Service areas' })).toBeInTheDocument();
       expect(screen.getByText('Denver Tech Center')).toBeInTheDocument();
       expect(screen.getByText('Cherry Creek')).toBeInTheDocument();
 
-      // Verify blog posts section is displayed
-      expect(screen.getByText('Bathroom Remodeling Tips')).toBeInTheDocument();
-      expect(screen.getByText('View All Bathroom Remodelers Articles')).toBeInTheDocument();
+      // Verify benefits section
+      expect(screen.getByRole('heading', { 
+        name: 'Professional Bathroom Remodelers Services: Our Commitment to Quality',
+        level: 2 
+      })).toBeInTheDocument();
+      expect(screen.getByText('Verified Customer Reviews')).toBeInTheDocument();
+      expect(screen.getByText('Licensed & Insured Experts')).toBeInTheDocument();
+      expect(screen.getByText('No-Cost Project Quotes')).toBeInTheDocument();
 
-      // Verify FAQs are displayed
+      // Verify blog posts section
+      expect(screen.getByRole('heading', {
+        name: 'Expert Bathroom Remodelers Tips & Project Guides',
+        level: 2
+      })).toBeInTheDocument();
+      expect(screen.getByText('Bathroom Remodeling Tips')).toBeInTheDocument();
+      const blogLink = screen.getByRole('link', {
+        name: 'View all Bathroom Remodelers articles and guides'
+      });
+      expect(blogLink).toBeInTheDocument();
+      expect(blogLink).toHaveAttribute('href', '/blog/trades/bathroom-remodelers');
+
+      // Verify FAQ section is present
+      expect(screen.getByRole('heading', { name: 'Frequently Asked Questions' })).toBeInTheDocument();
       expect(screen.getByText('How much does bathroom remodeling cost?')).toBeInTheDocument();
     });
 
     it('calls notFound() when trade is not found', async () => {
-      const notFound = jest.requireMock('next/navigation').notFound;
       (database.getTradeBySlug as jest.Mock).mockResolvedValue(null);
-
       const params = { slug: 'non-existent-trade' };
-      await TradePage({ params });
       
+      await TradePage({ params });
       expect(notFound).toHaveBeenCalled();
     });
 

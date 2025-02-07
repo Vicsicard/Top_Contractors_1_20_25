@@ -40,8 +40,32 @@ describe('Component Tests', () => {
   test('ContractorCard renders contractor information correctly', () => {
     render(<ContractorCard contractor={mockContractor} />);
     
-    expect(screen.getByText(mockContractor.contractor_name)).toBeInTheDocument();
-    expect(screen.getByText(mockContractor.address)).toBeInTheDocument();
+    // Test contractor name
+    expect(screen.getByRole('heading', { name: mockContractor.contractor_name })).toBeInTheDocument();
+    
+    // Test address with icon
+    const addressElement = screen.getByText(mockContractor.address);
+    expect(addressElement).toBeInTheDocument();
+    expect(addressElement.parentElement?.querySelector('svg')).toBeInTheDocument();
+    
+    // Test phone with icon
+    const phoneLink = screen.getByRole('link', { name: mockContractor.phone });
+    expect(phoneLink).toBeInTheDocument();
+    expect(phoneLink.parentElement?.querySelector('svg')).toBeInTheDocument();
+    
+    // Test website link if present
+    if (mockContractor.website) {
+      const websiteLink = screen.getByRole('link', { name: 'Visit Website' });
+      expect(websiteLink).toBeInTheDocument();
+      expect(websiteLink.getAttribute('href')).toBe(mockContractor.website);
+      expect(websiteLink.parentElement?.querySelector('svg')).toBeInTheDocument();
+    }
+    
+    // Test rating stars
+    const stars = screen.getAllByTestId('star-icon');
+    expect(stars).toHaveLength(5);
+    
+    // Test review count
     expect(screen.getByText(`(${mockContractor.google_review_count} reviews)`)).toBeInTheDocument();
   });
 

@@ -57,6 +57,7 @@ export function ContractorCard({ contractor }: ContractorCardProps) {
             {[...Array(5)].map((_, i) => (
               <StarIcon
                 key={i}
+                data-testid="star-icon"
                 className={`h-4 w-4 sm:h-5 sm:w-5 ${
                   i < Math.round(contractor.google_rating || 0)
                     ? 'text-yellow-400'
