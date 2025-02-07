@@ -1,128 +1,94 @@
-import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-import { resolve } from 'path';
+import { scriptSupabase } from '../src/utils/script-supabase';
 
-// Load environment variables from .env.local
-dotenv.config({ path: resolve(__dirname, '../.env.local') });
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase environment variables');
-  process.exit(1);
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-// Category mapping for standardization based on trades-data.ts slugs
-const categoryMapping: { [key: string]: string } = {
-  // Bathroom variations
-  'bathroom': 'bathroom-remodeling',
+const CATEGORY_MAPPINGS = {
   'bathroom remodeling': 'bathroom-remodeling',
-  'bathroom remodelingX': 'bathroom-remodeling',
-  'bathroom-remodelingX': 'bathroom-remodeling',
-  'bathroomX': 'bathroom-remodeling',
-  
-  // Kitchen variations
-  'kitchen': 'kitchen-remodeling',
-  'kitchen remodeling': 'kitchen-remodeling',
-  'kitchen-remodeling': 'kitchen-remodeling',
-  
-  // Home remodeling variations
+  'bathroomremodeling': 'bathroom-remodeling',
   'home remodeling': 'home-remodeling',
-  'remodeling': 'home-remodeling',
-  'general': 'home-remodeling',
-  
-  // Plumbing variations
-  'plumbers': 'plumbing',
-  
-  // Roofing variations
-  'roofers': 'roofing',
-  
-  // Siding variations
-  'siding and gutters': 'siding-gutters',
-  'siding': 'siding-gutters',
-  
-  // Ensure other categories match exactly
-  'electrical': 'electrical',
-  'hvac': 'hvac',
-  'carpentry': 'carpentry',
-  'painting': 'painting',
-  'landscaping': 'landscaping',
-  'masonry': 'masonry',
-  'decks': 'decks',
-  'flooring': 'flooring',
-  'windows': 'windows',
-  'fencing': 'fencing',
+  'homeremodeling': 'home-remodeling',
+  'kitchen remodeling': 'kitchen-remodeling',
+  'kitchenremodeling': 'kitchen-remodeling',
   'epoxy garage': 'epoxy-garage',
-  'epoxy-garage': 'epoxy-garage'
+  'siding gutters': 'siding-gutters',
+  'sidinggutters': 'siding-gutters',
+  // Single word categories stay the same
+  'decks': 'decks',
+  'electrician': 'electrician',
+  'fencing': 'fencing',
+  'flooring': 'flooring',
+  'hvac': 'hvac',
+  'landscaper': 'landscaper',
+  'masonry': 'masonry',
+  'plumbing': 'plumbing',
+  'roofer': 'roofer',
+  'windows': 'windows'
 };
 
 async function fixTradeCategories() {
   try {
-    console.log('Starting trade category fixes...');
+    console.log('Starting trade category fix...');
 
-    // Get all posts with categories that need to be fixed
-    const { data: posts, error } = await supabase
+    // Get all posts
+    const { data: posts, error: fetchError } = await scriptSupabase
       .from('posts')
-      .select('id, trade_category')
-      .not('trade_category', 'is', null);
+      .select('id, title, trade_category');
 
-    if (error) {
-      throw error;
+    if (fetchError) {
+      throw new Error(`Failed to fetch posts: ${fetchError.message}`);
     }
 
-    console.log(`Found ${posts.length} posts to check`);
+    console.log(`Found ${posts?.length || 0} posts to check`);
 
-    // Track updates
-    let updatesNeeded = 0;
-    let updatesCompleted = 0;
+    // Track statistics
+    const stats = {
+      total: posts?.length || 0,
+      updated: 0,
+      skipped: 0,
+      categories: new Set<string>()
+    };
 
     // Process each post
-    for (const post of posts) {
-      const currentCategory = post.trade_category;
-      const newCategory = categoryMapping[currentCategory];
+    for (const post of posts || []) {
+      if (!post.trade_category) {
+        console.log(`Skipping post "${post.title}" - No category`);
+        stats.skipped++;
+        continue;
+      }
 
-      if (newCategory) {
-        updatesNeeded++;
-        console.log(`Updating category: ${currentCategory} -> ${newCategory}`);
+      const currentCategory = post.trade_category.toLowerCase();
+      const mappedCategory = CATEGORY_MAPPINGS[currentCategory as keyof typeof CATEGORY_MAPPINGS];
 
-        const { error: updateError } = await supabase
+      if (mappedCategory && mappedCategory !== currentCategory) {
+        console.log(`Updating post "${post.title}": ${currentCategory} → ${mappedCategory}`);
+        
+        const { error: updateError } = await scriptSupabase
           .from('posts')
-          .update({ trade_category: newCategory })
+          .update({ trade_category: mappedCategory })
           .eq('id', post.id);
 
         if (updateError) {
-          console.error(`Error updating post ${post.id}:`, updateError);
+          console.error(`Error updating post ${post.title}:`, updateError);
         } else {
-          updatesCompleted++;
+          stats.updated++;
+          stats.categories.add(mappedCategory);
         }
+      } else {
+        console.log(`Skipping post "${post.title}" - Category already correct: ${currentCategory}`);
+        stats.skipped++;
+        stats.categories.add(currentCategory);
       }
     }
 
-    console.log('\nCategory update summary:');
-    console.log('=======================');
-    console.log(`Total posts checked: ${posts.length}`);
-    console.log(`Updates needed: ${updatesNeeded}`);
-    console.log(`Updates completed: ${updatesCompleted}`);
-
-    // Show final categories
-    const { data: finalCategories } = await supabase
-      .from('posts')
-      .select('trade_category')
-      .not('trade_category', 'is', null);
-
-    const uniqueCategories = [...new Set(finalCategories?.map(p => p.trade_category))].sort();
-
-    console.log('\nFinal trade categories:');
-    console.log('=====================');
-    uniqueCategories.forEach((category, index) => {
-      console.log(`${index + 1}. ${category}`);
-    });
+    // Log final statistics
+    console.log('\nFinal Statistics:');
+    console.log('----------------');
+    console.log(`Total Posts: ${stats.total}`);
+    console.log(`Updated: ${stats.updated}`);
+    console.log(`Skipped: ${stats.skipped}`);
+    console.log('Categories Found:', Array.from(stats.categories));
+    console.log('\nCategory fix completed successfully! ✅');
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('\n❌ Category fix failed:', error);
     process.exit(1);
   }
 }

@@ -1,16 +1,19 @@
 import { MetadataRoute } from "next"
 import { tradesData } from "@/lib/trades-data"
-import { getPosts } from "@/utils/supabase-blog"
 import { createClient } from '@/utils/supabase-server'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = "https://topcontractorsdenver.com"
 
-    // Get all blog posts
-    const { posts } = await getPosts(1, 1000) // Get up to 1000 posts
+    // Get all blog posts directly from Supabase
+    const supabase = createClient()
+    const { data: posts } = await supabase
+        .from('posts')
+        .select('slug, updated_at, published_at')
+        .order('published_at', { ascending: false })
 
     // Generate sitemap entries for blog posts
-    const blogEntries = posts.map((post) => ({
+    const blogEntries = (posts || []).map((post) => ({
         url: `${baseUrl}/blog/${post.slug}`,
         lastModified: post.updated_at || post.published_at,
         changeFrequency: 'weekly' as const,
@@ -68,7 +71,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]
 
     // Get all videos
-    const supabase = createClient()
     const { data: videos } = await supabase
         .from('videos')
         .select('*')

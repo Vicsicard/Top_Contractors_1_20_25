@@ -1,30 +1,44 @@
-import { getAllPosts } from '../src/utils/ghost';
 import fs from 'fs';
 import path from 'path';
+import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// Load environment variables
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Initialize Supabase client
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+async function getAllPosts() {
+    const { data, error } = await supabase
+        .from('posts')
+        .select('*')
+        .order('published_at', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+}
 
 const SITE_URL = 'https://www.topcontractorsdenver.com';
 
-interface GhostPost {
-    id: string;
-    slug: string;
-    title: string;
-    html: string;
-    feature_image?: string;
-    excerpt?: string;
-    published_at: string;
-    reading_time?: number;
-    tags?: Array<{ slug: string }>;
-}
-
-interface SitemapURL {
-    loc: string;
-    lastmod?: string;
-    changefreq: 'daily' | 'weekly' | 'monthly';
-    priority: number;
-}
+// URL structure for sitemap entries
+// {
+//     loc: string;
+//     lastmod?: string;
+//     changefreq: 'daily' | 'weekly' | 'monthly';
+//     priority: number;
+// }
 
 async function generateSitemap() {
-    const urls: SitemapURL[] = [];
+    const urls = [];
     
     // Add static pages
     const staticPages = [
