@@ -13,7 +13,7 @@ type Video = Database['public']['Tables']['videos']['Row'];
 
 interface VideoPageProps {
   params: {
-    category: string;
+    trade: string;
     id: string;
   };
 }
@@ -25,10 +25,11 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const supabase = createClient();
   
+  const { trade, id } = params;
   const { data: video } = await supabase
     .from('videos')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (!video) {
@@ -88,11 +89,11 @@ export default async function VideoPage({ params }: VideoPageProps) {
     notFound();
   }
 
-  // Fetch related videos in the same category
+  // Fetch related videos in the same trade
   const { data: relatedVideos, error: relatedError } = await supabase
     .from('videos')
     .select('*')
-    .eq('category', params.category)
+    .eq('trade', params.trade)
     .neq('id', params.id)
     .order('created_at', { ascending: false })
     .limit(3);
