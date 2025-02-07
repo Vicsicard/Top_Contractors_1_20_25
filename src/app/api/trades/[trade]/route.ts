@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createSupabaseClient } from '@/lib/supabase/client';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+import { tradesData } from '@/lib/trades-data';
+import type { TradeData } from '@/types/trade';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -12,7 +15,7 @@ function createTradeSlug(str: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-function findMatchingTrade(slug: string, tradesData: any): string | null {
+function findMatchingTrade(slug: string): string | null {
   const normalizedSlug = createTradeSlug(slug);
   
   // Check direct matches
@@ -21,7 +24,7 @@ function findMatchingTrade(slug: string, tradesData: any): string | null {
   }
 
   // Check alternative slugs
-  for (const [tradeKey, tradeInfo] of Object.entries(tradesData)) {
+  for (const [tradeKey, tradeInfo] of Object.entries(tradesData) as [string, TradeData][]) {
     if (tradeInfo.alternativeSlugs?.includes(normalizedSlug)) {
       return tradeKey;
     }
@@ -34,24 +37,23 @@ export async function GET(
   request: Request,
   { params }: { params: { trade: string } }
 ) {
-  const supabase = createSupabaseClient();
-
   try {
-    // Decode URL parameter
-    const decodedTrade = decodeURIComponent(params.trade);
-
-    // Get all trade categories
-    const { data: tradesData, error: tradesError } = await supabase
-      .from('categories')
-      .select('*');
-
-    if (tradesError) {
-      console.error('Error fetching trades:', tradesError);
-      return NextResponse.json({ error: tradesError.message }, { status: 500 });
-    }
+    const cookieStore = cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value;
+          },
+        },
+      }
+    );
 
     // Find matching trade slug
-    const matchingTrade = findMatchingTrade(decodedTrade, tradesData);
+    const decodedTrade = decodeURIComponent(params.trade);
+    const matchingTrade = findMatchingTrade(decodedTrade);
 
     if (!matchingTrade) {
       return NextResponse.json({ error: 'Trade category not found' }, { status: 404 });
@@ -84,21 +86,15 @@ export async function GET(
       return NextResponse.json({ error: contractorsError.message }, { status: 500 });
     }
 
-    // Format the response
-    const response = {
-      trade_category: {
-        name: categoryData.name,
-        slug: categoryData.slug,
-        description: categoryData.description
-      },
-      contractors: contractors || []
-    };
+    return NextResponse.json({
+      trade: categoryData,
+      contractors: contractors || [],
+    });
 
-    return NextResponse.json(response);
   } catch (error) {
-    console.error('Error in GET handler:', error);
+    console.error('Error in trade route:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
