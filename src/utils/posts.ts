@@ -13,22 +13,41 @@ function extractFirstImage(html: string): { url: string; alt: string } | null {
   return null;
 }
 
-export async function getPosts(limit?: number, category?: string) {
-  console.log('🔍 Fetching posts from Supabase...', { limit, category });
+export async function getPosts(page: number = 1, perPage: number = 12, category?: string) {
+  console.log('🔍 Fetching posts from Supabase...', { page, perPage, category });
   
   try {
+    // Get total count first
+    let countQuery = supabase
+      .from('posts')
+      .select('*', { count: 'exact', head: true });
+
+    if (category) {
+      countQuery = countQuery.eq('trade_category', category);
+    }
+
+    const { count, error: countError } = await countQuery;
+
+    if (countError) {
+      console.error('❌ Error getting post count:', countError);
+      return null;
+    }
+
+    // Calculate pagination
+    const totalPages = count ? Math.ceil(count / perPage) : 0;
+    const rangeStart = (page - 1) * perPage;
+    const rangeEnd = rangeStart + perPage - 1;
+
+    // Get paginated posts
     let query = supabase
       .from('posts')
       .select('*, authors, tags')
-      .order('published_at', { ascending: false });
+      .order('published_at', { ascending: false })
+      .range(rangeStart, rangeEnd);
 
     if (category) {
       console.log('📂 Filtering by category:', category);
       query = query.eq('trade_category', category);
-    }
-
-    if (limit) {
-      query = query.limit(limit);
     }
 
     console.log('📡 Executing Supabase query...');
@@ -89,7 +108,11 @@ export async function getPosts(limit?: number, category?: string) {
     });
 
     return {
-      posts: processedPosts || []
+      posts: processedPosts || [],
+      total: count || 0,
+      totalPages,
+      page,
+      perPage
     };
   } catch (error) {
     console.error('❌ Error fetching posts:', error);
