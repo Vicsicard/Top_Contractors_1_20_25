@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { BlogPostCard } from '@/components/BlogPostCard';
+import BlogPostCard from '@/components/BlogPostCard';
 import { Pagination } from '@/components/Pagination';
 import { getPostsByTrade } from '@/utils/supabase-blog';
 import { tradesData } from '@/lib/trades-data';

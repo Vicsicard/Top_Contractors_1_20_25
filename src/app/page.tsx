@@ -1,4 +1,4 @@
-import { CategoryList } from '@/components/CategoryList';
+import CategoryList from '@/components/CategoryList';
 import { getAllTrades } from '@/utils/database';
 
 export const revalidate = 3600; // Revalidate every hour

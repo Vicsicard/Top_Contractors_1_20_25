@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import BlogPostCard from '@/components/BlogPostCard';
 import { getPostBySlug } from '@/utils/supabase-blog';
 import { formatDate } from '@/utils/date';
 import { tradesData } from '@/lib/trades-data';

@@ -48,21 +48,13 @@ export default async function TradeBlogPage({ searchParams }: Props) {
         notFound();
     }
 
-    const { posts, hasNextPage, hasPrevPage } = await getPostsByCategory(trade, page);
+    const { posts, totalPages } = await getPostsByCategory(trade, page);
 
     if (!posts || posts.length === 0) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <h1 className="text-4xl font-bold mb-4">{tradeData.title} Blog</h1>
-                <p className="text-gray-600 mb-8">
-                    No posts found. Please check back soon for new content about {tradeData.title.toLowerCase()}.
-                </p>
-                <Link
-                    href="/blog"
-                    className="text-blue-600 hover:text-blue-800"
-                >
-                    ← Back to Blog
-                </Link>
+                <h1 className="text-4xl font-bold mb-8">No Posts Found</h1>
+                <p>There are currently no blog posts in this category.</p>
             </div>
         );
     }
@@ -151,9 +143,9 @@ export default async function TradeBlogPage({ searchParams }: Props) {
                     ))}
                 </div>
 
-                {(hasNextPage || hasPrevPage) && (
+                {(page > 1 || page < totalPages) && (
                     <div className="mt-8 flex justify-center gap-4">
-                        {hasPrevPage && (
+                        {page > 1 && (
                             <Link
                                 href={`/blog/trades/${trade}?page=${page - 1}`}
                                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -161,7 +153,7 @@ export default async function TradeBlogPage({ searchParams }: Props) {
                                 ← Previous
                             </Link>
                         )}
-                        {hasNextPage && (
+                        {page < totalPages && (
                             <Link
                                 href={`/blog/trades/${trade}?page=${page + 1}`}
                                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"

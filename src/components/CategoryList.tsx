@@ -31,7 +31,7 @@ interface CategoryListProps {
   categories: Category[];
 }
 
-export function CategoryList({ categories }: CategoryListProps) {
+export default function CategoryList({ categories }: CategoryListProps) {
   console.log('CategoryList rendering with categories:', categories);
 
   if (!Array.isArray(categories)) {

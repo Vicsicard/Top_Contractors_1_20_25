@@ -7,7 +7,7 @@ interface BlogPostCardProps {
   post: Post;
 }
 
-export function BlogPostCard({ post }: BlogPostCardProps) {
+export default function BlogPostCard({ post }: BlogPostCardProps) {
   const formattedDate = format(new Date(post.published_at), 'MMMM d, yyyy');
   
   // Default image for posts without a feature image
@@ -17,7 +17,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
 
   return (
     <Link 
-      href={`/blog/trades/${post.trade}/${post.slug}`}
+      href={`/blog/trades/${post.trade_category}/${post.slug}`}
       className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
     >
       <article className="group overflow-hidden">

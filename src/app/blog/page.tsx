@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { getPosts } from '@/utils/posts';
-import { BlogPostCard } from '@/components/BlogPostCard';
+import BlogPostCard from '@/components/BlogPostCard';
 import { CategoryList } from '@/components/blog/CategoryList';
 import type { Post } from '@/types/blog';
 

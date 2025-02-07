@@ -1,7 +1,8 @@
 'use client';
 
+import { notFound } from 'next/navigation';
 import { getPosts } from '@/utils/posts';
-import { BlogPostCard } from '@/components/BlogPostCard';
+import BlogPostCard from '@/components/BlogPostCard';
 import type { Post } from '@/types/blog';
 
 interface CategoryPostsProps {
@@ -11,7 +12,7 @@ interface CategoryPostsProps {
 export async function CategoryPosts({ category }: CategoryPostsProps) {
   const normalizedCategory = category.toLowerCase().replace(/\s+/g, '-');
   
-  const result = await getPosts(undefined, normalizedCategory);
+  const result = await getPosts(1, 12, normalizedCategory);
 
   if (!result) {
     return (
