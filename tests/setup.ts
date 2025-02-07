@@ -1,124 +1,121 @@
 import '@testing-library/jest-dom';
 import React from 'react';
-import { ImageProps } from 'next/image';
 
 // Mock environment variables
 process.env.NEXT_PUBLIC_SUPABASE_URL = 'http://localhost:54321';
 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
 
-// Increase timeout for database tests
+// Increase timeout for async tests
 jest.setTimeout(10000);
 
 // Mock next/image
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props: ImageProps) => {
-    // Ensure src starts with / or http
-    const imgSrc = typeof props.src === 'string' && !props.src.startsWith('/') && !props.src.startsWith('http')
-      ? `/${props.src}`
-      : props.src;
-    // eslint-disable-next-line @next/next/no-img-element
+  default: function Image({ src, alt, ...props }: any) {
     return React.createElement('img', {
+      src,
+      alt,
       ...props,
-      src: imgSrc,
-      alt: props.alt,
-      // Convert boolean props to strings
-      fill: props.fill ? 'true' : undefined,
-      priority: props.priority ? 'true' : undefined
+      fill: undefined,
+      sizes: undefined
     });
   }
 }));
 
 // Mock next/navigation
+const mockRouter = {
+  push: jest.fn(),
+  replace: jest.fn(),
+  prefetch: jest.fn(),
+  back: jest.fn(),
+  forward: jest.fn()
+};
+
+const mockSearchParams = new URLSearchParams();
+const mockPathname = '/blog';
+
 jest.mock('next/navigation', () => ({
-  ...jest.requireActual('next/navigation'),
-  useRouter() {
-    return {
-      push: jest.fn(),
-      replace: jest.fn(),
-      prefetch: jest.fn()
-    };
-  },
-  useSearchParams() {
-    return {
-      get: jest.fn()
-    };
-  },
-  notFound: jest.fn()
+  useRouter: () => mockRouter,
+  useSearchParams: () => mockSearchParams,
+  usePathname: () => mockPathname,
+  notFound: jest.fn(),
+  redirect: jest.fn()
 }));
 
-// Create reusable mock data
-const mockTradeData = {
-  id: '1',
-  category_name: 'Bathroom Remodelers',
-  slug: 'bathroom-remodelers',
-  created_at: '2025-01-09T14:56:32Z',
-  updated_at: '2025-01-09T14:56:32Z'
-};
+// Mock next/headers
+jest.mock('next/headers', () => ({
+  headers: () => new Map(),
+  cookies: () => ({
+    get: jest.fn(),
+    set: jest.fn(),
+    delete: jest.fn()
+  })
+}));
 
-const mockContractorData = {
-  id: '1',
-  contractor_name: 'Test Contractor',
-  slug: 'test-contractor',
-  google_rating: 4.5,
-  google_review_count: 100,
-  created_at: '2025-01-09T14:56:32Z',
-  updated_at: '2025-01-09T14:56:32Z'
-};
-
-// Mock Supabase client with improved implementation
-jest.mock('../src/lib/supabase', () => {
-  const mockSelect = jest.fn().mockReturnValue({
-    eq: jest.fn().mockImplementation((column: string, value: string) => {
-      if (column === 'slug' && value === 'bathroom-remodelers') {
-        return {
-          single: jest.fn().mockResolvedValue({
-            data: mockTradeData,
-            error: null
-          }),
-          data: [mockTradeData],
-          error: null
-        };
-      }
-      if (column === 'trade_category' && value === 'bathroom-remodelers') {
-        return {
-          data: [mockContractorData],
-          error: null
-        };
-      }
-      return {
-        data: [],
-        error: null
-      };
-    }),
-    order: jest.fn().mockResolvedValue({
-      data: [mockTradeData],
-      error: null
-    })
-  });
-
-  const mockFrom = jest.fn().mockReturnValue({
-    select: mockSelect
-  });
-
+// Mock next/link
+jest.mock('next/link', () => {
   return {
-    supabase: {
-      from: mockFrom
+    __esModule: true,
+    default: function Link({ children, ...props }: any) {
+      return React.createElement('a', props, children);
     }
   };
 });
 
-// Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(),
-    removeListener: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-});
+// Create reusable mock data
+export const mockCategories = [
+  {
+    id: 'bathroom-remodeling',
+    title: 'Bathroom Remodeling',
+    description: 'Transform your bathroom with expert remodeling services.'
+  },
+  {
+    id: 'kitchen-remodeling',
+    title: 'Kitchen Remodeling',
+    description: 'Expert kitchen renovation and remodeling services.'
+  }
+];
+
+export const mockPost = {
+  id: '1',
+  title: 'Test Blog Post',
+  slug: 'test-blog-post',
+  html: '<p>This is a test blog post.</p>',
+  published_at: '2025-01-01',
+  feature_image: '/test-image.jpg',
+  feature_image_alt: 'Test Image',
+  excerpt: 'Test excerpt',
+  reading_time: 5,
+  author: 'Test Author',
+  author_url: '#',
+  trade_category: 'bathroom-remodeling'
+};
+
+export const mockPosts = {
+  posts: [mockPost],
+  total: 1
+};
+
+// Mock utils
+jest.mock('@/utils/posts', () => ({
+  getPosts: jest.fn().mockResolvedValue(mockPosts),
+  getPostBySlug: jest.fn().mockResolvedValue({ post: mockPost })
+}));
+
+jest.mock('@/utils/categories', () => ({
+  getAllCategories: jest.fn().mockResolvedValue(mockCategories)
+}));
+
+// Mock metadata
+jest.mock('next/metadata', () => ({
+  Metadata: jest.fn()
+}));
+
+// Mock React Server Components
+jest.mock('react', () => ({
+  ...jest.requireActual('react'),
+  createElement: jest.fn((type, props, ...children) => {
+    if (type === 'script') return null;
+    return jest.requireActual('react').createElement(type, props, ...children);
+  }),
+}));

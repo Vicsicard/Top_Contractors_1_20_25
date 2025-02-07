@@ -2,15 +2,9 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import BlogPostCard from '@/components/BlogPostCard';
-import { getPostBySlug } from '@/utils/supabase-blog';
-import { formatDate } from '@/utils/date';
-import { tradesData } from '@/lib/trades-data';
-import { JsonLd } from '@/components/json-ld';
-import { Author } from '@/types/blog';
-import { processHtml } from '@/utils/html-processor';
-import { BlogContentErrorBoundary } from '@/components/BlogContentErrorBoundary';
-import { Suspense } from 'react';
+import { format } from 'date-fns';
+import { getPostBySlug } from '@/utils/posts';
+import type { Post } from '@/types/blog';
 
 interface Props {
   params: {
@@ -19,156 +13,103 @@ interface Props {
   };
 }
 
-function isValidImageUrl(url: string | undefined): boolean {
-  if (!url) return false;
-  try {
-    const urlObj = new URL(url);
-    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
-  } catch {
-    return url.startsWith('/');
-  }
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = await getPostBySlug(params.slug, params.trade);
-  const tradeData = tradesData[params.trade];
+  const { post } = await getPostBySlug(params.slug, params.trade);
 
-  if (!post || !tradeData) {
+  if (!post) {
     return {
-      title: 'Post Not Found | Top Contractors Denver Blog',
-      description: 'The requested blog post could not be found.',
+      title: 'Post Not Found | Top Contractors Denver',
       robots: 'noindex, nofollow'
     };
   }
 
   return {
-    title: `${post.title} | ${tradeData.title} Blog`,
-    description: post.excerpt || `Read about ${tradeData.title.toLowerCase()} on Top Contractors Denver Blog`,
+    title: `${post.title} | Top Contractors Denver`,
+    description: post.excerpt,
     openGraph: {
       title: post.title,
-      description: post.excerpt || undefined,
-      type: 'article',
-      publishedTime: post.published_at,
-      modifiedTime: post.updated_at || undefined,
-      authors: post.authors?.map((author: Author) => author.name) || undefined,
-      images: post.feature_image ? [post.feature_image] : undefined,
-    },
-    alternates: {
-      canonical: `/blog/trades/${params.trade}/${params.slug}`
+      description: post.excerpt,
+      images: [
+        {
+          url: post.feature_image,
+          width: 1200,
+          height: 630,
+          alt: post.feature_image_alt
+        }
+      ]
     }
   };
 }
 
 function BlogContent({ html }: { html: string }) {
-  return (
-    <BlogContentErrorBoundary>
-      <div 
-        className="prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: processHtml(html) }}
-      />
-    </BlogContentErrorBoundary>
-  );
-}
-
-function BlogImages({ post }: { post: any }) {
-  if (!post.feature_image || !isValidImageUrl(post.feature_image)) {
-    return null;
+  if (!html) {
+    return <p className="text-gray-600">Content not available</p>;
   }
 
   return (
-    <div className="relative w-full h-[400px] mb-8">
-      <Image
-        src={post.feature_image}
-        alt={post.title}
-        fill
-        className="object-cover rounded-lg"
-        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-        priority
-      />
-    </div>
+    <div 
+      className="prose prose-lg max-w-none"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
   );
 }
 
-export default async function TradeBlogPost({ params }: Props) {
-  const post = await getPostBySlug(params.slug, params.trade);
-  const tradeData = tradesData[params.trade];
+export default async function BlogPost({ params }: Props) {
+  const { post } = await getPostBySlug(params.slug, params.trade);
 
-  if (!post || !tradeData) {
+  if (!post) {
     notFound();
   }
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: post.title,
-    description: post.excerpt,
-    image: post.feature_image,
-    datePublished: post.published_at,
-    dateModified: post.updated_at || post.published_at,
-    author: post.authors?.map((author: Author) => ({
-      '@type': 'Person',
-      name: author.name,
-    })) || [],
-    publisher: {
-      '@type': 'Organization',
-      name: 'Top Contractors Denver',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://topcontractorsdenver.com/logo.png'
-      }
-    }
-  };
+  const formattedDate = format(new Date(post.published_at), 'MMMM d, yyyy');
 
   return (
-    <article className="container mx-auto px-4 py-8 max-w-4xl">
-      <JsonLd data={jsonLd} />
-      
-      <nav className="text-sm mb-8">
-        <ol className="flex items-center space-x-2">
-          <li>
-            <Link href="/" className="text-blue-600 hover:text-blue-800">
-              Home
+    <article className="container mx-auto px-4 py-8">
+      <header className="max-w-4xl mx-auto mb-12">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          {post.title}
+        </h1>
+        
+        <div className="flex items-center justify-between text-gray-600 mb-8">
+          <div className="flex items-center">
+            <Link
+              href={post.author_url}
+              className="text-blue-600 hover:text-blue-800"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {post.author}
             </Link>
-          </li>
-          <li>→</li>
-          <li>
-            <Link href={`/trades/${params.trade}`} className="text-blue-600 hover:text-blue-800">
-              {tradeData.title}
-            </Link>
-          </li>
-          <li>→</li>
-          <li>
-            <Link href={`/blog/trades/${params.trade}`} className="text-blue-600 hover:text-blue-800">
-              Blog
-            </Link>
-          </li>
-        </ol>
-      </nav>
+            <span className="mx-2">•</span>
+            <time dateTime={post.published_at}>{formattedDate}</time>
+          </div>
+          <span>{post.reading_time} min read</span>
+        </div>
 
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-        {post.excerpt && (
-          <p className="text-xl text-gray-600 mb-4">{post.excerpt}</p>
-        )}
-        <div className="flex items-center text-gray-600">
-          {post.authors?.map((author: Author, index: number) => (
-            <span key={author.id}>
-              {author.name}
-              {index < (post.authors?.length || 0) - 1 ? ', ' : ''}
-            </span>
-          ))}
-          <span className="mx-2">•</span>
-          <time dateTime={post.published_at}>
-            {formatDate(post.published_at)}
-          </time>
+        <div className="relative w-full h-[400px] mb-8">
+          <Image
+            src={post.feature_image}
+            alt={post.feature_image_alt}
+            fill
+            className="object-cover rounded-lg"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+            priority
+          />
         </div>
       </header>
 
-      <BlogImages post={post} />
+      <div className="max-w-4xl mx-auto">
+        <BlogContent html={post.html} />
+      </div>
 
-      <Suspense fallback={<div>Loading content...</div>}>
-        <BlogContent html={post.html || ''} />
-      </Suspense>
+      <footer className="max-w-4xl mx-auto mt-12 pt-8 border-t border-gray-200">
+        <Link
+          href={`/blog/page/1?category=${post.trade_category}`}
+          className="text-blue-600 hover:text-blue-800"
+        >
+          ← Back to {post.trade_category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')} Articles
+        </Link>
+      </footer>
     </article>
   );
 }

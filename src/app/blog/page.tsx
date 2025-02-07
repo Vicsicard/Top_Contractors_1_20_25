@@ -12,13 +12,15 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600; // Revalidate every hour
 
+export const dynamic = 'force-dynamic';
+
 interface BlogPageProps {
   searchParams: {
     category?: string;
   };
 }
 
-export default async function BlogPage({ searchParams }: BlogPageProps) {
+export default function BlogPage({ searchParams }: BlogPageProps) {
   const { category } = searchParams;
   redirect(`/blog/page/1${category ? `?category=${category}` : ''}`);
 }

@@ -10,6 +10,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
+import AnalyticsDimensions from '@/components/AnalyticsDimensions';
 
 // Optimize font loading
 const inter = Inter({
@@ -29,55 +30,22 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://topcontractorsdenver.com',
-    siteName: 'Top Contractors Denver',
-    title: 'Top Denver Contractors | Verified Local Pros for Home Improvement',
-    description: 'Discover trusted Denver contractors for home improvement, remodeling, and repairs. Our verified local pros bring your projects to life with quality workmanship and reliable service.',
-    images: [
-      {
-        url: '/images/denver sky 666.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Denver skyline'
-      }
-    ]
-  },
-  twitter: {
-    card: 'summary_large_image',
-    images: ['/images/denver sky 666.jpg']
-  },
-  verification: {
-    google: 'Uc0OPZIJKQg-K8pxzJAKqYGANtZvY_IzDMqhN9vQwpI',
-    other: {
-      'facebook-domain-verification': ['7n22l22v4th5rqv1eoxa3knlb19ptr']
-    }
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
   manifest: '/manifest.json',
   icons: {
     icon: [
-      { url: '/icon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/icon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icon-512x512.png', sizes: '512x512', type: 'image/png' }
+      { url: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
     ],
-    apple: '/apple-touch-icon.png',
-    shortcut: '/icon-192x192.png'
-  }
-}
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+};
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  userScalable: true,
-  viewportFit: 'cover',
   themeColor: [{ media: '(prefers-color-scheme: light)', color: '#3366FF' }],
 };
 
@@ -88,6 +56,7 @@ export default async function RootLayout({
 }) {
   const headersList = headers();
   const analyticsDimensions = headersList.get('x-analytics-dimensions') || '{}';
+  
   return (
     <html lang="en" className={inter.className}>
       <head>
@@ -98,20 +67,11 @@ export default async function RootLayout({
           }}
         />
         <meta name="google-site-verification" content="Uc0OPZIJKQg-K8pxzJAKqYGANtZvY_IzDMqhN9vQwpI" />
-        <meta
-          name="analytics-dimensions"
-          content={analyticsDimensions}
-        />
+        <AnalyticsDimensions />
         {/* Resource hints */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        
-        <link 
-          rel="manifest" 
-          href="/manifest.json" 
-          type="application/manifest+json"
-        />
       </head>
       <body className={inter.className}>
         <header className="fixed top-0 left-0 right-0 z-50 bg-primary shadow-lg">

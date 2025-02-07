@@ -25,6 +25,7 @@
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.1",
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.0.10",
     "@supabase/supabase-js": "^2.48.1",
     "@tailwindcss/aspect-ratio": "^0.4.2",
@@ -60,8 +61,10 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@swc/jest": "^0.2.37",
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.1.0",
+    "@testing-library/react": "^16.2.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/aria-query": "^5.0.4",
     "@types/dompurify": "^3.0.5",
     "@types/dotenv": "^8.2.0",

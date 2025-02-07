@@ -2,49 +2,68 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { getAllCategories } from '@/utils/categories';
+import { useCallback } from 'react';
 
-export function CategoryList() {
-  const categories = getAllCategories();
+interface Category {
+  id: string;
+  title: string;
+  description: string;
+}
+
+interface CategoryListProps {
+  activeCategory?: string;
+  categories: Category[];
+}
+
+export function CategoryList({ activeCategory, categories }: CategoryListProps) {
   const searchParams = useSearchParams();
-  const currentCategory = searchParams.get('category');
+  const currentPage = searchParams.get('page') || '1';
+
+  const getCategoryUrl = useCallback((categoryId?: string) => {
+    if (!categoryId) {
+      return `/blog/page/${currentPage}`;
+    }
+    return `/blog/page/${currentPage}?category=${categoryId}`;
+  }, [currentPage]);
+
+  const isActive = useCallback((categoryId?: string) => {
+    if (!categoryId && !activeCategory) return true;
+    return categoryId === activeCategory;
+  }, [activeCategory]);
 
   return (
     <section className="mb-12">
       <h2 className="text-2xl font-bold mb-6">Trade Categories</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex flex-wrap gap-4">
         <Link
-          href="/blog"
-          className={`group p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100 ${
-            !currentCategory ? 'ring-2 ring-blue-500' : ''
-          }`}
+          href={getCategoryUrl()}
+          className={`
+            px-4 py-2 rounded-full text-sm font-medium
+            ${isActive() 
+              ? 'bg-blue-600 text-white ring-2 ring-blue-500'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }
+            transition-colors duration-200
+          `}
         >
-          <div className="flex flex-col h-full">
-            <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 mb-2">
-              All Posts
-            </h3>
-            <p className="text-gray-600 text-sm">
-              Browse all articles across every home improvement category
-            </p>
-          </div>
+          All Posts
         </Link>
 
-        {categories.map(category => (
+        {categories.map((category) => (
           <Link
             key={category.id}
-            href={`/blog?category=${category.id}`}
-            className={`group p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border border-gray-100 ${
-              currentCategory === category.id ? 'ring-2 ring-blue-500' : ''
-            }`}
+            href={getCategoryUrl(category.id)}
+            className={`
+              px-4 py-2 rounded-full text-sm font-medium
+              ${isActive(category.id)
+                ? 'bg-blue-600 text-white ring-2 ring-blue-500'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }
+              transition-colors duration-200
+            `}
+            title={category.description}
           >
-            <div className="flex flex-col h-full">
-              <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 mb-2">
-                {category.title}
-              </h3>
-              <p className="text-gray-600 text-sm">
-                {category.description}
-              </p>
-            </div>
+            {category.title}
           </Link>
         ))}
       </div>
