@@ -12,11 +12,11 @@ import { BlogPostCard } from '@/components/BlogPostCard';
 export const revalidate = 3600; // Revalidate every hour
 
 interface Props {
-  params: { slug: string }
+  params: { trade: string }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const trade = await getTradeBySlug(params.slug);
+  const trade = await getTradeBySlug(params.trade);
   
   if (!trade) {
     throw new Error('Trade not found');
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: ['https://topcontractorsdenver.com/images/denver-skyline.jpg'],
     },
     alternates: {
-      canonical: `https://topcontractorsdenver.com/trades/${params.slug}`,
+      canonical: `https://topcontractorsdenver.com/trades/${params.trade}`,
     },
   };
 }
@@ -64,7 +64,7 @@ export const viewport = {
 };
 
 export default async function TradePage({ params }: Props) {
-  const trade = await getTradeBySlug(params.slug);
+  const trade = await getTradeBySlug(params.trade);
   if (!trade) {
     notFound();
   }
@@ -73,7 +73,7 @@ export default async function TradePage({ params }: Props) {
   const faqs = getFAQsForTrade(tradeName);
   
   // Fetch blog posts for this trade
-  const { posts } = await getPostsByCategory(params.slug);
+  const { posts } = await getPostsByCategory(params.trade);
   
   const schema = {
     localBusiness: generateLocalBusinessSchema({ trade: tradeName }),
@@ -83,7 +83,7 @@ export default async function TradePage({ params }: Props) {
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: tradeName, href: `/trades/${params.slug}` }
+    { label: tradeName, href: `/trades/${params.trade}` }
   ];
 
   const subregions = await getAllSubregions();
@@ -149,7 +149,7 @@ export default async function TradePage({ params }: Props) {
               </div>
               <div className="mt-8 text-center">
                 <a 
-                  href={`/blog/trades/${params.slug}`}
+                  href={`/blog/trades/${params.trade}`}
                   className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
                   aria-label={`View all ${tradeName} articles and guides`}
                 >

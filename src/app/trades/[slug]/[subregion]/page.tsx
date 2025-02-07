@@ -15,7 +15,7 @@ import { getFAQsForTrade } from '@/data/faqs';
 
 interface Props {
   params: { 
-    slug: string;
+    trade: string;
     subregion: string;
   }
 }
@@ -42,7 +42,7 @@ export async function generateStaticParams() {
         }
         
         paths.push({
-          slug: trade.slug,
+          trade: trade.slug,
           subregion: subregion.slug,
         });
       }
@@ -57,26 +57,26 @@ export async function generateStaticParams() {
   }
 }
 
-async function getTradeAndSubregionNames({ slug, subregion }: Props['params']) {
+async function getTradeAndSubregionNames({ trade, subregion }: Props['params']) {
   try {
-    console.log('[SERVER] Fetching trade and subregion data:', { slug, subregion });
-    const [trade, subregionData] = await Promise.all([
-      getTradeBySlug(slug),
+    console.log('[SERVER] Fetching trade and subregion data:', { trade, subregion });
+    const [tradeData, subregionData] = await Promise.all([
+      getTradeBySlug(trade),
       getSubregionBySlug(subregion)
     ]);
 
-    if (!trade || !subregionData) {
-      console.error('[SERVER] Trade or subregion not found:', { trade, subregionData });
+    if (!tradeData || !subregionData) {
+      console.error('[SERVER] Trade or subregion not found:', { tradeData, subregionData });
       throw new Error('Trade or subregion not found');
     }
 
-    if (!trade.category_name || !subregionData.subregion_name) {
-      console.error('[SERVER] Invalid trade or subregion data:', { trade, subregionData });
+    if (!tradeData.category_name || !subregionData.subregion_name) {
+      console.error('[SERVER] Invalid trade or subregion data:', { tradeData, subregionData });
       throw new Error('Invalid trade or subregion data');
     }
 
     return {
-      tradeName: trade.category_name,
+      tradeName: tradeData.category_name,
       subregionName: subregionData.subregion_name,
     };
   } catch (error) {
@@ -114,13 +114,13 @@ export const viewport: Viewport = {
 };
 
 export default async function TradeSubregionPage({ params }: Props) {
-  if (!params?.slug || !params?.subregion) {
+  if (!params?.trade || !params?.subregion) {
     console.error('[SERVER] Missing required params:', params);
     notFound();
   }
 
   const [trade, subregion] = await Promise.all([
-    getTradeBySlug(params.slug),
+    getTradeBySlug(params.trade),
     getSubregionBySlug(params.subregion)
   ]);
 
@@ -133,7 +133,7 @@ export default async function TradeSubregionPage({ params }: Props) {
   const faqs = getFAQsForTrade(tradeName);
 
   // Fetch contractors for this trade and subregion
-  const contractors = await getContractorsByTradeAndSubregion(params.slug, params.subregion);
+  const contractors = await getContractorsByTradeAndSubregion(params.trade, params.subregion);
 
   const schema = {
     localBusiness: generateLocalBusinessSchema({ trade: tradeName, subregion: subregionName }),
@@ -143,8 +143,8 @@ export default async function TradeSubregionPage({ params }: Props) {
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: tradeName, href: `/trades/${params.slug}` },
-    { label: subregionName, href: `/trades/${params.slug}/${params.subregion}` }
+    { label: tradeName, href: `/trades/${params.trade}` },
+    { label: subregionName, href: `/trades/${params.trade}/${params.subregion}` }
   ];
 
   return (
