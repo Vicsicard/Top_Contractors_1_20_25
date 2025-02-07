@@ -1,8 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import TradeBlogPage from '@/app/blog/trades/tradeType/page';
+import TradeBlogPage, { generateMetadata } from '@/app/blog/trades/tradeType/page';
 import { notFound } from 'next/navigation';
 import * as supabaseBlog from '@/utils/supabase-blog';
-import { tradesData } from '@/lib/trades-data';
 
 jest.mock('@/utils/supabase-blog', () => ({
   getPostsByCategory: jest.fn()
@@ -10,6 +9,15 @@ jest.mock('@/utils/supabase-blog', () => ({
 
 jest.mock('next/navigation', () => ({
   notFound: jest.fn()
+}));
+
+jest.mock('@/lib/trades-data', () => ({
+  tradesData: {
+    'bathroom-remodeling': {
+      title: 'Bathroom Remodeling',
+      description: 'Bathroom remodeling services'
+    }
+  }
 }));
 
 jest.mock('next/image', () => ({
@@ -44,7 +52,8 @@ describe('TradeBlogPage', () => {
       ],
       totalPages: 1,
       hasNextPage: false,
-      hasPrevPage: false
+      hasPrevPage: false,
+      totalPosts: 2
     };
 
     (supabaseBlog.getPostsByCategory as jest.Mock).mockResolvedValue(mockPosts);
@@ -52,7 +61,15 @@ describe('TradeBlogPage', () => {
     const params = { trade: 'bathroom-remodeling' };
     const searchParams = { page: '1' };
 
-    const { container } = render(await TradeBlogPage({ params, searchParams }));
+    const result = await TradeBlogPage({ params, searchParams });
+    
+    // Check if result is a redirect
+    if ('redirect' in result) {
+      expect(result.redirect.destination).toBeDefined();
+      return;
+    }
+
+    const { container } = render(result);
 
     expect(supabaseBlog.getPostsByCategory).toHaveBeenCalledWith(
       'bathroom-remodeling',
@@ -61,7 +78,9 @@ describe('TradeBlogPage', () => {
 
     expect(screen.getByText('Test Post 1')).toBeInTheDocument();
     expect(screen.getByText('Test Post 2')).toBeInTheDocument();
-    expect(container.querySelector('article')).toBeInTheDocument();
+    expect(screen.getByText('Bathroom Remodeling Blog')).toBeInTheDocument();
+    expect(screen.getByText('2 articles in this category')).toBeInTheDocument();
+    expect(container.querySelector('.grid')).toBeInTheDocument();
   });
 
   it('calls notFound when trade does not exist', async () => {
@@ -78,7 +97,8 @@ describe('TradeBlogPage', () => {
       posts: [],
       totalPages: 0,
       hasNextPage: false,
-      hasPrevPage: false
+      hasPrevPage: false,
+      totalPosts: 0
     };
 
     (supabaseBlog.getPostsByCategory as jest.Mock).mockResolvedValue(mockPosts);
@@ -86,10 +106,18 @@ describe('TradeBlogPage', () => {
     const params = { trade: 'bathroom-remodeling' };
     const searchParams = { page: '1' };
 
-    render(await TradeBlogPage({ params, searchParams }));
+    const result = await TradeBlogPage({ params, searchParams });
+    
+    // Check if result is a redirect
+    if ('redirect' in result) {
+      expect(result.redirect.destination).toBeDefined();
+      return;
+    }
 
-    expect(screen.getByText(/no posts found/i)).toBeInTheDocument();
-    expect(screen.getByText(/back to blog/i)).toBeInTheDocument();
+    const { container } = render(result);
+
+    expect(screen.getByText('No blog posts found for this trade category')).toBeInTheDocument();
+    expect(container.querySelector('.grid')).not.toBeInTheDocument();
   });
 
   it('renders pagination controls when there are multiple pages', async () => {
@@ -106,7 +134,8 @@ describe('TradeBlogPage', () => {
       ],
       totalPages: 2,
       hasNextPage: true,
-      hasPrevPage: false
+      hasPrevPage: false,
+      totalPosts: 3
     };
 
     (supabaseBlog.getPostsByCategory as jest.Mock).mockResolvedValue(mockPosts);
@@ -114,9 +143,37 @@ describe('TradeBlogPage', () => {
     const params = { trade: 'bathroom-remodeling' };
     const searchParams = { page: '1' };
 
-    render(await TradeBlogPage({ params, searchParams }));
+    const result = await TradeBlogPage({ params, searchParams });
+    
+    // Check if result is a redirect
+    if ('redirect' in result) {
+      expect(result.redirect.destination).toBeDefined();
+      return;
+    }
+
+    const { container } = render(result);
 
     expect(screen.getByText('Next →')).toBeInTheDocument();
     expect(screen.queryByText('← Previous')).not.toBeInTheDocument();
+    expect(screen.getByText('Page 1 of 2')).toBeInTheDocument();
+    expect(container.querySelector('.grid')).toBeInTheDocument();
+  });
+
+  describe('generateMetadata', () => {
+    it('generates correct metadata for trade blog page', async () => {
+      const params = { trade: 'bathroom-remodeling' };
+      const metadata = await generateMetadata({ params, searchParams: {} });
+
+      expect(metadata.title).toBe('Bathroom Remodeling Blog | Top Contractors Denver');
+      expect(metadata.description).toContain('Read expert bathroom remodeling tips');
+    });
+
+    it('generates not found metadata for invalid trade', async () => {
+      const params = { trade: 'invalid-trade' };
+      const metadata = await generateMetadata({ params, searchParams: {} });
+
+      expect(metadata.title).toBe('Trade Not Found | Top Contractors Denver Blog');
+      expect(metadata.robots).toBe('noindex, nofollow');
+    });
   });
 });

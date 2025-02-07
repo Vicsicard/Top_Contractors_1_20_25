@@ -247,114 +247,42 @@ export async function getTradeCategories(): Promise<string[]> {
 /**
  * Gets posts by category with case-insensitive matching
  */
-export async function getPostsByCategory(
-    category: string,
-    page = 1,
-    limit = POSTS_PER_PAGE
-): Promise<PaginatedPosts> {
-    try {
-        // Validate connection and category
-        const isConnected = await validateSupabaseConnection();
-        if (!isConnected) {
-            throw new Error('Failed to connect to Supabase');
-        }
-        if (!category) {
-            throw new Error('Category is required');
-        }
+export async function getPostsByCategory(categorySlug: string, page: number = 1, perPage: number = 12) {
+  try {
+    // Calculate the range start and end
+    const rangeStart = (page - 1) * perPage;
+    const rangeEnd = rangeStart + perPage - 1;
 
-        // Validate and standardize the category
-        if (!isValidCategory(category)) {
-            console.log('DEBUG: Invalid category requested:', category);
-            return {
-                posts: [],
-                totalPages: 0,
-                hasNextPage: false,
-                hasPrevPage: false,
-                totalPosts: 0
-            };
-        }
+    // Get total count first
+    const { count } = await supabase
+      .from('posts')
+      .select('*', { count: 'exact', head: true })
+      .eq('trade_category', categorySlug);
 
-        const standardizedCategory = getStandardCategory(category);
-        console.log('DEBUG: Fetching posts for standardized category:', {
-            original: category,
-            standardized: standardizedCategory
-        });
+    // Then get the paginated results
+    const { data: posts, error } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('trade_category', categorySlug)
+      .order('published_at', { ascending: false })
+      .range(rangeStart, rangeEnd);
 
-        // Calculate pagination
-        const from = (page - 1) * limit;
-        const to = from + limit - 1;
-
-        // Get count first to ensure it's properly retrieved
-        const countResult = await supabase
-            .from('posts')
-            .select('*', { count: 'exact', head: true })
-            .or(`trade_category.ilike.${category},trade_category.ilike.${standardizedCategory}`)
-            .not('trade_category', 'is', null)
-            .not('published_at', 'is', null)
-            .lt('published_at', new Date().toISOString());
-
-        if (countResult.error) throw countResult.error;
-        if (countResult.count === null) throw new Error('Failed to get post count');
-
-        // Then get posts
-        const postsResult = await supabase
-            .from('posts')
-            .select(`
-                id,
-                title,
-                slug,
-                excerpt,
-                feature_image,
-                feature_image_alt,
-                published_at,
-                updated_at,
-                reading_time,
-                trade_category
-            `)
-            .or(`trade_category.ilike.${category},trade_category.ilike.${standardizedCategory}`)
-            .not('trade_category', 'is', null)
-            .not('published_at', 'is', null)
-            .lt('published_at', new Date().toISOString())
-            .order('published_at', { ascending: false })
-            .range(from, to);
-
-        console.log('DEBUG: Posts query result:', {
-            category,
-            standardizedCategory,
-            postsFound: postsResult.data?.length || 0,
-            error: postsResult.error
-        });
-
-        // Handle post query errors
-        if (postsResult.error) throw postsResult.error;
-        if (!postsResult.data) throw new Error('Failed to fetch posts: posts data is null');
-
-        const count = countResult.count;
-        const posts = postsResult.data;
-
-        // Transform posts to match Post interface
-        const transformedPosts = posts.map(transformPost);
-
-        return {
-            posts: transformedPosts,
-            totalPages: Math.ceil(count / limit),
-            hasNextPage: from + limit < count,
-            hasPrevPage: page > 1,
-            totalPosts: count
-        };
-    } catch (error) {
-        console.error('getPostsByCategory - Unexpected error:', error);
-        
-        if (error instanceof Error) {
-            throw error;
-        } else {
-            throw new Error(
-                typeof error === 'string' 
-                    ? error 
-                    : 'An unexpected error occurred while fetching blog posts'
-            );
-        }
+    if (error) {
+      console.error('Error fetching posts:', error);
+      return { posts: [], total: 0, totalPages: 0 };
     }
+
+    const totalPages = count ? Math.ceil(count / perPage) : 0;
+
+    return {
+      posts: posts || [],
+      total: count || 0,
+      totalPages
+    };
+  } catch (error) {
+    console.error('Error in getPostsByCategory:', error);
+    return { posts: [], total: 0, totalPages: 0 };
+  }
 }
 
 /**
@@ -426,4 +354,47 @@ export async function getPostsByTag(tag: string, page = 1, limit = POSTS_PER_PAG
             totalPosts: 0
         };
     }
+}
+
+/**
+ * Gets all posts with pagination
+ */
+export async function getAllPosts(page: number = 1, perPage: number = 12) {
+  try {
+    // Calculate the range start and end
+    const rangeStart = (page - 1) * perPage;
+    const rangeEnd = rangeStart + perPage - 1;
+
+    // Get total count first
+    const { count } = await supabase
+      .from('posts')
+      .select('*', { count: 'exact', head: true })
+      .not('published_at', 'is', null)
+      .lt('published_at', new Date().toISOString());
+
+    // Then get the paginated results
+    const { data: posts, error } = await supabase
+      .from('posts')
+      .select('*')
+      .not('published_at', 'is', null)
+      .lt('published_at', new Date().toISOString())
+      .order('published_at', { ascending: false })
+      .range(rangeStart, rangeEnd);
+
+    if (error) {
+      console.error('Error fetching posts:', error);
+      return { posts: [], total: 0, totalPages: 0 };
+    }
+
+    const totalPages = count ? Math.ceil(count / perPage) : 0;
+
+    return {
+      posts: posts || [],
+      total: count || 0,
+      totalPages
+    };
+  } catch (error) {
+    console.error('Error in getAllPosts:', error);
+    return { posts: [], total: 0, totalPages: 0 };
+  }
 }

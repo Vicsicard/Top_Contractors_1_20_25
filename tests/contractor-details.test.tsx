@@ -67,8 +67,8 @@ describe('ContractorCard', () => {
 
     render(<ContractorCard contractor={contractorWithoutOptionals} />);
     
-    expect(screen.queryByTestId('phone-icon')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('globe-icon')).not.toBeInTheDocument();
+    expect(screen.queryByText('303-555-0123')).not.toBeInTheDocument();
+    expect(screen.queryByText('Visit Website')).not.toBeInTheDocument();
     expect(screen.getByText('(75 reviews)')).toBeInTheDocument();
   });
 
@@ -98,26 +98,26 @@ describe('ContractorCard', () => {
   it('applies responsive text classes', () => {
     render(<ContractorCard contractor={mockContractor} />);
     
-    const name = screen.getByText('ABC Remodeling');
-    expect(name.parentElement).toHaveClass('text-lg', 'sm:text-xl');
+    const name = screen.getByText('ABC Remodeling').parentElement;
+    expect(name).toHaveClass('text-lg', 'sm:text-xl', 'font-semibold', 'text-gray-900', 'mb-3');
     
-    const address = screen.getByText('123 Tech Center Dr, Denver, CO');
-    expect(address.parentElement).toHaveClass('text-sm', 'sm:text-base');
+    const address = screen.getByText('123 Tech Center Dr, Denver, CO').parentElement;
+    expect(address).toHaveClass('flex', 'items-start', 'gap-2', 'text-sm', 'sm:text-base', 'text-gray-600');
   });
 
   it('applies hover effects to contact links', () => {
     render(<ContractorCard contractor={mockContractor} />);
     
-    const phoneLink = screen.getByText('303-555-0123').parentElement;
+    const phoneLink = screen.getByText('303-555-0123');
     expect(phoneLink).toHaveClass('hover:text-blue-600');
     
     const websiteLink = screen.getByText('Visit Website');
-    expect(websiteLink).toHaveClass('hover:text-blue-800');
+    expect(websiteLink).toHaveClass('text-blue-600', 'hover:text-blue-800', 'break-words');
   });
 
   it('applies transition effects to card', () => {
     const { container } = render(<ContractorCard contractor={mockContractor} />);
     const card = container.firstChild;
-    expect(card).toHaveClass('hover:shadow-lg', 'transition-shadow');
+    expect(card).toHaveClass('bg-white', 'rounded-lg', 'shadow-md', 'hover:shadow-lg', 'transition-shadow');
   });
 });

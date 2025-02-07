@@ -1,8 +1,8 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { BlogPostCard } from '@/components/BlogPostCard';
 import { CategoryList } from '@/components/blog/CategoryList';
-import { getPosts } from '@/utils/posts';
+import { getPostsByCategory } from '@/utils/supabase-blog';
 import { getStandardCategory } from '@/utils/category-mapper';
 import type { Post } from '@/types/blog';
 
@@ -35,6 +35,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
       title: `${title} Blog Posts | Top Contractors Denver`,
       description: `Read our latest articles about ${title.toLowerCase()} and related topics.`,
       type: 'website',
+      url: `https://topcontractorsdenver.com/blog/trades/${category}`,
       images: [
         {
           url: 'https://6be7e0906f1487fecf0b9cbd301defd6.cdn.bubble.io/f1738570015825x940388143865540100/FLUX.1-schnell',
@@ -44,6 +45,9 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
         }
       ]
     },
+    alternates: {
+      canonical: `https://topcontractorsdenver.com/blog/trades/${category}`,
+    }
   };
 }
 
@@ -51,81 +55,11 @@ export const revalidate = 3600; // Revalidate every hour
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { category } = params;
-  console.log('Category page requested for:', category);
-
-  // Get the standardized category
   const standardCategory = getStandardCategory(category);
-  console.log('Standardized category:', standardCategory);
 
   if (!standardCategory) {
-    console.log('Category not found:', category);
-    notFound();
+    redirect('/blog');
   }
 
-  // Format the category title
-  const categoryTitle = standardCategory
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-
-  // Try different variations of the category to find posts
-  const variations = [
-    standardCategory,
-    standardCategory.replace('-', ' '),
-    standardCategory.split('-')[0]
-  ];
-
-  let result = null;
-  for (const variation of variations) {
-    console.log('Trying category variation:', variation);
-    result = await getPosts(undefined, variation);
-    if (result?.posts.length) {
-      console.log('Found posts with variation:', variation);
-      break;
-    }
-  }
-
-  if (!result || !result.posts.length) {
-    console.log('No posts found for any category variation');
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">{categoryTitle} Blog Posts</h1>
-        <CategoryList />
-        <p className="text-gray-600 mt-8">No posts found in this category.</p>
-      </div>
-    );
-  }
-
-  const { posts } = result;
-
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">{categoryTitle} Blog Posts</h1>
-      
-      {/* Trade Categories Section */}
-      <section className="mb-12">
-        <CategoryList />
-      </section>
-
-      {/* Posts Grid */}
-      <section>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.map((post: Post) => (
-            <BlogPostCard 
-              key={post.id} 
-              post={post}
-            />
-          ))}
-        </div>
-      </section>
-
-      {posts.length > 0 && (
-        <div className="mt-8 text-center">
-          <p className="text-gray-600">
-            Showing {posts.length} posts in {categoryTitle}
-          </p>
-        </div>
-      )}
-    </div>
-  );
+  redirect(`/blog/trades/${category}/page/1`);
 }
