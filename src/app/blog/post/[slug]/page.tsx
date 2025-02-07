@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getPostBySlug } from '@/utils/posts';
 import { PostContent } from '@/components/blog/PostContent';
 
@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const post = await getPostBySlug(params.slug);
 
     if (!post) {
-      notFound(); // This will trigger the not-found page instead of returning noindex
+      notFound();
     }
 
     const canonicalUrl = `https://topcontractorsdenver.com/blog/post/${post.slug}`;
@@ -51,16 +51,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     console.error('Error generating metadata:', error);
     return {
       title: 'Blog Post | Top Contractors Denver',
-      description: 'Read our latest blog post about home improvement and contractors.',
-      alternates: {
-        canonical: `https://topcontractorsdenver.com/blog/post/${params.slug}`
-      }
+      description: 'Read our latest blog post about home improvement and contractors in Denver.'
     };
   }
 }
 
 export const revalidate = 3600; // Revalidate every hour
 
-export default async function BlogPostRedirect({ params }: Props) {
-  redirect(`/blog/post/${params.slug}`);
+export default async function BlogPostPage({ params }: Props) {
+  const post = await getPostBySlug(params.slug);
+
+  if (!post) {
+    notFound();
+  }
+
+  return (
+    <article className="min-h-screen bg-white">
+      <PostContent post={post} />
+    </article>
+  );
 }
