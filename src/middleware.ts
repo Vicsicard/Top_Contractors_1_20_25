@@ -124,16 +124,15 @@ export async function middleware(request: NextRequest) {
   });
 
   // Set analytics dimensions in headers for client-side tracking
-  const tradeCategory = getTradeCategory(pathname);
   const region = getRegion(pathname);
   const userType = getUserType(request);
 
   response.headers.set(
     'x-analytics-dimensions',
     JSON.stringify({
-      userType,
-      serviceCategory: tradeCategory,
+      trade_category: tradeCategory,
       region,
+      user_type: userType,
     })
   );
 
@@ -143,12 +142,12 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except:
-     * 1. /api/ (API routes)
-     * 2. /_next/ (Next.js internals)
-     * 3. /_static (inside /public)
-     * 4. all root files inside /public (e.g. /favicon.ico)
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
      */
-    '/((?!api|_next|_static|_vercel|[\\w-]+\\.\\w+).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
