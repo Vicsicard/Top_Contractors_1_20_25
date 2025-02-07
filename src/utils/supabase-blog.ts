@@ -286,6 +286,42 @@ export async function getPostsByCategory(categorySlug: string, page: number = 1,
 }
 
 /**
+ * Gets posts by trade.
+ */
+export async function getPostsByTrade(trade: string, page: number = 1, pageSize: number = 12) {
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize - 1;
+
+  const { data: posts, count } = await supabase
+    .from('posts')
+    .select('*', { count: 'exact' })
+    .eq('trade', trade)
+    .order('published_at', { ascending: false })
+    .range(start, end);
+
+  const totalPages = Math.ceil((count || 0) / pageSize);
+
+  return {
+    posts: posts || [],
+    totalPages,
+  };
+}
+
+/**
+ * Gets a single post by slug and trade.
+ */
+export async function getPostBySlugAndTrade(slug: string, trade: string) {
+  const { data: post } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('slug', slug)
+    .eq('trade', trade)
+    .single();
+
+  return post;
+}
+
+/**
  * Gets posts by tag.
  */
 export async function getPostsByTag(tag: string, page = 1, limit = POSTS_PER_PAGE): Promise<PaginatedPosts> {

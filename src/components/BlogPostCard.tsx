@@ -8,7 +8,6 @@ interface BlogPostCardProps {
 }
 
 export function BlogPostCard({ post }: BlogPostCardProps) {
-  const postUrl = `/blog/${post.slug}`;
   const formattedDate = format(new Date(post.published_at), 'MMMM d, yyyy');
   
   // Default image for posts without a feature image
@@ -17,20 +16,22 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
   const imageAlt = post.feature_image_alt || post.title;
 
   return (
-    <article className="group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
+    <Link 
+      href={`/blog/trades/${post.trade}/${post.slug}`}
+      className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200"
+    >
+      <article className="group overflow-hidden">
         {/* Feature Image */}
-        <Link href={postUrl} className="block">
-          <div className="relative h-48 w-full overflow-hidden">
-            <Image
-              src={imageUrl}
-              alt={imageAlt}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover transform group-hover:scale-105 transition-transform duration-500"
-              priority={false}
-            />
-          </div>
-        </Link>
+        <div className="relative h-48 w-full overflow-hidden">
+          <Image
+            src={imageUrl}
+            alt={imageAlt}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transform group-hover:scale-105 transition-transform duration-500"
+            priority={false}
+          />
+        </div>
 
         <div className="p-6">
           {/* Trade Category */}
@@ -46,18 +47,14 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
           )}
 
           {/* Title */}
-          <Link href={postUrl}>
-            <h2 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 mb-3">
-              {post.title}
-            </h2>
-          </Link>
+          <h2 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 mb-3">
+            {post.title}
+          </h2>
           
           {/* Excerpt */}
-          <Link href={postUrl} className="block">
-            <div className="text-gray-600 text-sm mb-4 line-clamp-2">
-              {post.excerpt || `Preview coming soon for "${post.title}"`}
-            </div>
-          </Link>
+          <div className="text-gray-600 text-sm mb-4 line-clamp-2">
+            {post.excerpt || `Preview coming soon for "${post.title}"`}
+          </div>
 
           {/* Author and Date */}
           <div className="flex items-center text-sm text-gray-500 justify-between mt-4 pt-4 border-t border-gray-100">
@@ -93,6 +90,7 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
             )}
           </div>
         </div>
-    </article>
+      </article>
+    </Link>
   );
 }
