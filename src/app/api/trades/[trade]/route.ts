@@ -12,6 +12,24 @@ function createTradeSlug(str: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
+function findMatchingTrade(slug: string, tradesData: any): string | null {
+  const normalizedSlug = createTradeSlug(slug);
+  
+  // Check direct matches
+  if (tradesData[normalizedSlug]) {
+    return normalizedSlug;
+  }
+
+  // Check alternative slugs
+  for (const [tradeKey, tradeInfo] of Object.entries(tradesData)) {
+    if (tradeInfo.alternativeSlugs?.includes(normalizedSlug)) {
+      return tradeKey;
+    }
+  }
+
+  return null;
+}
+
 export async function GET(
   request: Request,
   { params }: { params: { trade: string } }
@@ -21,13 +39,29 @@ export async function GET(
   try {
     // Decode URL parameter
     const decodedTrade = decodeURIComponent(params.trade);
-    const processedSlug = createTradeSlug(decodedTrade);
+
+    // Get all trade categories
+    const { data: tradesData, error: tradesError } = await supabase
+      .from('categories')
+      .select('*');
+
+    if (tradesError) {
+      console.error('Error fetching trades:', tradesError);
+      return NextResponse.json({ error: tradesError.message }, { status: 500 });
+    }
+
+    // Find matching trade slug
+    const matchingTrade = findMatchingTrade(decodedTrade, tradesData);
+
+    if (!matchingTrade) {
+      return NextResponse.json({ error: 'Trade category not found' }, { status: 404 });
+    }
 
     // Get the trade category details
     const { data: categoryData, error: categoryError } = await supabase
       .from('categories')
       .select('*')
-      .eq('slug', processedSlug)
+      .eq('slug', matchingTrade)
       .single();
 
     if (categoryError) {
@@ -43,7 +77,7 @@ export async function GET(
     const { data: contractors, error: contractorsError } = await supabase
       .from('contractors')
       .select('*')
-      .eq('trade', processedSlug);
+      .eq('trade', matchingTrade);
 
     if (contractorsError) {
       console.error('Error fetching contractors:', contractorsError);

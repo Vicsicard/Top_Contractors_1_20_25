@@ -75,7 +75,8 @@ export const tradesData: Record<string, TradeData> = {
       }
     ],
     keywords: ["electrician", "electrical", "electric", "lighting", "outlet", "switch", "panel"],
-    category: "electrical"
+    category: "electrical",
+    alternativeSlugs: ["electricians", "electrician"]
   },
   "hvac": {
     name: "hvac",
@@ -114,7 +115,8 @@ export const tradesData: Record<string, TradeData> = {
       }
     ],
     keywords: ["hvac", "heating", "cooling", "ventilation", "furnace", "ac", "heat pump"],
-    category: "hvac"
+    category: "hvac",
+    alternativeSlugs: ["hvac-contractors", "hvac-services"]
   },
   "roofing": {
     name: "roofing",
@@ -348,6 +350,7 @@ export const tradesData: Record<string, TradeData> = {
     ],
     keywords: ["bathroom remodeling", "bathroom renovation", "bathroom remodel", "bathroom contractor", "denver"],
     category: "remodeling",
+    alternativeSlugs: ["bathroom-remodelers", "bathroom-remodeler"],
     videoUrl: "https://youtu.be/mTOqRT0unsY"
   },
   "kitchen-remodeling": {
@@ -465,7 +468,8 @@ export const tradesData: Record<string, TradeData> = {
       }
     ],
     keywords: ["masonry", "brick", "stone", "concrete", "block", "patio", "retaining wall"],
-    category: "masonry"
+    category: "masonry",
+    alternativeSlugs: ["masons", "masonry-contractors"]
   },
   "decks": {
     name: "decks",
@@ -504,7 +508,8 @@ export const tradesData: Record<string, TradeData> = {
       }
     ],
     keywords: ["deck", "patio", "composite deck", "wood deck", "outdoor living"],
-    category: "decks"
+    category: "decks",
+    alternativeSlugs: ["deck-builders", "deck-contractors"]
   },
   "flooring": {
     name: "flooring",

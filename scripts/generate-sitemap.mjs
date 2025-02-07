@@ -53,28 +53,27 @@ async function generateSitemap() {
 
     // Add blog categories
     const categories = [
-        'home_remodeler',
-        'bathroom_remodeler',
-        'kitchen_remodeler',
-        'siding_and_gutters',
-        'plumber',
+        'bathroom-remodeling',
+        'kitchen-remodeling',
+        'home-remodeling',
+        'siding-gutters',
+        'plumbing',
         'electrician',
         'hvac',
         'roofer',
-        'painter',
-        'landscaper',
         'masonry',
         'decks',
         'flooring',
         'windows',
         'fencing',
-        'epoxy_garage'
+        'epoxy-garage'
     ];
 
     // Add static pages to sitemap
     staticPages.forEach(({ path, priority }) => {
         urls.push({
             loc: `${SITE_URL}${path ? `/${path}` : ''}`,
+            lastmod: new Date().toISOString(),
             changefreq: 'monthly',
             priority
         });
@@ -82,8 +81,26 @@ async function generateSitemap() {
 
     // Add category pages to sitemap
     categories.forEach(category => {
+        // Main category page
         urls.push({
-            loc: `${SITE_URL}/blog?category=${category}`,
+            loc: `${SITE_URL}/blog/trades/${category}`,
+            lastmod: new Date().toISOString(),
+            changefreq: 'daily',
+            priority: 0.9
+        });
+
+        // Category page with pagination
+        urls.push({
+            loc: `${SITE_URL}/blog/trades/${category}/page/1`,
+            lastmod: new Date().toISOString(),
+            changefreq: 'daily',
+            priority: 0.8
+        });
+
+        // Trade service page
+        urls.push({
+            loc: `${SITE_URL}/trades/${category}`,
+            lastmod: new Date().toISOString(),
             changefreq: 'weekly',
             priority: 0.8
         });
@@ -104,6 +121,19 @@ async function generateSitemap() {
                 priority: 0.7
             });
         });
+
+        // Add blog pagination
+        const postsPerPage = 12;
+        const totalPages = Math.ceil(posts.length / postsPerPage);
+        
+        for (let i = 1; i <= totalPages; i++) {
+            urls.push({
+                loc: `${SITE_URL}/blog/page/${i}`,
+                lastmod: new Date().toISOString(),
+                changefreq: 'daily',
+                priority: 0.8
+            });
+        }
 
         // Generate sitemap XML
         const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

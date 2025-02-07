@@ -29,11 +29,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
 
     // Generate sitemap entries for trade blog pages
-    const tradeBlogEntries = Object.keys(tradesData).map((trade) => ({
-        url: `${baseUrl}/blog/trades/${trade}`,
+    const tradeBlogEntries = Object.keys(tradesData).map((trade) => [
+        {
+            url: `${baseUrl}/blog/trades/${trade}`,
+            lastModified: new Date().toISOString(),
+            changeFrequency: 'daily' as const,
+            priority: 0.9,
+        },
+        {
+            url: `${baseUrl}/blog/trades/${trade}/page/1`,
+            lastModified: new Date().toISOString(),
+            changeFrequency: 'daily' as const,
+            priority: 0.8,
+        }
+    ]).flat()
+
+    // Add pagination for main blog
+    const totalPosts = posts?.length || 0
+    const postsPerPage = 12
+    const totalPages = Math.ceil(totalPosts / postsPerPage)
+    
+    const blogPaginationEntries = Array.from({ length: totalPages }, (_, i) => ({
+        url: `${baseUrl}/blog/page/${i + 1}`,
         lastModified: new Date().toISOString(),
         changeFrequency: 'daily' as const,
-        priority: 0.9,
+        priority: 0.8,
     }))
 
     // Static pages
@@ -98,6 +118,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...videoEntries,
         ...blogEntries,
         ...tradeEntries,
-        ...tradeBlogEntries
+        ...tradeBlogEntries,
+        ...blogPaginationEntries
     ]
 }

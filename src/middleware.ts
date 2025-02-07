@@ -13,6 +13,25 @@ function getTradeCategory(pathname: string): string | null {
   return null;
 }
 
+// Trade slug mapping for redirects
+const tradeSlugMappings: Record<string, string> = {
+  'bathroom-remodelers': 'bathroom-remodeling',
+  'bathroom-remodeler': 'bathroom-remodeling',
+  'electricians': 'electrical',
+  'electrician': 'electrical',
+  'hvac-contractors': 'hvac',
+  'hvac-services': 'hvac',
+  'masons': 'masonry',
+  'masonry-contractors': 'masonry',
+  'deck-builders': 'decks',
+  'deck-contractors': 'decks'
+};
+
+// Helper function to get canonical trade slug
+function getCanonicalTradeSlug(trade: string): string {
+  return tradeSlugMappings[trade] || trade;
+}
+
 // Helper function to extract region from URL
 function getRegion(pathname: string): string | null {
   const parts = pathname.split('/');
@@ -47,6 +66,18 @@ function getUserType(request: NextRequest): string {
 export async function middleware(request: NextRequest) {
   // Get the pathname
   const pathname = request.nextUrl.pathname;
+
+  // Check for trade route and handle redirects
+  const tradeCategory = getTradeCategory(pathname);
+  if (tradeCategory) {
+    const canonicalSlug = getCanonicalTradeSlug(tradeCategory);
+    if (canonicalSlug !== tradeCategory) {
+      // Create redirect URL
+      const url = request.nextUrl.clone();
+      url.pathname = pathname.replace(tradeCategory, canonicalSlug);
+      return NextResponse.redirect(url);
+    }
+  }
 
   // Skip API routes and static files
   if (
