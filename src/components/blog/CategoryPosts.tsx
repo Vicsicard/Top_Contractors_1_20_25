@@ -12,7 +12,11 @@ interface CategoryPostsProps {
 export async function CategoryPosts({ category }: CategoryPostsProps) {
   const normalizedCategory = category.toLowerCase().replace(/\s+/g, '-');
   
-  const result = await getPosts(1, 12, normalizedCategory);
+  const result = await getPosts({
+    page: 1,
+    pageSize: 12,
+    category: normalizedCategory
+  });
 
   if (!result) {
     return (

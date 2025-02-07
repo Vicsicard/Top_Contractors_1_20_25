@@ -4,6 +4,7 @@ export interface Post {
   slug: string;
   html: string;
   published_at: string;
+  updated_at?: string;
   feature_image: string;
   feature_image_alt: string;
   excerpt: string;
@@ -11,6 +12,8 @@ export interface Post {
   author: string;
   author_url: string;
   trade_category: string;
+  tags?: Tag[];
+  authors?: Author[];
 }
 
 export interface Author {

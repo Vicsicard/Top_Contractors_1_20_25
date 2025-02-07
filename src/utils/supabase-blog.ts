@@ -36,6 +36,15 @@ async function validateSupabaseConnection() {
  * Transform raw post data to match Post interface
  */
 function transformPost(post: any): Post {
+    const authors = post.authors ? [post.authors].map((author: any): Author => ({
+        id: author.id,
+        name: author.name,
+        slug: author.slug,
+        profile_image: author.profile_image,
+        bio: author.bio,
+        url: author.url
+    })) : [];
+
     return {
         id: post.id,
         title: post.title,
@@ -48,14 +57,9 @@ function transformPost(post: any): Post {
         updated_at: post.updated_at,
         reading_time: post.reading_time,
         trade_category: post.trade_category,
-        authors: post.authors ? [post.authors].map((author: any): Author => ({
-            id: author.id,
-            name: author.name,
-            slug: author.slug,
-            profile_image: author.profile_image,
-            bio: author.bio,
-            url: author.url
-        })) : [],
+        author: authors[0]?.name || 'Top Contractors Denver',
+        author_url: authors[0]?.url || '#',
+        authors,
         tags: post.tags ? post.tags.map((tag: any): Tag => ({
             id: tag.id,
             name: tag.name,
