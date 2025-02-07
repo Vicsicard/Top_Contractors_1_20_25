@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { TextEncoder, TextDecoder } from 'util';
+import React from 'react';
 import { BlogPostCard, CategoryList, Pagination } from './__mocks__/components';
 
 // Mock TextEncoder/TextDecoder
@@ -60,7 +61,7 @@ process.env = {
 jest.mock('next/image', () => ({
   __esModule: true,
   default: function Image({ src, alt, ...props }: any) {
-    return <img src={src} alt={alt} {...props} />;
+    return React.createElement('img', { src, alt, ...props });
   }
 }));
 
