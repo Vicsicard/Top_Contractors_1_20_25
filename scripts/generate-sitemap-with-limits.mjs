@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
-const SITE_URL = 'https://www.topcontractorsdenver.com';
+const SITE_URL = 'https://topcontractorsdenver.com';
 const RATE_LIMIT_DELAY = 100; // 100ms delay between operations
 
 // Helper function to add delay between operations
@@ -27,17 +27,17 @@ async function generateSitemap() {
     
     // Add static pages with rate limiting
     const staticPages = [
-        { path: '', priority: 1.0 },
-        { path: 'about', priority: 0.8 },
-        { path: 'services', priority: 0.9 },
-        { path: 'privacy', priority: 0.5 },
-        { path: 'trades', priority: 0.9 },
-        { path: 'blog', priority: 0.9 },
-        { path: 'videos', priority: 0.9 }
+        { path: '', priority: 1.0, changefreq: 'daily' },
+        { path: 'about', priority: 0.6, changefreq: 'monthly' },
+        { path: 'contact', priority: 0.6, changefreq: 'monthly' },
+        { path: 'trades', priority: 0.8, changefreq: 'weekly' },
+        { path: 'blog', priority: 0.9, changefreq: 'daily' },
+        { path: 'videos', priority: 0.9, changefreq: 'daily' }
     ];
 
     // Add trades categories with rate limiting
     const trades = [
+        'home-remodeling',
         'bathroom-remodeling',
         'kitchen-remodeling',
         'siding-and-gutters',
@@ -106,12 +106,13 @@ async function generateSitemap() {
     }
 
     try {
-        // Fetch all blog posts
+        // Fetch all blog posts with pagination
         console.log('Fetching blog posts...');
         const { data: posts, error: postsError } = await supabase
             .from('posts')
-            .select('slug, published_at, updated_at')
-            .order('published_at', { ascending: false });
+            .select('*')
+            .order('published_at', { ascending: false })
+            .limit(1000);
 
         if (postsError) throw postsError;
 
@@ -122,8 +123,20 @@ async function generateSitemap() {
             urls.push({
                 loc: `${SITE_URL}/blog/${post.slug}`,
                 lastmod: post.updated_at || post.published_at,
-                changefreq: 'monthly',
+                changefreq: 'weekly',
                 priority: 0.7
+            });
+            await delay(RATE_LIMIT_DELAY);
+        }
+
+        // Add trade blog pages
+        console.log('Adding trade blog pages...');
+        for (const trade of trades) {
+            urls.push({
+                loc: `${SITE_URL}/blog/trades/${trade}`,
+                lastmod: new Date().toISOString(),
+                changefreq: 'daily',
+                priority: 0.9
             });
             await delay(RATE_LIMIT_DELAY);
         }
@@ -132,7 +145,7 @@ async function generateSitemap() {
         console.log('Fetching videos...');
         const { data: videos, error: videosError } = await supabase
             .from('videos')
-            .select('id, category, created_at')
+            .select('*')
             .order('created_at', { ascending: false });
 
         if (videosError) throw videosError;
@@ -144,8 +157,8 @@ async function generateSitemap() {
             urls.push({
                 loc: `${SITE_URL}/videos/${video.category}/${video.id}`,
                 lastmod: video.created_at,
-                changefreq: 'monthly',
-                priority: 0.7
+                changefreq: 'weekly',
+                priority: 0.8
             });
             await delay(RATE_LIMIT_DELAY);
         }
