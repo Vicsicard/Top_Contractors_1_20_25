@@ -19,7 +19,10 @@ A comprehensive contractor directory for the Denver metropolitan area, featuring
 - Automatic search engine notifications
 
 ### SEO Features
-- Dynamic sitemap generation
+- Dynamic sitemap generation with rate limiting
+  - Includes all static pages, trade pages, blog posts, and videos
+  - Built-in rate limiting to prevent API throttling
+  - Generates comprehensive sitemap with 790+ URLs
 - Structured data (Schema.org)
 - IndexNow API integration
 - Optimized meta tags
@@ -93,8 +96,17 @@ yarn build
 yarn start
 ```
 
+### Sitemap Generation
+```bash
+# Generate a new sitemap with rate limiting
+node scripts/generate-sitemap-with-limits.mjs
+```
+
 ## Project Structure
 ```
+├── scripts/
+│   ├── generate-sitemap.mjs          # Legacy sitemap generator
+│   ├── generate-sitemap-with-limits.mjs  # Rate-limited sitemap generator
 ├── src/
 │   ├── app/                 # Next.js app router
 │   ├── components/         # Reusable components
