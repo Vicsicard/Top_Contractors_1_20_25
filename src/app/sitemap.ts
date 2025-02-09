@@ -7,7 +7,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = "https://topcontractorsdenver.com"
 
     // Get all blog posts
-    const { posts } = await getPosts(1, 1000) // Get up to 1000 posts
+    const { posts } = await getPosts(1, 10000) // Get up to 10000 posts to ensure we get all
 
     // Generate sitemap entries for blog posts
     const blogEntries = posts.map((post) => ({

@@ -111,8 +111,7 @@ async function generateSitemap() {
         const { data: posts, error: postsError } = await supabase
             .from('posts')
             .select('*')
-            .order('published_at', { ascending: false })
-            .limit(1000);
+            .order('published_at', { ascending: false });
 
         if (postsError) throw postsError;
 

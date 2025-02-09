@@ -29,6 +29,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: post.excerpt || undefined,
       type: 'article',
       publishedTime: post.published_at,
+      modifiedTime: post.updated_at,
+      authors: ['Top Contractors Denver'],
       images: [
         {
           url: post.feature_image || '/images/default-post.svg',
@@ -45,7 +47,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: [post.feature_image || '/images/default-post.svg']
     },
     alternates: {
-      canonical: `/blog/${post.slug}`
+      canonical: `https://topcontractorsdenver.com/blog/${post.slug}`
+    },
+    robots: {
+      index: true,
+      follow: true,
+      'max-snippet': -1,
+      'max-image-preview': 'large',
+      'max-video-preview': -1
     }
   };
 }

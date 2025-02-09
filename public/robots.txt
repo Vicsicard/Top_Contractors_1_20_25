@@ -2,9 +2,12 @@
 User-agent: *
 Allow: /
 
-# Allow crawling of all content
-Allow: /services/
+# Explicitly allow important sections
 Allow: /blog/
+Allow: /trades/
+Allow: /videos/
+Allow: /about/
+Allow: /contact/
 Allow: /images/
 Allow: /*.js
 Allow: /*.css
@@ -18,8 +21,8 @@ Disallow: /api/
 Disallow: /_next/
 Disallow: /*?*
 
-# Crawl-delay for better server performance
-Crawl-delay: 1
+# Set reasonable crawl rate
+Crawl-delay: 0.5
 
 # Sitemaps
 Sitemap: https://topcontractorsdenver.com/sitemap.xml
