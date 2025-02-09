@@ -20,7 +20,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://top-contractors-1-20-25-git-html-rendering-vicsicards-projects.vercel.app'),
+  metadataBase: new URL('https://topcontractorsdenver.com'),
   title: {
     default: 'Top Denver Contractors | Verified Local Pros for Home Improvement, Remodeling, and Repairs',
     template: '%s | Top Contractors Denver'

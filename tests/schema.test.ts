@@ -14,9 +14,13 @@ describe('Schema Generation', () => {
       expect(schema['@type']).toBe('Organization');
       expect(schema.name).toBe('Top Contractors Denver');
       expect(schema.url).toBe('https://topcontractorsdenver.com');
-      expect(schema.logo).toBe('https://topcontractorsdenver.com/logo.png');
+      expect(schema.logo).toBe('https://top-contractors-1-20-25-git-html-rendering-vicsicards-projects.vercel.app/images/logo.png');
+      expect(schema.description).toBe('Find the best local contractors in Denver. Compare verified reviews, ratings, and get free quotes.');
       expect(schema.address['@type']).toBe('PostalAddress');
+      expect(schema.address.addressLocality).toBe('Denver');
+      expect(schema.address.addressRegion).toBe('CO');
       expect(schema.contactPoint['@type']).toBe('ContactPoint');
+      expect(schema.contactPoint.telephone).toBe('+1-303-555-0123');
       expect(Array.isArray(schema.sameAs)).toBe(true);
     });
   });

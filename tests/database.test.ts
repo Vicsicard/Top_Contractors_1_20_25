@@ -9,8 +9,8 @@ import {
 } from '../src/utils/database';
 
 // Mock Supabase client
-jest.mock('@/utils/supabase', () => ({
-  createClient: jest.fn(() => ({
+jest.mock('../src/lib/supabase/client', () => ({
+  supabase: {
     from: jest.fn(() => ({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
@@ -23,28 +23,9 @@ jest.mock('@/utils/supabase', () => ({
               updated_at: '2025-01-09T14:56:32Z'
             },
             error: null
-          })),
-          order: jest.fn(() => ({
-            data: [
-              {
-                id: '1',
-                category_id: 'cat-1',
-                subregion_id: 'sub-1',
-                contractor_name: 'Test Contractor',
-                address: '123 Test St, Denver, CO',
-                phone: '303-555-0123',
-                website: 'https://example.com',
-                google_rating: 4.5,
-                google_review_count: 100,
-                slug: 'test-contractor',
-                created_at: '2025-01-09T14:56:32Z',
-                updated_at: '2025-01-09T14:56:32Z'
-              }
-            ],
-            error: null
           }))
         })),
-        match: jest.fn(() => ({
+        order: jest.fn(() => ({
           data: [
             {
               id: '1',
@@ -56,14 +37,16 @@ jest.mock('@/utils/supabase', () => ({
               website: 'https://example.com',
               google_rating: 4.5,
               google_review_count: 100,
-              slug: 'test-contractor'
+              slug: 'test-contractor',
+              created_at: '2025-01-09T14:56:32Z',
+              updated_at: '2025-01-09T14:56:32Z'
             }
           ],
           error: null
         }))
       }))
     }))
-  }))
+  }
 }));
 
 describe('Database Operations', () => {

@@ -7,6 +7,12 @@ const config = {
   // Configure error handling for Vercel deployment
   async rewrites() {
     return {
+      beforeFiles: [
+        {
+          source: '/sitemap.xml',
+          destination: '/api/sitemap',
+        }
+      ],
       fallback: [
         {
           source: '/_error',

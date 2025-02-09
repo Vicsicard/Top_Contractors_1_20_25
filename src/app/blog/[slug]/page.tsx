@@ -1,7 +1,9 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getPostBySlug } from '@/utils/posts';
+import { getRelatedPosts } from '@/utils/related-content';
 import { PostContent } from '@/components/blog/PostContent';
+import { RelatedContent } from '@/components/RelatedContent';
 import { Post } from '@/types/blog';
 
 interface Props {
@@ -63,10 +65,40 @@ export const revalidate = 3600; // Revalidate every hour
 
 export default async function BlogPostPage({ params }: Props) {
   const post = await getPostBySlug(params.slug);
+  const relatedPosts = await getRelatedPosts(post);
 
   if (!post) {
     notFound();
   }
 
-  return <PostContent post={post} />;
+  return (
+    <main className="container mx-auto px-4 py-8">
+      <BreadcrumbNav
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Blog', href: '/blog' },
+          { label: post.title, href: `/blog/${post.slug}` }
+        ]}
+      />
+      
+      <article className="max-w-4xl mx-auto">
+        <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+        <div className="prose prose-lg max-w-none">
+          <PostContent post={post} />
+        </div>
+      </article>
+
+      <div className="max-w-4xl mx-auto">
+        <RelatedContent
+          title="Related Articles"
+          items={relatedPosts.map(relatedPost => ({
+            title: relatedPost.title,
+            href: `/blog/${relatedPost.slug}`,
+            date: new Date(relatedPost.published_at).toLocaleDateString(),
+            type: 'blog'
+          }))}
+        />
+      </div>
+    </main>
+  );
 }

@@ -3,14 +3,21 @@ import { scriptSupabase } from '../src/utils/script-supabase';
 const HASHNODE_API_URL = 'https://gql.hashnode.com';
 
 interface HashnodePost {
-  hashnode_id: string;
+  id: string;
   title: string;
   slug: string;
-  excerpt?: string;
-  content: string;
-  cover_image?: string | null;
-  published_at: string | null;
-  tags: string[] | null;
+  content: {
+    html: string;
+  };
+  brief?: string;
+  coverImage?: {
+    url: string;
+  } | null;
+  publishedAt: string;
+  tags?: Array<{
+    name: string;
+    slug: string;
+  }>;
 }
 
 interface HashnodeResponse {
@@ -23,23 +30,12 @@ interface HashnodeResponse {
             title: string;
             posts: {
               edges: Array<{
-                node: {
-                  id: string;
-                  title: string;
-                  slug: string;
-                  brief: string;
-                  content: {
-                    html: string;
-                  };
-                  coverImage?: {
-                    url: string;
-                  };
-                  publishedAt: string;
-                  tags: Array<{
-                    name: string;
-                  }>;
-                };
+                node: HashnodePost;
               }>;
+              pageInfo: {
+                hasNextPage: boolean;
+                endCursor: string;
+              };
             };
           };
         }>;
@@ -52,43 +48,59 @@ interface HashnodeResponse {
 }
 
 async function syncHashnodePosts() {
+  console.log('Starting Hashnode sync...');
+  let successCount = 0;
+  let errorCount = 0;
+  let updateCount = 0;
+  let insertCount = 0;
+
   try {
-    console.log('Starting Hashnode sync...');
-    
-    // 1. Fetch posts from Hashnode
-    console.log('Fetching posts from Hashnode...');
-    const response = await fetch(HASHNODE_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.HASHNODE_API_KEY}`,
-      },
-      body: JSON.stringify({
-        query: `
-          query {
-            me {
-              publications(first: 10) {
-                edges {
-                  node {
-                    id
-                    title
-                    posts(first: 50) {
-                      edges {
-                        node {
-                          id
-                          title
-                          slug
-                          brief
-                          content {
-                            html
+    let allPosts: HashnodePost[] = [];
+    let hasNextPage = true;
+    let endCursor: string | null = null;
+
+    while (hasNextPage) {
+      console.log('Fetching posts from Hashnode...');
+      console.log(endCursor ? `Using cursor: ${endCursor}` : 'First page');
+
+      const response = await fetch(HASHNODE_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.HASHNODE_API_KEY}`,
+        },
+        body: JSON.stringify({
+          query: `
+            query {
+              me {
+                publications(first: 10) {
+                  edges {
+                    node {
+                      id
+                      title
+                      posts(first: 50${endCursor ? `, after: "${endCursor}"` : ''}) {
+                        edges {
+                          node {
+                            id
+                            title
+                            slug
+                            brief
+                            content {
+                              html
+                            }
+                            coverImage {
+                              url
+                            }
+                            publishedAt
+                            tags {
+                              name
+                              slug
+                            }
                           }
-                          coverImage {
-                            url
-                          }
-                          publishedAt
-                          tags {
-                            name
-                          }
+                        }
+                        pageInfo {
+                          hasNextPage
+                          endCursor
                         }
                       }
                     }
@@ -96,89 +108,122 @@ async function syncHashnodePosts() {
                 }
               }
             }
-          }
-        `
-      }),
-    });
+          `
+        }),
+      });
 
-    const result: HashnodeResponse = await response.json();
-    
-    if (result.errors) {
-      throw new Error(`Hashnode API Error: ${result.errors[0].message}`);
-    }
-    
-    if (!result.data?.me?.publications?.edges?.length) {
-      throw new Error('No publications found');
-    }
+      const result: HashnodeResponse = await response.json();
 
-    const publication = result.data.me.publications.edges[0].node;
-    console.log(`Found publication: ${publication.title}`);
+      if (result.errors) {
+        throw new Error(`Hashnode API Error: ${result.errors[0].message}`);
+      }
 
-    if (!publication.posts?.edges?.length) {
-      throw new Error('No posts found in publication');
-    }
+      const publication = result.data.me.publications.edges[0]?.node;
+      if (!publication) {
+        throw new Error('No publication found');
+      }
 
-    const posts: HashnodePost[] = publication.posts.edges.map(edge => ({
-      hashnode_id: edge.node.id,
-      title: edge.node.title,
-      slug: edge.node.slug,
-      excerpt: edge.node.brief,
-      content: edge.node.content.html,
-      cover_image: edge.node.coverImage?.url || null,
-      published_at: edge.node.publishedAt,
-      tags: edge.node.tags.map(tag => tag.name)
-    }));
+      const posts = publication.posts.edges.map(edge => edge.node);
+      allPosts = allPosts.concat(posts);
 
-    console.log(`Found ${posts.length} posts to sync`);
+      hasNextPage = publication.posts.pageInfo.hasNextPage;
+      endCursor = publication.posts.pageInfo.endCursor;
 
-    // 2. Sync posts to Supabase
-    console.log('\nSyncing posts to Supabase...');
-    for (const post of posts) {
-      const { error } = await scriptSupabase
-        .from('posts')
-        .upsert(
-          {
-            hashnode_id: post.hashnode_id,
-            title: post.title,
-            slug: post.slug,
-            excerpt: post.excerpt,
-            html: post.content,
-            feature_image: post.cover_image,
-            published_at: post.published_at,
-            tags: post.tags ? post.tags.map(tag => ({
-              id: `hashnode_tag_${tag.toLowerCase().replace(/\s+/g, '_')}`,
-              name: tag,
-              slug: tag.toLowerCase().replace(/\s+/g, '-'),
-              description: null
-            })) : [],
-            authors: [{
-              id: 'default',
-              name: 'Top Contractors Denver',
-              slug: 'top-contractors-denver',
-              profile_image: null,
-              bio: null,
-              url: null
-            }],
-            updated_at: new Date().toISOString()
-          },
-          {
-            onConflict: 'hashnode_id'
-          }
-        );
-
-      if (error) {
-        console.error(`Error syncing post ${post.title}:`, error);
-      } else {
-        console.log(`Synced post: ${post.title}`);
+      console.log(`Fetched ${posts.length} posts (Total: ${allPosts.length})`);
+      
+      if (hasNextPage) {
+        // Add a small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
 
-    console.log('\nSync completed successfully! ✅');
+    console.log(`Total posts fetched from Hashnode: ${allPosts.length}`);
+    console.log('Starting Supabase sync...');
 
+    // Process and store posts
+    for (const post of allPosts) {
+      try {
+        const { data: existingPost, error: selectError } = await scriptSupabase
+          .from('posts')
+          .select('id')
+          .eq('hashnode_id', post.id)
+          .single();
+
+        if (selectError && selectError.code !== 'PGRST116') {
+          console.error(`Error checking post existence: ${post.title}`, selectError);
+          errorCount++;
+          continue;
+        }
+
+        const postData = {
+          hashnode_id: post.id,
+          title: post.title,
+          slug: post.slug,
+          html: post.content.html,
+          excerpt: post.brief || null,
+          feature_image: post.coverImage?.url || null,
+          feature_image_alt: null,
+          authors: null,
+          tags: post.tags?.map(tag => tag.name) || [],
+          reading_time: null,
+          trade_category: post.tags?.find((tag: { name: string }) => 
+            tag.name.toLowerCase().startsWith('trade-')
+          )?.name.toLowerCase().replace('trade-', '') || null,
+          published_at: post.publishedAt,
+          updated_at: new Date().toISOString(),
+        };
+
+        if (existingPost) {
+          const { error: updateError } = await scriptSupabase
+            .from('posts')
+            .update(postData)
+            .eq('hashnode_id', post.id);
+
+          if (updateError) {
+            console.error(`Error updating post: ${post.title}`, updateError);
+            errorCount++;
+          } else {
+            console.log(`✅ Updated post: ${post.title}`);
+            updateCount++;
+            successCount++;
+          }
+        } else {
+          const { error: insertError } = await scriptSupabase
+            .from('posts')
+            .insert([postData]);
+
+          if (insertError) {
+            console.error(`Error inserting post: ${post.title}`, insertError);
+            errorCount++;
+          } else {
+            console.log(`✅ Created new post: ${post.title}`);
+            insertCount++;
+            successCount++;
+          }
+        }
+      } catch (error) {
+        console.error(`Error processing post: ${post.title}`, error);
+        errorCount++;
+      }
+    }
+
+    console.log('\nSync Summary:');
+    console.log(`Total posts fetched from Hashnode: ${allPosts.length}`);
+    console.log(`Successfully processed: ${successCount}`);
+    console.log(`Updates: ${updateCount}`);
+    console.log(`Inserts: ${insertCount}`);
+    console.log(`Errors: ${errorCount}`);
+
+    if (errorCount > 0) {
+      console.log('\n⚠️ Some posts failed to sync. Please check the error messages above.');
+    } else {
+      console.log('\n✅ Sync completed successfully');
+    }
   } catch (error) {
-    console.error('\n❌ Sync failed:', error);
+    console.error('❌ Sync failed:', error);
     process.exit(1);
   }
 }
 
+// Run the sync
 syncHashnodePosts();

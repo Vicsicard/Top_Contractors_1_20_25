@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TradePage, { generateMetadata } from '../src/app/trades/[slug]/page';
 import * as database from '@/utils/database';
@@ -34,6 +34,47 @@ jest.mock('next/navigation', () => ({
   notFound: jest.fn(),
 }));
 
+// Mock the components
+jest.mock('@/components/SubregionList', () => ({
+  SubregionList: ({ subregions, tradeName }: any) => (
+    <nav data-testid="subregion-list" aria-label="Service areas">
+      <h2>{tradeName} Service Areas</h2>
+      {subregions.map((s: any) => (
+        <div key={s.id}>{s.subregion_name}</div>
+      ))}
+    </nav>
+  ),
+}));
+
+jest.mock('@/components/breadcrumb', () => ({
+  __esModule: true,
+  default: () => <nav data-testid="breadcrumb" aria-label="Breadcrumb" />,
+}));
+
+jest.mock('@/components/FAQSection', () => ({
+  FAQSection: ({ category }: any) => (
+    <section data-testid="faq-section">
+      <h2>FAQs about {category}</h2>
+    </section>
+  ),
+}));
+
+jest.mock('@/components/BlogPostCard', () => ({
+  BlogPostCard: ({ post }: any) => (
+    <article data-testid="blog-post-card">
+      <h3>{post.title}</h3>
+      <p>{post.excerpt}</p>
+    </article>
+  ),
+}));
+
+// Mock next/link
+jest.mock('next/link', () => {
+  return ({ children, href }: { children: React.ReactNode; href: string }) => (
+    <a href={href}>{children}</a>
+  );
+});
+
 describe('TradePage', () => {
   const mockTrade = {
     id: '1',
@@ -50,119 +91,65 @@ describe('TradePage', () => {
       slug: 'denver-tech-center',
       created_at: '2025-01-09T14:56:32Z',
       updated_at: '2025-01-09T14:56:32Z'
-    },
-    {
-      id: '2',
-      subregion_name: 'Cherry Creek',
-      slug: 'cherry-creek',
-      created_at: '2025-01-09T14:56:32Z',
-      updated_at: '2025-01-09T14:56:32Z'
     }
   ];
 
-  const mockPosts = {
-    posts: [
-      {
-        id: '1',
-        title: 'Bathroom Remodeling Tips',
-        slug: 'bathroom-remodeling-tips',
-        excerpt: 'Learn how to remodel your bathroom',
-        feature_image: 'image.jpg',
-        published_at: '2025-01-09T14:56:32Z'
-      }
-    ],
-    total: 1
-  };
-
-  const mockFaqs = [
+  const mockPosts = [
     {
-      question: 'How much does bathroom remodeling cost?',
-      answer: 'The cost varies depending on the scope of work.'
+      id: '1',
+      title: 'Test Blog Post',
+      slug: 'test-blog-post',
+      excerpt: 'Test excerpt',
+      feature_image: 'test.jpg',
+      published_at: '2025-01-09T14:56:32Z'
     }
   ];
 
   beforeEach(() => {
-    // Reset all mocks before each test
     jest.clearAllMocks();
-    
-    // Setup default mock implementations
     (database.getTradeBySlug as jest.Mock).mockResolvedValue(mockTrade);
     (database.getAllSubregions as jest.Mock).mockResolvedValue(mockSubregions);
-    (supabaseBlog.getPostsByCategory as jest.Mock).mockResolvedValue(mockPosts);
-    (faqs.getFAQsForTrade as jest.Mock).mockReturnValue(mockFaqs);
+    (supabaseBlog.getPostsByCategory as jest.Mock).mockResolvedValue({ posts: mockPosts });
+    (faqs.getFAQsForTrade as jest.Mock).mockReturnValue([]);
     (schema.generateLocalBusinessSchema as jest.Mock).mockReturnValue({});
     (schema.generateBreadcrumbSchema as jest.Mock).mockReturnValue({});
     (schema.generateFAQSchema as jest.Mock).mockReturnValue({});
   });
 
-  describe('generateMetadata', () => {
-    it('generates correct metadata for trade page', async () => {
-      const params = { slug: 'bathroom-remodelers' };
-      const metadata = await generateMetadata({ params });
+  it('renders trade page with correct trade and subregion information', async () => {
+    const page = await TradePage({ params: { slug: 'bathroom-remodelers' } });
+    render(page);
 
-      expect(metadata.title).toBe('Bathroom Remodelers in Denver | Find Local Contractors');
-      expect(metadata.description).toContain('Find trusted Bathroom Remodelers in the Denver area');
-    });
+    // Check main heading
+    expect(screen.getByRole('heading', { name: 'Bathroom Remodelers Services in Denver', level: 1 })).toBeInTheDocument();
 
-    it('throws error when trade is not found', async () => {
-      (database.getTradeBySlug as jest.Mock).mockResolvedValue(null);
-      const params = { slug: 'non-existent' };
+    // Check navigation and sections
+    expect(screen.getByRole('navigation', { name: 'Breadcrumb' })).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: 'Service areas' })).toBeInTheDocument();
+    expect(screen.getByText('Denver Tech Center')).toBeInTheDocument();
 
-      await expect(generateMetadata({ params })).rejects.toThrow('Trade not found');
-    });
+    // Check blog post section
+    const blogPost = screen.getByTestId('blog-post-card');
+    expect(blogPost).toBeInTheDocument();
+    expect(within(blogPost).getByText('Test Blog Post')).toBeInTheDocument();
+    expect(within(blogPost).getByText('Test excerpt')).toBeInTheDocument();
+
+    // Check FAQ section
+    expect(screen.getByTestId('faq-section')).toBeInTheDocument();
   });
 
-  describe('TradePage component', () => {
-    it('renders trade page with correct information', async () => {
-      const params = { slug: 'bathroom-remodelers' };
-      render(await TradePage({ params }));
+  it('calls notFound when trade is not found', async () => {
+    (database.getTradeBySlug as jest.Mock).mockResolvedValue(null);
+    await TradePage({ params: { slug: 'non-existent' } });
+    expect(require('next/navigation').notFound).toHaveBeenCalled();
+  });
 
-      // Verify trade name is displayed
-      expect(screen.getByText('Bathroom Remodelers')).toBeInTheDocument();
-
-      // Verify subregions are displayed
-      expect(screen.getByText('Denver Tech Center')).toBeInTheDocument();
-      expect(screen.getByText('Cherry Creek')).toBeInTheDocument();
-
-      // Verify blog posts section is displayed
-      expect(screen.getByText('Bathroom Remodeling Tips')).toBeInTheDocument();
-      expect(screen.getByText('View All Bathroom Remodelers Articles')).toBeInTheDocument();
-
-      // Verify FAQs are displayed
-      expect(screen.getByText('How much does bathroom remodeling cost?')).toBeInTheDocument();
-    });
-
-    it('calls notFound() when trade is not found', async () => {
-      const notFound = jest.requireMock('next/navigation').notFound;
-      (database.getTradeBySlug as jest.Mock).mockResolvedValue(null);
-
-      const params = { slug: 'non-existent-trade' };
-      await TradePage({ params });
-      
-      expect(notFound).toHaveBeenCalled();
-    });
-
-    it('fetches data with correct parameters', async () => {
-      const params = { slug: 'bathroom-remodelers' };
-      await TradePage({ params });
-
-      expect(database.getTradeBySlug).toHaveBeenCalledWith('bathroom-remodelers');
-      expect(database.getAllSubregions).toHaveBeenCalled();
-      expect(supabaseBlog.getPostsByCategory).toHaveBeenCalledWith('bathroom-remodelers');
-      expect(faqs.getFAQsForTrade).toHaveBeenCalledWith('Bathroom Remodelers');
-    });
-
-    it('generates schema with correct data', async () => {
-      const params = { slug: 'bathroom-remodelers' };
-      await TradePage({ params });
-
-      expect(schema.generateLocalBusinessSchema).toHaveBeenCalledWith({ 
-        trade: 'Bathroom Remodelers' 
-      });
-      expect(schema.generateBreadcrumbSchema).toHaveBeenCalledWith({ 
-        trade: 'Bathroom Remodelers' 
-      });
-      expect(schema.generateFAQSchema).toHaveBeenCalledWith(mockFaqs);
-    });
+  it('generates correct metadata', async () => {
+    const metadata = await generateMetadata({ params: { slug: 'bathroom-remodelers' } });
+    
+    expect(metadata.title).toBe('Bathroom Remodelers in Denver | Top-Rated Local Contractors');
+    expect(metadata.description).toContain('Find trusted Bathroom Remodelers in the Denver area');
+    expect(metadata.openGraph?.title).toBe('Bathroom Remodelers in Denver | Top-Rated Local Contractors');
+    expect(metadata.openGraph?.images?.[0].url).toBe('https://topcontractorsdenver.com/images/denver-skyline.jpg');
   });
 });

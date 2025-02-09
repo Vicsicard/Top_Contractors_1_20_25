@@ -2,10 +2,14 @@
 User-agent: *
 Allow: /
 
-# Explicitly allow important sections
+# Sitemaps
+Sitemap: https://www.topcontractorsdenver.com/sitemap.xml
+
+# Important sections
 Allow: /blog/
 Allow: /trades/
 Allow: /videos/
+Allow: /services/
 Allow: /about/
 Allow: /contact/
 Allow: /images/
@@ -21,8 +25,5 @@ Disallow: /api/
 Disallow: /_next/
 Disallow: /*?*
 
-# Set reasonable crawl rate
-Crawl-delay: 0.5
-
-# Sitemaps
-Sitemap: https://topcontractorsdenver.com/sitemap.xml
+# Set a reasonable crawl rate
+Crawl-delay: 1

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StarIcon, PhoneIcon, GlobeAltIcon, MapPinIcon } from '@heroicons/react/20/solid';
+
 interface ContractorData {
   id: string;
   contractor_name: string;
@@ -31,12 +32,14 @@ export function ContractorCard({ contractor }: ContractorCardProps) {
           <span>{contractor.address}</span>
         </div>
         
-        <div className="flex items-center gap-2 text-sm sm:text-base text-gray-600">
-          <PhoneIcon className="h-5 w-5 flex-shrink-0 text-gray-400" />
-          <a href={`tel:${contractor.phone}`} className="hover:text-blue-600">
-            {contractor.phone}
-          </a>
-        </div>
+        {contractor.phone && (
+          <div className="flex items-center gap-2 text-sm sm:text-base text-gray-600">
+            <PhoneIcon className="h-5 w-5 flex-shrink-0 text-gray-400" />
+            <a href={`tel:${contractor.phone}`} className="hover:text-blue-600">
+              {contractor.phone}
+            </a>
+          </div>
+        )}
         
         {contractor.website && (
           <div className="flex items-center gap-2 text-sm sm:text-base text-gray-600">

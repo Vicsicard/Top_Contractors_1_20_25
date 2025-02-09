@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://topcontractorsdenver.com/sitemap-static.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://topcontractorsdenver.com/sitemap-blog.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://topcontractorsdenver.com/sitemap-trades.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://topcontractorsdenver.com/sitemap-videos.xml</loc>
+  </sitemap>
+</sitemapindex>
