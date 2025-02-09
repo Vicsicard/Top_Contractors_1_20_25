@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getAllTrades } from '@/utils/database';
 import { BreadcrumbNav } from '@/components/BreadcrumbNav';
 
 export const metadata: Metadata = {

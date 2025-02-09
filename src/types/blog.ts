@@ -1,17 +1,24 @@
+export interface Tag {
+    id: string;
+    name: string;
+    slug: string;
+    description?: string | null;
+}
+
 export interface Post {
     id: string;
     title: string;
     slug: string;
     html: string;
-    excerpt: string | null;
-    feature_image: string | null;
-    feature_image_alt: string | null;
+    excerpt?: string;
+    feature_image?: string;
+    feature_image_alt?: string;
+    authors?: string[];
+    tags: Tag[];
+    reading_time?: number;
+    trade_category?: string;
     published_at: string;
-    updated_at: string | null;
-    reading_time: number | null;
-    trade_category: string | null;
-    authors?: Author[];
-    tags?: Tag[];
+    updated_at?: string;
 }
 
 export interface Author {
@@ -23,17 +30,8 @@ export interface Author {
     url: string | null;
 }
 
-export interface Tag {
-    id: string;
-    name: string;
-    slug: string;
-    description: string | null;
-}
-
 export interface PaginatedPosts {
     posts: Post[];
-    totalPages: number;
-    hasNextPage: boolean;
-    hasPrevPage: boolean;
     totalPosts: number;
+    hasMore: boolean;
 }

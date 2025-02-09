@@ -131,3 +131,15 @@ export function processHtml(html: string | null): string {
         return '<p>Error processing content</p>';
     }
 }
+
+export function extractFirstImage(html: string): string | undefined {
+    try {
+        const dom = new JSDOM(html);
+        const document = dom.window.document;
+        const firstImage = document.querySelector('img');
+        return firstImage?.getAttribute('src') || undefined;
+    } catch (error) {
+        console.error('Error extracting first image:', error);
+        return undefined;
+    }
+}

@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 import { scriptSupabase } from './script-supabase';
 import { getStandardCategory } from './category-mapper';
 import { Post } from '@/types/blog';
+import { extractFirstImage } from './html-processor';
 
 // Extend the Parser.Item type to include Hashnode-specific fields
 interface HashnodeRSSItem extends Parser.Item {
@@ -21,7 +22,9 @@ const parser = new Parser<{item: HashnodeRSSItem}>({
     item: [
       'content:encoded',
       'content:encodedSnippet',
-      'coverImage'
+      'coverImage',
+      'creator',
+      'categories',
     ]
   }
 });
@@ -29,32 +32,33 @@ const parser = new Parser<{item: HashnodeRSSItem}>({
 /**
  * Extract trade category from post tags/categories
  */
-function extractTradeCategory(categories?: string[]): string | null {
-  if (!categories || categories.length === 0) return null;
+function extractTradeCategory(categories?: string[]): string | undefined {
+  if (!categories || categories.length === 0) return undefined;
   
-  // Look for categories that start with "trade-"
-  const tradeCategory = categories.find(cat => 
-    cat.toLowerCase().startsWith('trade-')
+  // Common trade categories we want to extract
+  const tradeKeywords = [
+    'plumbing',
+    'electrical',
+    'hvac',
+    'roofing',
+    'landscaping',
+    'painting',
+    'carpentry',
+    'masonry',
+    'flooring',
+    'bathroom remodeling',
+    'kitchen remodeling',
+    'general contracting',
+  ];
+
+  // Find the first category that matches our trade keywords
+  const tradeCategory = categories.find(category => 
+    tradeKeywords.some(keyword => 
+      category.toLowerCase().includes(keyword)
+    )
   );
 
-  if (tradeCategory) {
-    // Remove "trade-" prefix and normalize
-    const category = tradeCategory.toLowerCase().replace(/^trade-/, '');
-    console.log('Found trade category:', category);
-    return getStandardCategory(category);
-  }
-
-  // If no trade category found, try to infer from title or content
-  for (const category of categories) {
-    const standardCategory = getStandardCategory(category);
-    if (standardCategory) {
-      console.log('Inferred category from tag:', category, '→', standardCategory);
-      return standardCategory;
-    }
-  }
-
-  console.log('No trade category found in categories:', categories);
-  return null;
+  return tradeCategory;
 }
 
 /**
@@ -72,33 +76,27 @@ function transformRSSItem(item: HashnodeRSSItem): Partial<Post> {
   
   // Use content:encoded for full HTML content, fallback to description
   const html = item['content:encoded'] || item.description?.[0] || '';
+  const featureImage = extractFirstImage(html);
   
   return {
     id,
     title: item.title || '',
     slug: slug,
     html,
-    excerpt: item.brief || item['content:encodedSnippet'] || null,
-    feature_image: item.coverImage || null,
-    feature_image_alt: null, // Hashnode RSS doesn't provide alt text
+    excerpt: item.brief || item['content:encodedSnippet'] || undefined,
+    feature_image: featureImage || item.coverImage || undefined,
+    feature_image_alt: undefined, // Hashnode RSS doesn't provide alt text
     published_at: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
-    updated_at: item.pubDate ? new Date(item.pubDate).toISOString() : null,
+    updated_at: item.pubDate ? new Date(item.pubDate).toISOString() : undefined,
     trade_category: extractTradeCategory(item.categories),
     reading_time: Math.ceil((html.length || 0) / 1500), // Rough estimate: 1500 chars ≈ 1 minute
-    authors: item.creator ? [{
-      id: `hashnode_author_${item.creator}`,
-      name: item.creator,
-      slug: item.creator.toLowerCase().replace(/\s+/g, '-'),
-      profile_image: null,
-      bio: null,
-      url: null
-    }] : undefined,
-    tags: item.categories ? item.categories.map(cat => ({
-      id: `hashnode_tag_${cat.toLowerCase().replace(/\s+/g, '_')}`,
+    authors: item.creator ? [item.creator] : undefined,
+    tags: item.categories?.map(cat => ({
+      id: cat.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       name: cat,
-      slug: cat.toLowerCase().replace(/\s+/g, '-'),
+      slug: cat.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       description: null
-    })) : undefined
+    })) || [],
   };
 }
 

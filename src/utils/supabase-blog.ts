@@ -1,8 +1,17 @@
-import { Post, PaginatedPosts, Author, Tag } from '@/types/blog';
+import { Post, Author, Tag } from '@/types/blog';
 import { supabase } from '@/utils/supabase';
 import { getStandardCategory, isValidCategory } from '@/utils/category-mapper';
 
 const POSTS_PER_PAGE = 12; // Standardized posts per page across the site - optimized for 3-column grid
+
+interface PaginatedPosts {
+  posts: Post[];
+  totalPosts: number;
+  hasMore: boolean;
+  totalPages?: number;
+  hasNextPage?: boolean;
+  hasPrevPage?: boolean;
+}
 
 /**
  * Validate Supabase connection and table structure
@@ -48,14 +57,7 @@ function transformPost(post: any): Post {
         updated_at: post.updated_at,
         reading_time: post.reading_time,
         trade_category: post.trade_category,
-        authors: post.authors ? [post.authors].map((author: any): Author => ({
-            id: author.id,
-            name: author.name,
-            slug: author.slug,
-            profile_image: author.profile_image,
-            bio: author.bio,
-            url: author.url
-        })) : [],
+        authors: post.authors ? [post.authors].flat() : undefined,
         tags: post.tags ? post.tags.map((tag: any): Tag => ({
             id: tag.id,
             name: tag.name,
@@ -81,6 +83,8 @@ export async function getPosts(page = 1, limit = POSTS_PER_PAGE): Promise<Pagina
             .from('posts')
             .select('*', { count: 'exact', head: true });
 
+        const totalCount = count || 0;
+
         // Calculate pagination
         const from = (page - 1) * limit;
         const to = from + limit - 1;
@@ -99,7 +103,7 @@ export async function getPosts(page = 1, limit = POSTS_PER_PAGE): Promise<Pagina
                 published_at,
                 updated_at,
                 reading_time,
-                authors (*),
+                authors,
                 tags (*),
                 trade_category
             `)
@@ -111,25 +115,24 @@ export async function getPosts(page = 1, limit = POSTS_PER_PAGE): Promise<Pagina
         // Transform posts to match Post interface
         const transformedPosts = posts.map(transformPost);
 
-        const totalPages = Math.ceil((count || 0) / limit);
-        const hasNextPage = page < totalPages;
+        const totalPages = Math.ceil(totalCount / limit);
+        const hasNextPage = totalCount > to + 1;
         const hasPrevPage = page > 1;
 
         return {
             posts: transformedPosts,
+            totalPosts: totalCount,
+            hasMore: totalCount > to + 1,
             totalPages,
             hasNextPage,
-            hasPrevPage,
-            totalPosts: count || 0
+            hasPrevPage
         };
     } catch (error) {
         console.error('Error fetching posts:', error);
         return {
             posts: [],
-            totalPages: 0,
-            hasNextPage: false,
-            hasPrevPage: false,
-            totalPosts: 0
+            totalPosts: 0,
+            hasMore: false
         };
     }
 }
@@ -267,10 +270,8 @@ export async function getPostsByCategory(
             console.log('DEBUG: Invalid category requested:', category);
             return {
                 posts: [],
-                totalPages: 0,
-                hasNextPage: false,
-                hasPrevPage: false,
-                totalPosts: 0
+                totalPosts: 0,
+                hasMore: false
             };
         }
 
@@ -294,7 +295,7 @@ export async function getPostsByCategory(
             .lt('published_at', new Date().toISOString());
 
         if (countResult.error) throw countResult.error;
-        if (countResult.count === null) throw new Error('Failed to get post count');
+        const totalCount = countResult.count || 0;
 
         // Then get posts
         const postsResult = await supabase
@@ -309,6 +310,8 @@ export async function getPostsByCategory(
                 published_at,
                 updated_at,
                 reading_time,
+                authors,
+                tags (*),
                 trade_category
             `)
             .or(`trade_category.ilike.${category},trade_category.ilike.${standardizedCategory}`)
@@ -329,7 +332,6 @@ export async function getPostsByCategory(
         if (postsResult.error) throw postsResult.error;
         if (!postsResult.data) throw new Error('Failed to fetch posts: posts data is null');
 
-        const count = countResult.count;
         const posts = postsResult.data;
 
         // Transform posts to match Post interface
@@ -337,10 +339,11 @@ export async function getPostsByCategory(
 
         return {
             posts: transformedPosts,
-            totalPages: Math.ceil(count / limit),
-            hasNextPage: from + limit < count,
-            hasPrevPage: page > 1,
-            totalPosts: count
+            totalPosts: totalCount,
+            hasMore: totalCount > to + 1,
+            totalPages: Math.ceil(totalCount / limit),
+            hasNextPage: totalCount > to + 1,
+            hasPrevPage: page > 1
         };
     } catch (error) {
         console.error('getPostsByCategory - Unexpected error:', error);
@@ -374,6 +377,8 @@ export async function getPostsByTag(tag: string, page = 1, limit = POSTS_PER_PAG
             .select('*', { count: 'exact', head: true })
             .contains('tags', [{ slug: tag }]);
 
+        const totalCount = count || 0;
+
         // Calculate pagination
         const from = (page - 1) * limit;
         const to = from + limit - 1;
@@ -392,7 +397,7 @@ export async function getPostsByTag(tag: string, page = 1, limit = POSTS_PER_PAG
                 published_at,
                 updated_at,
                 reading_time,
-                authors (*),
+                authors,
                 tags (*),
                 trade_category
             `)
@@ -405,25 +410,20 @@ export async function getPostsByTag(tag: string, page = 1, limit = POSTS_PER_PAG
         // Transform posts to match Post interface
         const transformedPosts = posts.map(transformPost);
 
-        const totalPages = Math.ceil((count || 0) / limit);
-        const hasNextPage = page < totalPages;
-        const hasPrevPage = page > 1;
-
         return {
             posts: transformedPosts,
-            totalPages,
-            hasNextPage,
-            hasPrevPage,
-            totalPosts: count || 0
+            totalPosts: totalCount,
+            hasMore: totalCount > to + 1,
+            totalPages: Math.ceil(totalCount / limit),
+            hasNextPage: totalCount > to + 1,
+            hasPrevPage: page > 1
         };
     } catch (error) {
         console.error('Error fetching posts by tag:', error);
         return {
             posts: [],
-            totalPages: 0,
-            hasNextPage: false,
-            hasPrevPage: false,
-            totalPosts: 0
+            totalPosts: 0,
+            hasMore: false
         };
     }
 }

@@ -13,178 +13,148 @@ function extractFirstImage(html: string): { url: string; alt: string } | null {
   return null;
 }
 
-export async function getPosts(limit = 12, category?: string, offset = 0) {
-  console.log('🔍 Fetching posts from Supabase...', { limit, category, offset });
-  
-  try {
-    // First, get total count
-    let countQuery = supabase
-      .from('posts')
-      .select('id', { count: 'exact' });
+export async function getPosts(page = 1, perPage = 10): Promise<{
+  posts: Post[];
+  totalPosts: number;
+  hasMore: boolean;
+}> {
+  const start = (page - 1) * perPage;
+  const end = start + perPage - 1;
 
-    if (category) {
-      console.log('📂 Filtering by category:', category);
-      const variations = [
-        category,
-        category.replace(/-/g, ' '),
-        category.split('-')[0],
-      ];
-      console.log('🔄 Using category variations:', variations);
-      countQuery = countQuery.or(`trade_category.eq.${variations.join('},trade_category.eq.{')}`);
-    }
+  const { data: posts, error: postsError, count } = await supabase
+    .from('posts')
+    .select(`
+      id,
+      title,
+      slug,
+      html,
+      excerpt,
+      feature_image,
+      feature_image_alt,
+      authors,
+      tags,
+      reading_time,
+      trade_category,
+      published_at,
+      updated_at
+    `, { count: 'exact' })
+    .order('published_at', { ascending: false })
+    .range(start, end);
 
-    const { count: totalPosts, error: countError } = await countQuery;
-
-    if (countError) {
-      console.error('❌ Count query error:', countError);
-      return null;
-    }
-
-    // Then, get paginated posts
-    let query = supabase
-      .from('posts')
-      .select('*, authors, tags')
-      .order('published_at', { ascending: false });
-
-    if (category) {
-      const variations = [
-        category,
-        category.replace(/-/g, ' '),
-        category.split('-')[0],
-      ];
-      query = query.or(`trade_category.eq.${variations.join('},trade_category.eq.{')}`);
-    }
-
-    if (offset) {
-      query = query.range(offset, offset + limit - 1);
-    } else {
-      query = query.limit(limit);
-    }
-
-    console.log('📡 Executing Supabase query...');
-    const { data: posts, error } = await query;
-
-    if (error) {
-      console.error('❌ Supabase query error:', error);
-      return null;
-    }
-
-    console.log('✅ Found posts:', posts?.length || 0);
-    if (posts?.[0]) {
-      console.log('📝 Sample post:', {
-        id: posts[0].id,
-        title: posts[0].title,
-        category: posts[0].trade_category
-      });
-    }
-
-    // Process posts
-    const processedPosts = posts?.map(post => {
-      // Extract first image if no feature image
-      if (!post.feature_image && post.html) {
-        const firstImage = extractFirstImage(post.html);
-        if (firstImage) {
-          post.feature_image = firstImage.url;
-          post.feature_image_alt = firstImage.alt;
-        }
-      }
-
-      // Parse authors and tags if they're strings
-      try {
-        if (typeof post.authors === 'string') {
-          post.authors = JSON.parse(post.authors);
-        }
-      } catch (e) {
-        console.error('Error parsing authors:', e);
-        post.authors = [{
-          id: 'default',
-          name: 'Top Contractors Denver',
-          slug: 'top-contractors-denver',
-          profile_image: null,
-          bio: null,
-          url: null
-        }];
-      }
-
-      try {
-        if (typeof post.tags === 'string') {
-          post.tags = JSON.parse(post.tags);
-        }
-      } catch (e) {
-        console.error('Error parsing tags:', e);
-        post.tags = [];
-      }
-
-      return post;
-    });
-
+  if (postsError) {
+    console.error('Error fetching posts:', postsError);
     return {
-      posts: processedPosts || [],
-      totalPosts: totalPosts || 0
+      posts: [],
+      totalPosts: 0,
+      hasMore: false
     };
-  } catch (error) {
-    console.error('❌ Error fetching posts:', error);
-    return null;
   }
+
+  // Ensure posts have all required fields
+  const processedPosts = (posts || []).map(post => ({
+    ...post,
+    html: post.html || `<p>Content coming soon for "${post.title}"</p>`,
+    excerpt: post.excerpt?.replace('undefined...', '') || `Preview coming soon for "${post.title}"`,
+    authors: post.authors || [],
+    tags: post.tags || [],
+    reading_time: post.reading_time || null,
+    trade_category: post.trade_category || null,
+    feature_image: post.feature_image || null,
+    feature_image_alt: post.feature_image_alt || null,
+    updated_at: post.updated_at || post.published_at
+  }));
+
+  return {
+    posts: processedPosts,
+    totalPosts: count || 0,
+    hasMore: count ? (start + perPage) < count : false
+  };
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
-  try {
-    const { data: posts, error } = await supabase
-      .from('posts')
-      .select('*, authors, tags')
-      .eq('slug', slug)
-      .limit(1);
+  const { data: post, error } = await supabase
+    .from('posts')
+    .select(`
+      id,
+      title,
+      slug,
+      html,
+      excerpt,
+      feature_image,
+      feature_image_alt,
+      authors,
+      tags,
+      reading_time,
+      trade_category,
+      published_at,
+      updated_at
+    `)
+    .eq('slug', slug)
+    .single();
 
-    if (error) {
-      console.error('Error fetching post by slug:', error);
-      return null;
-    }
-
-    if (!posts || posts.length === 0) {
-      return null;
-    }
-
-    const post = posts[0];
-
-    // Extract first image if no feature image
-    if (!post.feature_image && post.html) {
-      const firstImage = extractFirstImage(post.html);
-      if (firstImage) {
-        post.feature_image = firstImage.url;
-        post.feature_image_alt = firstImage.alt;
-      }
-    }
-
-    // Parse authors and tags if they're strings
-    try {
-      if (typeof post.authors === 'string') {
-        post.authors = JSON.parse(post.authors);
-      }
-    } catch (e) {
-      console.error('Error parsing authors:', e);
-      post.authors = [{
-        id: 'default',
-        name: 'Top Contractors Denver',
-        slug: 'top-contractors-denver',
-        profile_image: null,
-        bio: null,
-        url: null
-      }];
-    }
-
-    try {
-      if (typeof post.tags === 'string') {
-        post.tags = JSON.parse(post.tags);
-      }
-    } catch (e) {
-      console.error('Error parsing tags:', e);
-      post.tags = [];
-    }
-
-    return post;
-  } catch (error) {
-    console.error('Error in getPostBySlug:', error);
+  if (error) {
+    console.error('Error fetching post:', error);
     return null;
   }
+
+  return post;
+}
+
+export async function getPostsByTag(tag: string, page = 1, perPage = 10): Promise<{
+  posts: Post[];
+  totalPosts: number;
+  hasMore: boolean;
+}> {
+  const start = (page - 1) * perPage;
+  const end = start + perPage - 1;
+
+  const { data: posts, error: postsError, count } = await supabase
+    .from('posts')
+    .select(`
+      id,
+      title,
+      slug,
+      html,
+      excerpt,
+      feature_image,
+      feature_image_alt,
+      authors,
+      tags,
+      reading_time,
+      trade_category,
+      published_at,
+      updated_at
+    `, { count: 'exact' })
+    .filter('tags', 'cs', `{${tag}}`)
+    .order('published_at', { ascending: false })
+    .range(start, end);
+
+  if (postsError) {
+    console.error('Error fetching posts by tag:', postsError);
+    return {
+      posts: [],
+      totalPosts: 0,
+      hasMore: false
+    };
+  }
+
+  // Ensure posts have all required fields
+  const processedPosts = (posts || []).map(post => ({
+    ...post,
+    html: post.html || `<p>Content coming soon for "${post.title}"</p>`,
+    excerpt: post.excerpt?.replace('undefined...', '') || `Preview coming soon for "${post.title}"`,
+    authors: post.authors || [],
+    tags: post.tags || [],
+    reading_time: post.reading_time || null,
+    trade_category: post.trade_category || null,
+    feature_image: post.feature_image || null,
+    feature_image_alt: post.feature_image_alt || null,
+    updated_at: post.updated_at || post.published_at
+  }));
+
+  return {
+    posts: processedPosts,
+    totalPosts: count || 0,
+    hasMore: count ? (start + perPage) < count : false
+  };
 }

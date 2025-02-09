@@ -1,19 +1,22 @@
 import type { Post } from '@/types/blog';
+import Image from 'next/image';
 
 interface ServerBlogPostProps {
     post: Post;
 }
 
-export function ServerBlogPost({ post }: ServerBlogPostProps) {
+export default function ServerBlogPost({ post }: ServerBlogPostProps) {
     return (
         <article className="container mx-auto px-4 py-8 max-w-4xl">
             <header className="mb-8">
                 {post.feature_image && (
                     <div className="relative w-full h-[400px] mb-6 rounded-lg overflow-hidden">
-                        <img
+                        <Image
                             src={post.feature_image}
                             alt={post.feature_image_alt || post.title}
-                            className="absolute inset-0 w-full h-full object-cover"
+                            fill
+                            className="object-cover"
+                            priority
                         />
                     </div>
                 )}

@@ -1,159 +1,74 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { getPostsByCategory } from '@/utils/supabase-blog';
-import { tradesData } from '@/lib/trades-data';
-import { JsonLd } from '@/components/json-ld';
-import { BlogPostCard } from '@/components/BlogPostCard';
+import { getPosts } from '@/utils/posts';
+import { BlogPostGrid } from '@/components/blog/BlogPostGrid';
+import { BreadcrumbNav } from '@/components/BreadcrumbNav';
+
+export const metadata: Metadata = {
+  title: 'Trade Types | Top Contractors Denver',
+  description: 'Browse articles by trade type on Top Contractors Denver.',
+};
+
+const POSTS_PER_PAGE = 12;
 
 interface Props {
-    params: {
-        trade: string;
-    };
-    searchParams: {
-        page?: string;
-    };
+  searchParams: {
+    page?: string;
+  };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const trade = params.trade;
-    const tradeData = tradesData[trade];
+export default async function TradeTypesPage({ searchParams }: Props) {
+  const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
+  const { posts, totalPosts, hasMore } = await getPosts(currentPage, POSTS_PER_PAGE);
 
-    if (!tradeData) {
-        return {
-            title: 'Trade Not Found | Top Contractors Denver Blog',
-            description: 'The requested trade blog page could not be found.',
-            robots: 'noindex, nofollow'
-        };
-    }
+  // Group posts by trade type
+  const tradeTypeMap = new Map<string, typeof posts>();
+  posts.forEach(post => {
+    if (!post.trade_category) return;
+    const category = post.trade_category.toLowerCase();
+    const existing = tradeTypeMap.get(category) || [];
+    tradeTypeMap.set(category, [...existing, post]);
+  });
 
-    return {
-        title: `${tradeData.title} Blog | Top Contractors Denver`,
-        description: `Read expert ${tradeData.title.toLowerCase()} tips, guides, and advice. Professional insights for Denver homeowners.`,
-        openGraph: {
-            title: `${tradeData.title} Blog | Top Contractors Denver`,
-            description: `Read expert ${tradeData.title.toLowerCase()} tips, guides, and advice. Professional insights for Denver homeowners.`,
-            type: 'website',
-        },
-        alternates: {
-            canonical: `/blog/trades/${trade}`
-        }
-    };
-}
+  const breadcrumbs = [
+    { label: 'Home', href: '/' },
+    { label: 'Blog', href: '/blog' },
+    { label: 'Trade Types', href: '/blog/trades/tradeType', current: true }
+  ];
 
-export default async function TradeBlogPage({ params, searchParams }: Props) {
-    const trade = params.trade;
-    const tradeData = tradesData[trade];
-    if (!tradeData) {
-        notFound();
-    }
-
-    // Validate and sanitize page parameter
-    let page = 1;
-    if (searchParams.page) {
-        const parsedPage = parseInt(searchParams.page);
-        if (!isNaN(parsedPage) && parsedPage > 0) {
-            page = parsedPage;
-        }
-    }
-
-    const { posts, totalPages, hasNextPage, hasPrevPage, totalPosts } = await getPostsByCategory(trade, page);
-
-    // Redirect to page 1 if requested page is beyond total pages
-    if (totalPages > 0 && page > totalPages) {
-        return {
-            redirect: {
-                destination: `/blog/trades/${trade}?page=1`,
-                permanent: false
-            }
-        };
-    }
-
-    if (!posts || posts.length === 0) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <h1 className="text-4xl font-bold mb-8">{tradeData.title} Blog</h1>
-                <p className="text-gray-600">No blog posts found for this trade category.</p>
-            </div>
-        );
-    }
-
-    const jsonLd = {
-        '@context': 'https://schema.org',
-        '@type': 'CollectionPage',
-        name: `${tradeData.title} Blog | Top Contractors Denver`,
-        description: `Read expert ${tradeData.title.toLowerCase()} tips, guides, and advice. Professional insights for Denver homeowners.`,
-        url: `/blog/trades/${trade}`,
-        mainEntity: {
-            '@type': 'ItemList',
-            itemListElement: posts.map((post, index) => ({
-                '@type': 'ListItem',
-                position: index + 1,
-                item: {
-                    '@type': 'BlogPosting',
-                    headline: post.title,
-                    url: `/blog/trades/${trade}/${post.slug}`,
-                    datePublished: post.published_at,
-                    dateModified: post.updated_at || post.published_at,
-                    author: post.authors && post.authors[0] ? {
-                        '@type': 'Person',
-                        name: post.authors[0].name
-                    } : {
-                        '@type': 'Organization',
-                        name: 'Top Contractors Denver'
-                    },
-                    image: post.feature_image || undefined
-                }
-            }))
-        }
-    };
-
+  if (tradeTypeMap.size === 0) {
     return (
-        <>
-            <JsonLd data={jsonLd} />
-            <div className="container mx-auto px-4 py-8">
-                <header className="mb-8">
-                    <h1 className="text-4xl font-bold mb-4">{tradeData.title} Blog</h1>
-                    <p className="text-gray-600">
-                        Expert tips and advice about {tradeData.title.toLowerCase()} for Denver homeowners
-                    </p>
-                    <p className="text-sm text-gray-500 mt-2">
-                        {totalPosts} articles in this category
-                    </p>
-                </header>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                    {posts.map(post => (
-                        <BlogPostCard key={post.id} post={post} />
-                    ))}
-                </div>
-
-                {(hasNextPage || hasPrevPage) && (
-                    <div className="mt-8 flex flex-col items-center gap-4">
-                        <div className="text-gray-600">
-                            Page {page} of {totalPages}
-                        </div>
-                        <div className="flex justify-center gap-4">
-                            {hasPrevPage && (
-                                <Link
-                                    href={`/blog/trades/${trade}?page=${page - 1}`}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                                >
-                                    ← Previous
-                                </Link>
-                            )}
-                            {hasNextPage && (
-                                <Link
-                                    href={`/blog/trades/${trade}?page=${page + 1}`}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                                >
-                                    Next →
-                                </Link>
-                            )}
-                        </div>
-                    </div>
-                )}
-            </div>
-        </>
+      <main className="container mx-auto px-4 py-8">
+        <BreadcrumbNav items={breadcrumbs} />
+        <div className="text-center mt-12">
+          <h1 className="text-3xl font-bold mb-4">No Trade Types Found</h1>
+          <p className="text-gray-600">No trade types found.</p>
+        </div>
+      </main>
     );
+  }
+
+  return (
+    <main className="container mx-auto px-4 py-8">
+      <BreadcrumbNav items={breadcrumbs} />
+      
+      <h1 className="text-4xl font-bold mb-8">Browse by Trade Type</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {Array.from(tradeTypeMap.entries()).map(([category, posts]) => (
+          <div key={category} className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-2xl font-semibold mb-4">
+              {category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+            </h2>
+            <p className="text-gray-600 mb-4">{posts.length} articles</p>
+            <a
+              href={`/blog/trades/tradeType/${category}`}
+              className="text-blue-600 hover:text-blue-800"
+            >
+              View Articles →
+            </a>
+          </div>
+        ))}
+      </div>
+    </main>
+  );
 }

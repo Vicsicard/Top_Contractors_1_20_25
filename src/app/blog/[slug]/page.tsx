@@ -1,10 +1,10 @@
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import { getPostBySlug } from '@/utils/posts';
+import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 import { getRelatedPosts } from '@/utils/related-content';
 import { PostContent } from '@/components/blog/PostContent';
-import { RelatedContent } from '@/components/RelatedContent';
-import { Post } from '@/types/blog';
+import RelatedContent from '@/components/RelatedContent';
+import { BreadcrumbNav } from '@/components/BreadcrumbNav';
 
 interface Props {
   params: {
@@ -17,46 +17,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!post) {
     return {
-      title: 'Not Found',
-      description: 'The page you are looking for does not exist.',
-      robots: 'noindex, nofollow'
+      title: 'Post Not Found',
+      description: 'The requested blog post could not be found.'
     };
   }
 
   return {
-    title: `${post.title} | Top Contractors Denver Blog`,
-    description: post.excerpt || undefined,
+    title: post.title,
+    description: post.excerpt || `Read ${post.title} on Top Contractors Denver`,
     openGraph: {
       title: post.title,
-      description: post.excerpt || undefined,
-      type: 'article',
-      publishedTime: post.published_at,
-      modifiedTime: post.updated_at || undefined,
-      authors: ['Top Contractors Denver'],
-      images: [
-        {
-          url: post.feature_image || '/images/default-post.svg',
-          alt: post.feature_image_alt || post.title,
-          width: 1200,
-          height: 630
-        }
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: post.title,
-      description: post.excerpt || undefined,
-      images: [post.feature_image || '/images/default-post.svg']
-    },
-    alternates: {
-      canonical: `https://topcontractorsdenver.com/blog/${post.slug}`
-    },
-    robots: {
-      index: true,
-      follow: true,
-      'max-snippet': -1,
-      'max-image-preview': 'large',
-      'max-video-preview': -1
+      description: post.excerpt || `Read ${post.title} on Top Contractors Denver`,
+      images: post.feature_image ? [{ url: post.feature_image }] : []
     }
   };
 }
@@ -65,40 +37,40 @@ export const revalidate = 3600; // Revalidate every hour
 
 export default async function BlogPostPage({ params }: Props) {
   const post = await getPostBySlug(params.slug);
-  const relatedPosts = await getRelatedPosts(post);
 
   if (!post) {
     notFound();
   }
 
+  const relatedPosts = await getRelatedPosts(post);
+
+  const breadcrumbs = [
+    { label: 'Home', href: '/' },
+    { label: 'Blog', href: '/blog' },
+    { label: post.title, href: `/blog/${post.slug}`, current: true }
+  ];
+
   return (
     <main className="container mx-auto px-4 py-8">
-      <BreadcrumbNav
-        items={[
-          { label: 'Home', href: '/' },
-          { label: 'Blog', href: '/blog' },
-          { label: post.title, href: `/blog/${post.slug}` }
-        ]}
-      />
+      <BreadcrumbNav items={breadcrumbs} />
       
-      <article className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-        <div className="prose prose-lg max-w-none">
-          <PostContent post={post} />
-        </div>
+      <article className="prose prose-lg max-w-none mt-8">
+        <PostContent post={post} />
       </article>
 
-      <div className="max-w-4xl mx-auto">
-        <RelatedContent
-          title="Related Articles"
-          items={relatedPosts.map(relatedPost => ({
-            title: relatedPost.title,
-            href: `/blog/${relatedPost.slug}`,
-            date: new Date(relatedPost.published_at).toLocaleDateString(),
-            type: 'blog'
-          }))}
-        />
-      </div>
+      {relatedPosts.length > 0 && (
+        <section className="mt-12">
+          <h2 className="text-2xl font-bold mb-6">Related Articles</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {relatedPosts.map((relatedPost) => (
+              <RelatedContent
+                key={relatedPost.id}
+                post={relatedPost}
+              />
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }

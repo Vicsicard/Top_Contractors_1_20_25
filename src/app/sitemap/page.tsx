@@ -87,7 +87,7 @@ export default async function SitemapPage() {
                   href={`/trades/${trade.slug}`}
                   className="block font-medium text-primary hover:text-accent-warm"
                 >
-                  {trade.name}
+                  {trade.category_name}
                 </Link>
                 <div className="mt-2 grid grid-cols-2 gap-2">
                   {subregions.slice(0, 4).map((subregion) => (
@@ -96,7 +96,7 @@ export default async function SitemapPage() {
                       href={`/trades/${trade.slug}/${subregion.slug}`}
                       className="text-sm text-gray-600 hover:text-accent-warm"
                     >
-                      {trade.name} in {subregion.name}
+                      {trade.category_name} in {subregion.subregion_name}
                     </Link>
                   ))}
                   {subregions.length > 4 && (
