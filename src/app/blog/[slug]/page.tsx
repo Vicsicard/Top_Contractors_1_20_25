@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: post.excerpt || undefined,
       type: 'article',
       publishedTime: post.published_at,
-      modifiedTime: post.updated_at,
+      modifiedTime: post.updated_at || undefined,
       authors: ['Top Contractors Denver'],
       images: [
         {
