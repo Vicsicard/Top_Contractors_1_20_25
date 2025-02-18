@@ -106,6 +106,7 @@ export default async function RootLayout({
           href="/manifest.json" 
           type="application/manifest+json"
         />
+        <script src="https://analytics.ahrefs.com/analytics.js" data-key="x9s4rXhtvM7jWVn7bFKrpA" async></script>
       </head>
       <body className={inter.className}>
         <header className="fixed top-0 left-0 right-0 z-50 bg-primary shadow-lg">
