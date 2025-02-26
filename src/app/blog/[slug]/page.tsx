@@ -5,6 +5,7 @@ import { getRelatedPosts } from '@/utils/related-content';
 import { PostContent } from '@/components/blog/PostContent';
 import RelatedContent from '@/components/RelatedContent';
 import { BreadcrumbNav } from '@/components/BreadcrumbNav';
+import { generateBlogPostSchema, generateBreadcrumbSchema } from '@/utils/schema';
 
 interface Props {
   params: {
@@ -23,9 +24,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.title,
     description: post.excerpt || `Read ${post.title} on Top Contractors Denver`,
+    alternates: {
+      canonical: `/blog/${params.slug}/`,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt || `Read ${post.title} on Top Contractors Denver`,
+      url: `/blog/${params.slug}/`,
+      type: 'article',
+      publishedTime: post.published_at,
+      modifiedTime: post.updated_at || post.published_at,
       images: post.feature_image ? [{ url: post.feature_image }] : []
     }
   };
@@ -48,8 +56,23 @@ export default async function BlogPostPage({ params }: Props) {
     { label: post.title, href: `/blog/${post.slug}`, current: true }
   ];
 
+  // Generate structured data for this blog post
+  const blogPostSchema = generateBlogPostSchema(post);
+  const breadcrumbSchema = generateBreadcrumbSchema(null, null);
+
   return (
     <main className="container mx-auto px-4 py-8">
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': [blogPostSchema, breadcrumbSchema]
+          })
+        }}
+      />
+      
       <BreadcrumbNav items={breadcrumbs} />
       
       <article className="prose prose-lg max-w-none mt-8">

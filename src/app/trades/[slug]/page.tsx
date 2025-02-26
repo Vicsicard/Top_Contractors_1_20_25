@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { SubregionList } from '@/components/SubregionList';
 import { getAllSubregions, getTradeBySlug } from '@/utils/database';
-import { generateLocalBusinessSchema, generateBreadcrumbSchema, generateFAQSchema } from '@/utils/schema';
+import { generateLocalBusinessSchema, generateBreadcrumbSchema, generateServiceSchema, generateFAQSchema } from '@/utils/schema';
 import Breadcrumb from '@/components/breadcrumb';
 import { FAQSection } from '@/components/FAQSection';
 import { getFAQsForTrade } from '@/data/faqs';
@@ -70,30 +70,41 @@ export default async function TradePage({ params }: Props) {
   }
 
   const tradeName = trade.category_name;
-  const faqs = getFAQsForTrade(tradeName);
   
-  // Fetch blog posts for this trade
-  const { posts } = await getPostsByCategory(params.slug);
-  
-  const schema = {
-    localBusiness: generateLocalBusinessSchema({ trade: tradeName }),
-    breadcrumb: generateBreadcrumbSchema({ trade: tradeName }),
-    faq: generateFAQSchema(faqs)
+  // Create schema objects
+  const tradeObject = {
+    category_name: tradeName,
+    slug: params.slug
   };
+  
+  const denverLocation = {
+    subregion_name: 'Denver',
+    slug: 'denver'
+  };
+  
+  const faqs = getFAQsForTrade(tradeName);
+  const subregions = await getAllSubregions();
+  const { posts } = await getPostsByCategory(params.slug);
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
     { label: tradeName, href: `/trades/${params.slug}` }
   ];
 
-  const subregions = await getAllSubregions();
-
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(schema)
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': [
+              generateLocalBusinessSchema(tradeObject, denverLocation),
+              generateBreadcrumbSchema(tradeObject, null),
+              generateServiceSchema(tradeObject, denverLocation),
+              generateFAQSchema(faqs)
+            ]
+          })
         }}
       />
       <main className="container mx-auto px-4" role="main">

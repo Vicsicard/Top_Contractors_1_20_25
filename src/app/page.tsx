@@ -1,5 +1,21 @@
+import { Metadata } from 'next';
 import { CategoryList } from '@/components/CategoryList';
 import { getAllTrades } from '@/utils/database';
+import { generateOrganizationSchema } from '@/utils/schema';
+
+export const metadata: Metadata = {
+  title: 'Top Contractors Denver | Find Local Contractors for Home Services',
+  description: 'Find the best local contractors in Denver for your home improvement, remodeling, and repair projects. Read reviews, compare pros, and get free quotes.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'Top Contractors Denver | Find Local Contractors for Home Services',
+    description: 'Find the best local contractors in Denver for your home improvement, remodeling, and repair projects. Read reviews, compare pros, and get free quotes.',
+    url: '/',
+    type: 'website',
+  }
+};
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -7,8 +23,64 @@ export default async function HomePage() {
   try {
     const categories = await getAllTrades();
 
+    // Generate website and organization schemas
+    const organizationSchema = generateOrganizationSchema();
+    const websiteSchema = {
+      '@type': 'WebSite',
+      '@id': 'https://topcontractorsdenver.com/#website',
+      url: 'https://topcontractorsdenver.com/',
+      name: 'Top Contractors Denver',
+      description: 'Find the best local contractors in Denver for your home improvement, remodeling, and repair projects.',
+      potentialAction: [
+        {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: 'https://topcontractorsdenver.com/search?q={search_term_string}'
+          },
+          'query-input': 'required name=search_term_string'
+        }
+      ]
+    };
+    
+    const webpageSchema = {
+      '@type': 'WebPage',
+      '@id': 'https://topcontractorsdenver.com/#webpage',
+      url: 'https://topcontractorsdenver.com/',
+      inLanguage: 'en-US',
+      name: 'Home',
+      isPartOf: {
+        '@id': 'https://topcontractorsdenver.com/#website'
+      },
+      breadcrumb: {
+        '@id': 'https://topcontractorsdenver.com/#breadcrumb'
+      },
+      description: 'Find the best local contractors in Denver for your home improvement, remodeling, and repair projects.',
+      headline: 'Top Contractors Denver',
+      image: 'https://topcontractorsdenver.com/images/denver-sky-4.jpg',
+      keywords: 'Denver contractors, home improvement, remodeling, repair',
+      mainEntityOfPage: {
+        '@id': 'https://topcontractorsdenver.com/#webpage'
+      }
+    };
+
     return (
       <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
+        {/* Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@graph': [
+                organizationSchema,
+                websiteSchema,
+                webpageSchema
+              ]
+            })
+          }}
+        />
+        
         <header 
           className="relative h-[600px] w-full bg-cover bg-center bg-no-repeat"
           style={{

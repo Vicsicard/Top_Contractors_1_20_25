@@ -3,6 +3,11 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ServiceHero } from '@/components/services/ServiceHero'
 import { getTradeBySlug, getAllSubregions, getAllTrades } from '@/utils/database'
+import { 
+  generateLocalBusinessSchema, 
+  generateBreadcrumbSchema,
+  generateServiceSchema
+} from '@/utils/schema'
 
 interface Props {
   params: {
@@ -15,28 +20,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     console.log(`[DEBUG] Generating metadata for trade: ${params.trade}`);
     const trade = await getTradeBySlug(params.trade)
     
-    // Return a fallback metadata if trade isn't found
-    // This is a temporary change to diagnose the issue
     if (!trade) {
       console.error(`[DEBUG] Trade not found in generateMetadata: ${params.trade}`);
-      return {
-        title: 'Service Not Found | Top Contractors Denver',
-        description: 'The requested service page could not be found.',
-      }
+      notFound();
     }
+
+    // Create a mock location object for Denver
+    const denverLocation = {
+      subregion_name: 'Denver',
+      slug: 'denver'
+    };
 
     return {
       title: `${trade.category_name} in Denver | Top Contractors Denver`,
       description: `Find ${trade.category_name.toLowerCase()} in the Denver metro area. Browse our directory of local ${trade.category_name.toLowerCase()} by location.`,
+      alternates: {
+        canonical: `/services/${params.trade}/`,
+      },
+      openGraph: {
+        type: 'website',
+        url: `/services/${params.trade}/`,
+        title: `${trade.category_name} in Denver | Top Contractors Denver`,
+        description: `Find ${trade.category_name.toLowerCase()} in the Denver metro area. Browse our directory of local ${trade.category_name.toLowerCase()} by location.`,
+      }
     }
   } catch (error) {
     console.error('[DEBUG] Error generating metadata:', error);
-    // Return fallback metadata rather than throwing notFound()
-    // This is to diagnose the issue
-    return {
-      title: 'Service | Top Contractors Denver',
-      description: 'Find local services in the Denver metro area.',
-    }
+    notFound();
   }
 }
 
@@ -136,6 +146,17 @@ export default async function TradePage({ params }: Props) {
             </div>
           </div>
         </section>
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              generateLocalBusinessSchema(trade, { subregion_name: 'Denver', slug: 'denver' }),
+              generateBreadcrumbSchema(trade, null),
+              generateServiceSchema(trade, { subregion_name: 'Denver', slug: 'denver' }),
+            ]),
+          }}
+        />
       </main>
     )
   } catch (error) {

@@ -10,6 +10,11 @@ import {
   getAllTrades,
   getAllSubregions 
 } from '@/utils/database'
+import { 
+  generateLocalBusinessSchema, 
+  generateBreadcrumbSchema,
+  generateServiceSchema 
+} from '@/utils/schema'
 
 interface Props {
   params: {
@@ -26,26 +31,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       getSubregionBySlug(params.location)
     ])
 
-    // Return fallback metadata for diagnosis
     if (!trade || !location) {
       console.error(`[DEBUG] Trade or location not found in generateMetadata: trade=${params.trade}, location=${params.location}`);
-      return {
-        title: 'Service Not Found | Top Contractors Denver',
-        description: 'The requested service or location page could not be found.',
-      }
+      notFound();
     }
 
     return {
       title: `${trade.category_name} in ${location.subregion_name} | Top Contractors Denver`,
       description: `Find professional ${trade.category_name.toLowerCase()} in ${location.subregion_name}. Browse our directory of local ${trade.category_name.toLowerCase()} serving ${location.subregion_name} and surrounding areas.`,
+      alternates: {
+        canonical: `/services/${params.trade}/${params.location}/`,
+      },
+      openGraph: {
+        type: 'website',
+        url: `/services/${params.trade}/${params.location}/`,
+        title: `${trade.category_name} in ${location.subregion_name} | Top Contractors Denver`,
+        description: `Find professional ${trade.category_name.toLowerCase()} in ${location.subregion_name}. Browse our directory of local ${trade.category_name.toLowerCase()} serving ${location.subregion_name} and surrounding areas.`,
+      },
     }
   } catch (error) {
     console.error('[DEBUG] Error generating metadata:', error);
-    // Return fallback metadata rather than throwing notFound()
-    return {
-      title: 'Local Services | Top Contractors Denver',
-      description: 'Find local services in the Denver metro area.',
-    }
+    notFound();
   }
 }
 
@@ -75,15 +81,9 @@ export default async function TradeLocationPage({ params }: Props) {
       getContractorsByTradeAndSubregion(params.trade, params.location)
     ])
 
-    // Return fallback page for diagnosis
     if (!trade || !location) {
       console.error(`[DEBUG] Trade or location not found in TradeLocationPage: trade=${params.trade}, location=${params.location}`);
-      return (
-        <main>
-          <h1>Service Not Found</h1>
-          <p>The requested service or location page could not be found.</p>
-        </main>
-      )
+      notFound();
     }
 
     return (
@@ -105,6 +105,8 @@ export default async function TradeLocationPage({ params }: Props) {
                 <ContractorCard
                   key={contractor.id}
                   contractor={contractor}
+                  trade={trade.category_name}
+                  location={location.subregion_name}
                 />
               ))}
             </div>
@@ -122,16 +124,21 @@ export default async function TradeLocationPage({ params }: Props) {
           trade={trade.category_name}
           location={location.subregion_name}
         />
+        
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              generateLocalBusinessSchema(trade, location),
+              generateBreadcrumbSchema(trade, location),
+              generateServiceSchema(trade, location),
+            ]),
+          }}
+        />
       </main>
     )
   } catch (error) {
     console.error('[DEBUG] Error rendering trade location page:', error);
-    // Return fallback page rather than throwing notFound()
-    return (
-      <main>
-        <h1>Local Services</h1>
-        <p>Find local services in the Denver metro area.</p>
-      </main>
-    )
+    notFound();
   }
 }

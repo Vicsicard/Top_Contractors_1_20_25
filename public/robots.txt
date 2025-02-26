@@ -4,6 +4,10 @@ Allow: /
 
 # Sitemaps
 Sitemap: https://www.topcontractorsdenver.com/sitemap.xml
+Sitemap: https://www.topcontractorsdenver.com/sitemap-static.xml
+Sitemap: https://www.topcontractorsdenver.com/sitemap-blog.xml
+Sitemap: https://www.topcontractorsdenver.com/sitemap-trades.xml
+Sitemap: https://www.topcontractorsdenver.com/sitemap-videos.xml
 
 # Important sections
 Allow: /blog/

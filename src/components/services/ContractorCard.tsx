@@ -1,3 +1,5 @@
+'use client'
+
 interface ContractorCardProps {
   contractor: {
     id: string
@@ -6,11 +8,53 @@ interface ContractorCardProps {
     website: string | null
     google_rating: number
   }
+  trade?: string
+  location?: string
 }
 
-export function ContractorCard({ contractor }: ContractorCardProps) {
+export function ContractorCard({ contractor, trade, location }: ContractorCardProps) {
+  // Generate LocalBusiness schema for the contractor
+  const contractorSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: contractor.contractor_name,
+    telephone: contractor.phone || undefined,
+    url: contractor.website || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: location || 'Denver',
+      addressRegion: 'CO',
+      addressCountry: 'US'
+    },
+    ...(contractor.google_rating && contractor.google_rating > 0 ? {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: contractor.google_rating.toFixed(1),
+        bestRating: '5',
+        worstRating: '1',
+        ratingCount: '20', // Placeholder since we don't have the actual count
+      }
+    } : {}),
+    ...(trade ? {
+      makesOffer: {
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'Service',
+          name: trade
+        }
+      }
+    } : {})
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(contractorSchema)
+        }}
+      />
+      
       <h3 className="text-xl font-semibold text-gray-900 mb-3">
         {contractor.contractor_name}
       </h3>

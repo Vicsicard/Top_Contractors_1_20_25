@@ -135,9 +135,20 @@ export default async function TradeSubregionPage({ params }: Props) {
   // Fetch contractors for this trade and subregion
   const contractors = await getContractorsByTradeAndSubregion(params.slug, params.subregion);
 
+  // Create properly structured trade and location objects for schema
+  const tradeObject = {
+    category_name: tradeName,
+    slug: params.slug
+  };
+  
+  const locationObject = {
+    subregion_name: subregionName,
+    slug: params.subregion
+  };
+
   const schema = {
-    localBusiness: generateLocalBusinessSchema({ trade: tradeName, subregion: subregionName }),
-    breadcrumb: generateBreadcrumbSchema({ trade: tradeName, subregion: subregionName }),
+    localBusiness: generateLocalBusinessSchema(tradeObject, locationObject),
+    breadcrumb: generateBreadcrumbSchema(tradeObject, locationObject),
     faq: generateFAQSchema(faqs)
   };
 
