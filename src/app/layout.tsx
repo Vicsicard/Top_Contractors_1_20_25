@@ -102,7 +102,7 @@ export default async function RootLayout({
           href="/images/denver sky 666.jpg" 
           as="image" 
           type="image/jpeg"
-          fetchpriority="high"
+          fetchPriority="high"
         />
         
         {/* Web app manifest */}
