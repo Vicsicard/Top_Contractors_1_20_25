@@ -12,10 +12,17 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
+    console.log(`[DEBUG] Generating metadata for trade: ${params.trade}`);
     const trade = await getTradeBySlug(params.trade)
     
+    // Return a fallback metadata if trade isn't found
+    // This is a temporary change to diagnose the issue
     if (!trade) {
-      notFound()
+      console.error(`[DEBUG] Trade not found in generateMetadata: ${params.trade}`);
+      return {
+        title: 'Service Not Found | Top Contractors Denver',
+        description: 'The requested service page could not be found.',
+      }
     }
 
     return {
@@ -23,32 +30,40 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: `Find ${trade.category_name.toLowerCase()} in the Denver metro area. Browse our directory of local ${trade.category_name.toLowerCase()} by location.`,
     }
   } catch (error) {
-    console.error('Error generating metadata:', error);
-    notFound()
+    console.error('[DEBUG] Error generating metadata:', error);
+    // Return fallback metadata rather than throwing notFound()
+    // This is to diagnose the issue
+    return {
+      title: 'Service | Top Contractors Denver',
+      description: 'Find local services in the Denver metro area.',
+    }
   }
 }
 
 export async function generateStaticParams() {
   try {
+    console.log('[DEBUG] Generating static params for trades');
     const trades = await getAllTrades()
     
     return trades.map((trade) => ({
       trade: trade.slug,
     }))
   } catch (error) {
-    console.error('Error generating static params:', error);
+    console.error('[DEBUG] Error generating static params:', error);
     return []
   }
 }
 
 export default async function TradePage({ params }: Props) {
   try {
+    console.log(`[DEBUG] Rendering trade page for trade: ${params.trade}`);
     const [trade, subregions] = await Promise.all([
       getTradeBySlug(params.trade),
       getAllSubregions(),
     ])
 
     if (!trade) {
+      console.error(`[DEBUG] Trade not found in TradePage: ${params.trade}`);
       notFound()
     }
 
@@ -124,7 +139,7 @@ export default async function TradePage({ params }: Props) {
       </main>
     )
   } catch (error) {
-    console.error('Error rendering trade page:', error);
+    console.error('[DEBUG] Error rendering trade page:', error);
     notFound()
   }
 }

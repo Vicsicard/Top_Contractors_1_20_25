@@ -20,14 +20,19 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
+    console.log(`[DEBUG] Generating metadata for trade/location: ${params.trade}/${params.location}`);
     const [trade, location] = await Promise.all([
       getTradeBySlug(params.trade),
       getSubregionBySlug(params.location)
     ])
 
+    // Return fallback metadata for diagnosis
     if (!trade || !location) {
-      // Use notFound() instead of returning metadata for non-existent pages
-      notFound()
+      console.error(`[DEBUG] Trade or location not found in generateMetadata: trade=${params.trade}, location=${params.location}`);
+      return {
+        title: 'Service Not Found | Top Contractors Denver',
+        description: 'The requested service or location page could not be found.',
+      }
     }
 
     return {
@@ -35,9 +40,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: `Find professional ${trade.category_name.toLowerCase()} in ${location.subregion_name}. Browse our directory of local ${trade.category_name.toLowerCase()} serving ${location.subregion_name} and surrounding areas.`,
     }
   } catch (error) {
-    console.error('Error generating metadata:', error);
-    // Use notFound() for error cases as well
-    notFound()
+    console.error('[DEBUG] Error generating metadata:', error);
+    // Return fallback metadata rather than throwing notFound()
+    return {
+      title: 'Local Services | Top Contractors Denver',
+      description: 'Find local services in the Denver metro area.',
+    }
   }
 }
 
@@ -60,14 +68,22 @@ export async function generateStaticParams() {
 
 export default async function TradeLocationPage({ params }: Props) {
   try {
+    console.log(`[DEBUG] Rendering trade/location page: ${params.trade}/${params.location}`);
     const [trade, location, contractors] = await Promise.all([
       getTradeBySlug(params.trade),
       getSubregionBySlug(params.location),
       getContractorsByTradeAndSubregion(params.trade, params.location)
     ])
 
+    // Return fallback page for diagnosis
     if (!trade || !location) {
-      notFound()
+      console.error(`[DEBUG] Trade or location not found in TradeLocationPage: trade=${params.trade}, location=${params.location}`);
+      return (
+        <main>
+          <h1>Service Not Found</h1>
+          <p>The requested service or location page could not be found.</p>
+        </main>
+      )
     }
 
     return (
@@ -109,7 +125,13 @@ export default async function TradeLocationPage({ params }: Props) {
       </main>
     )
   } catch (error) {
-    console.error('Error rendering trade location page:', error);
-    notFound()
+    console.error('[DEBUG] Error rendering trade location page:', error);
+    // Return fallback page rather than throwing notFound()
+    return (
+      <main>
+        <h1>Local Services</h1>
+        <p>Find local services in the Denver metro area.</p>
+      </main>
+    )
   }
 }
