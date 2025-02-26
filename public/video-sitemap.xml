@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+    <url>
+        <loc>https://topcontractorsdenver.com/videos/bathroom-remodeling/714e17b8-59ff-40dd-8f6f-92848110baa6</loc>
+        <lastmod>2025-01-31T01:17:19.013452+00:00</lastmod>
+        <video:video>
+            <video:thumbnail_loc>https://topcontractorsdenver.com/images/video-thumbnails/bathroom-remodel.jpg</video:thumbnail_loc>
+            <video:title>Bathroom Remodeling Tips and Trends</video:title>
+            <video:description>Expert advice on bathroom remodeling from Denver's top contractors</video:description>
+            <video:content_loc>https://topcontractorsdenver.com/videos/bathroom-remodeling/714e17b8-59ff-40dd-8f6f-92848110baa6</video:content_loc>
+            <video:player_loc>https://topcontractorsdenver.com/videos/bathroom-remodeling/714e17b8-59ff-40dd-8f6f-92848110baa6</video:player_loc>
+            <video:duration>360</video:duration>
+            <video:publication_date>2025-01-31T01:17:19+00:00</video:publication_date>
+            <video:family_friendly>yes</video:family_friendly>
+            <video:tag>bathroom</video:tag>
+            <video:tag>remodeling</video:tag>
+            <video:tag>denver</video:tag>
+            <video:category>Home Improvement</video:category>
+        </video:video>
+    </url>
+    <url>
+        <loc>https://topcontractorsdenver.com/videos/plumbing/b5abdeec-901d-438b-a212-ed51f2be3f27</loc>
+        <lastmod>2025-01-31T01:17:18.935548+00:00</lastmod>
+        <video:video>
+            <video:thumbnail_loc>https://topcontractorsdenver.com/images/video-thumbnails/plumbing.jpg</video:thumbnail_loc>
+            <video:title>Professional Plumbing Solutions</video:title>
+            <video:description>Expert plumbing tips and solutions from Denver's top contractors</video:description>
+            <video:content_loc>https://topcontractorsdenver.com/videos/plumbing/b5abdeec-901d-438b-a212-ed51f2be3f27</video:content_loc>
+            <video:player_loc>https://topcontractorsdenver.com/videos/plumbing/b5abdeec-901d-438b-a212-ed51f2be3f27</video:player_loc>
+            <video:duration>420</video:duration>
+            <video:publication_date>2025-01-31T01:17:18+00:00</video:publication_date>
+            <video:family_friendly>yes</video:family_friendly>
+            <video:tag>plumbing</video:tag>
+            <video:tag>home maintenance</video:tag>
+            <video:tag>denver</video:tag>
+            <video:category>Home Improvement</video:category>
+        </video:video>
+    </url>
+    <url>
+        <loc>https://topcontractorsdenver.com/videos/kitchen-remodeling/d01c9e08-f767-4ca6-a1e7-56a7e2a45e24</loc>
+        <lastmod>2025-01-31T01:17:18.758998+00:00</lastmod>
+        <video:video>
+            <video:thumbnail_loc>https://topcontractorsdenver.com/images/video-thumbnails/kitchen-remodel.jpg</video:thumbnail_loc>
+            <video:title>Kitchen Renovation Best Practices</video:title>
+            <video:description>Expert kitchen remodeling advice from Denver's top contractors</video:description>
+            <video:content_loc>https://topcontractorsdenver.com/videos/kitchen-remodeling/d01c9e08-f767-4ca6-a1e7-56a7e2a45e24</video:content_loc>
+            <video:player_loc>https://topcontractorsdenver.com/videos/kitchen-remodeling/d01c9e08-f767-4ca6-a1e7-56a7e2a45e24</video:player_loc>
+            <video:duration>480</video:duration>
+            <video:publication_date>2025-01-31T01:17:18+00:00</video:publication_date>
+            <video:family_friendly>yes</video:family_friendly>
+            <video:tag>kitchen</video:tag>
+            <video:tag>remodeling</video:tag>
+            <video:tag>denver</video:tag>
+            <video:category>Home Improvement</video:category>
+        </video:video>
+    </url>
+</urlset>

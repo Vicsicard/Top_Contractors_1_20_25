@@ -12,6 +12,7 @@ Your website already has sitemaps generated automatically during the build proce
 - `sitemap-blog.xml` - Blog posts
 - `sitemap-trades.xml` - Trade and service pages
 - `sitemap-videos.xml` - Video content
+- `video-sitemap.xml` - Specialized video sitemap format
 
 These sitemaps are located in the `/public` directory and are accessible at `https://topcontractorsdenver.com/sitemap.xml` after deployment.
 
@@ -65,10 +66,19 @@ Before submitting your sitemaps to Google Search Console, you need to make sure 
    - `https://topcontractorsdenver.com/sitemap-blog.xml`
    - `https://topcontractorsdenver.com/sitemap-trades.xml`
    - `https://topcontractorsdenver.com/sitemap-videos.xml`
+   - `https://topcontractorsdenver.com/video-sitemap.xml` (specialized video sitemap format)
 
 Even though you've verified the property in Google Search Console, it requires the full URL for sitemap submission, not just the path portion.
 
-### Step 4: Verify Status
+### Step 4: Special Note for Video Content
+
+If Google Search Console has trouble fetching the standard video sitemap, try submitting the specialized video sitemap format instead:
+
+1. We've created a specialized `video-sitemap.xml` that uses Google's preferred format for video content
+2. This sitemap includes detailed video metadata that helps Google better understand and index your video content
+3. The specialized format includes video thumbnails, duration, tags, and other important metadata
+
+### Step 5: Verify Status
 
 1. After submission, Google will process your sitemaps
 2. Check the "Status" column to ensure they're successfully processed
