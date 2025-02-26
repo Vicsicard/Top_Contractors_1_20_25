@@ -94,10 +94,10 @@ function generateCanonicalUrl({ trade, subregion }: MetadataParams): string {
   const baseUrl = 'https://topcontractorsdenver.com';
   
   if (trade && subregion) {
-    return `${baseUrl}/trades/${trade.toLowerCase()}/${subregion.toLowerCase()}`;
+    return `${baseUrl}/trades/${trade.toLowerCase()}/${subregion.toLowerCase()}/`;
   } else if (trade) {
-    return `${baseUrl}/trades/${trade.toLowerCase()}`;
+    return `${baseUrl}/trades/${trade.toLowerCase()}/`;
   }
   
-  return baseUrl;
+  return `${baseUrl}/`;
 }

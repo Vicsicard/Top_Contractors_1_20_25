@@ -97,12 +97,12 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-gray-300 hover:text-white transition">
+                <Link href="/about/" className="text-gray-300 hover:text-white transition">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="text-gray-300 hover:text-white transition">
+                <Link href="/privacy/" className="text-gray-300 hover:text-white transition">
                   Privacy Policy
                 </Link>
               </li>

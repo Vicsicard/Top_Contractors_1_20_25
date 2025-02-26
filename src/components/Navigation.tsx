@@ -36,7 +36,7 @@ function Navigation() {
             <span className="hidden md:inline">Home</span>
           </Link>
           <Link 
-            href="/blog" 
+            href="/blog/" 
             className={`text-white hover:text-accent-warm transition-colors font-medium flex items-center gap-2 ${
               pathname?.startsWith('/blog') ? 'text-accent-warm' : ''
             }`}
@@ -47,7 +47,7 @@ function Navigation() {
             <span className="hidden md:inline">Blog</span>
           </Link>
           <Link 
-            href="/services" 
+            href="/services/" 
             className={`text-white hover:text-accent-warm transition-colors font-medium flex items-center gap-2 ${
               pathname?.startsWith('/services') ? 'text-accent-warm' : ''
             }`}
@@ -58,7 +58,7 @@ function Navigation() {
             <span className="hidden md:inline">Services</span>
           </Link>
           <Link 
-            href="/videos" 
+            href="/videos/" 
             className={`text-white hover:text-accent-warm transition-colors font-medium flex items-center gap-2 ${
               pathname?.startsWith('/videos') ? 'text-accent-warm' : ''
             }`}

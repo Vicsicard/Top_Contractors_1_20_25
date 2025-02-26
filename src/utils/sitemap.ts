@@ -16,7 +16,7 @@ export async function generateSitemapUrls(): Promise<SitemapUrl[]> {
 
   // Add homepage
   urls.push({
-    loc: baseUrl,
+    loc: `${baseUrl}/`,
     lastmod: currentDate,
     changefreq: 'daily',
     priority: 1.0,
@@ -33,7 +33,7 @@ export async function generateSitemapUrls(): Promise<SitemapUrl[]> {
 
   for (const page of staticPages) {
     urls.push({
-      loc: `${baseUrl}/${page.path}`,
+      loc: `${baseUrl}/${page.path}/`,
       lastmod: currentDate,
       changefreq: page.changefreq,
       priority: page.priority,
@@ -45,25 +45,17 @@ export async function generateSitemapUrls(): Promise<SitemapUrl[]> {
   for (const trade of trades) {
     // Main trade page
     urls.push({
-      loc: `${baseUrl}/trades/${trade.slug}`,
+      loc: `${baseUrl}/trades/${trade.slug}/`,
       lastmod: currentDate,
       changefreq: 'daily',
       priority: 0.9,
     });
 
-    // Trade blog page
-    urls.push({
-      loc: `${baseUrl}/blog/trades/${trade.slug}`,
-      lastmod: currentDate,
-      changefreq: 'daily',
-      priority: 0.8,
-    });
-
-    // Add trade-subregion combination pages
+    // Add subregion pages for each trade
     const subregions = await getAllSubregions();
     for (const subregion of subregions) {
       urls.push({
-        loc: `${baseUrl}/trades/${trade.slug}/${subregion.slug}`,
+        loc: `${baseUrl}/trades/${trade.slug}/${subregion.slug}/`,
         lastmod: currentDate,
         changefreq: 'daily',
         priority: 0.8,
@@ -72,37 +64,49 @@ export async function generateSitemapUrls(): Promise<SitemapUrl[]> {
   }
 
   // Add blog posts
-  const { data: posts } = await supabase
-    .from('posts')
-    .select('slug, updated_at, published_at')
-    .order('published_at', { ascending: false });
+  try {
+    const { data: posts, error } = await supabase
+      .from('blog_posts')
+      .select('slug, trade_category, updated_at')
+      .filter('status', 'eq', 'published');
 
-  if (posts) {
-    for (const post of posts) {
-      urls.push({
-        loc: `${baseUrl}/blog/${post.slug}`,
-        lastmod: post.updated_at || post.published_at,
-        changefreq: 'weekly',
-        priority: 0.7,
-      });
+    if (error) {
+      console.error('Error fetching blog posts for sitemap:', error);
+    } else if (posts) {
+      for (const post of posts) {
+        const category = post.trade_category?.toLowerCase().replace(' ', '-') || 'general';
+        urls.push({
+          loc: `${baseUrl}/blog/trades/${category}/${post.slug}/`,
+          lastmod: post.updated_at || currentDate,
+          changefreq: 'weekly',
+          priority: 0.7,
+        });
+      }
     }
+  } catch (e) {
+    console.error('Exception fetching blog posts for sitemap:', e);
   }
 
   // Add videos
-  const { data: videos } = await supabase
-    .from('videos')
-    .select('id, category, created_at')
-    .order('created_at', { ascending: false });
+  try {
+    const { data: videos, error } = await supabase
+      .from('videos')
+      .select('id, category, updated_at');
 
-  if (videos) {
-    for (const video of videos) {
-      urls.push({
-        loc: `${baseUrl}/videos/${video.category}/${video.id}`,
-        lastmod: video.created_at,
-        changefreq: 'weekly',
-        priority: 0.8,
-      });
+    if (error) {
+      console.error('Error fetching videos for sitemap:', error);
+    } else if (videos) {
+      for (const video of videos) {
+        urls.push({
+          loc: `${baseUrl}/videos/${video.category}/${video.id}/`,
+          lastmod: video.updated_at || currentDate,
+          changefreq: 'monthly',
+          priority: 0.6,
+        });
+      }
     }
+  } catch (e) {
+    console.error('Exception fetching videos for sitemap:', e);
   }
 
   return urls;
