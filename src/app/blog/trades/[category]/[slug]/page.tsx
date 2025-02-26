@@ -16,11 +16,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getPostBySlug(params.slug);
 
   if (!post) {
-    return {
-      title: 'Post Not Found | Top Contractors Denver Blog',
-      description: 'The requested blog post could not be found.',
-      robots: 'noindex, nofollow'
-    };
+    // Use notFound() instead of returning a page with noindex
+    notFound();
   }
 
   return {

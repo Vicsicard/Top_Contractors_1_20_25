@@ -26,10 +26,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ])
 
     if (!trade || !location) {
-      return {
-        title: 'Service Not Found | Top Contractors Denver',
-        description: 'The requested service or location page could not be found.',
-      }
+      // Use notFound() instead of returning metadata for non-existent pages
+      notFound()
     }
 
     return {
@@ -38,10 +36,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   } catch (error) {
     console.error('Error generating metadata:', error);
-    return {
-      title: 'Service Not Found | Top Contractors Denver',
-      description: 'The requested service or location page could not be found.',
-    }
+    // Use notFound() for error cases as well
+    notFound()
   }
 }
 

@@ -16,10 +16,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getPostBySlug(params.slug);
 
   if (!post) {
-    return {
-      title: 'Post Not Found',
-      description: 'The requested blog post could not be found.'
-    };
+    // Use notFound() instead of returning metadata for a non-existent post
+    notFound();
   }
 
   return {

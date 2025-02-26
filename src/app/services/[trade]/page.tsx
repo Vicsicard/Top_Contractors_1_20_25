@@ -15,10 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const trade = await getTradeBySlug(params.trade)
     
     if (!trade) {
-      return {
-        title: 'Service Not Found | Top Contractors Denver',
-        description: 'The requested service page could not be found.',
-      }
+      notFound()
     }
 
     return {
@@ -27,10 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   } catch (error) {
     console.error('Error generating metadata:', error);
-    return {
-      title: 'Service Not Found | Top Contractors Denver',
-      description: 'The requested service page could not be found.',
-    }
+    notFound()
   }
 }
 

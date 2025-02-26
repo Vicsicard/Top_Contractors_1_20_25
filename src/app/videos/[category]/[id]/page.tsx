@@ -32,10 +32,8 @@ export async function generateMetadata(
     .single();
 
   if (!video) {
-    return {
-      title: 'Video Not Found',
-      description: 'The requested video could not be found.',
-    };
+    // Use notFound() instead of returning metadata for a non-existent video
+    notFound();
   }
 
   const previousImages = (await parent).openGraph?.images || [];
