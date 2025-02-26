@@ -19,6 +19,13 @@ const inter = Inter({
   fallback: ['system-ui', 'arial']
 })
 
+export const viewport: Viewport = {
+  themeColor: '#3366FF',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+}
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://topcontractorsdenver.com'),
   title: {
@@ -49,12 +56,6 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     images: ['/images/denver sky 666.jpg']
   },
-  verification: {
-    google: 'Uc0OPZIJKQg-K8pxzJAKqYGANtZvY_IzDMqhN9vQwpI',
-    other: {
-      'facebook-domain-verification': ['7n22l22v4th5rqv1eoxa3knlb19ptr']
-    }
-  },
   robots: {
     index: true,
     follow: true,
@@ -66,15 +67,6 @@ export const metadata: Metadata = {
   }
 }
 
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  maximumScale: 5,
-  userScalable: true,
-  viewportFit: 'cover',
-  themeColor: [{ media: '(prefers-color-scheme: light)', color: '#3366FF' }],
-};
-
 export default async function RootLayout({
   children,
 }: {
@@ -85,6 +77,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={inter.className}>
       <head>
+        {/* Structured data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -96,30 +89,48 @@ export default async function RootLayout({
           name="analytics-dimensions"
           content={analyticsDimensions}
         />
-        {/* Resource hints */}
+        
+        {/* Resource hints - improve performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://analytics.ahrefs.com" crossOrigin="anonymous" />
         
+        {/* Preload critical assets */}
+        <link 
+          rel="preload" 
+          href="/images/denver sky 666.jpg" 
+          as="image" 
+          type="image/jpeg"
+          fetchpriority="high"
+        />
+        
+        {/* Web app manifest */}
         <link 
           rel="manifest" 
           href="/manifest.json" 
           type="application/json"
         />
-        <script src="https://analytics.ahrefs.com/analytics.js" data-key="x9s4rXhtvM7jWVn7bFKrpA" async></script>
+        
+        {/* Defer non-critical scripts */}
+        <script src="https://analytics.ahrefs.com/analytics.js" data-key="x9s4rXhtvM7jWVn7bFKrpA" async defer></script>
       </head>
       <body className={inter.className}>
-        <header className="fixed top-0 left-0 right-0 z-50 bg-primary shadow-lg">
+        {/* Fixed header - avoid layout shifts by setting exact height */}
+        <header className="fixed top-0 left-0 right-0 z-50 bg-primary shadow-lg h-[72px]">
           <div className="container mx-auto px-4 py-4">
             <Navigation />
           </div>
         </header>
         <ErrorBoundary>
-          <main className="min-h-screen bg-gray-50 pt-20">
+          {/* Add explicit margin to avoid content being hidden under fixed header */}
+          <main className="min-h-screen bg-gray-50 pt-[72px]">
             {children}
           </main>
         </ErrorBoundary>
         <Footer />
+        
+        {/* Analytics - load at the end */}
         <GoogleAnalytics />
         <PerformanceMonitor />
         <Analytics />
