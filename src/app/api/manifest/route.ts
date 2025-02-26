@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+// This API route has been disabled in favor of using a static manifest.json file
+// to prevent conflicts and 401 errors
+/*
 export async function GET() {
   const manifest = {
     name: "Top Contractors Denver",
@@ -28,5 +31,17 @@ export async function GET() {
       'Access-Control-Allow-Methods': 'GET',
       'Access-Control-Allow-Headers': 'Content-Type'
     }
+  });
+}
+*/
+
+// Placeholder response to prevent 404s
+export async function GET() {
+  return new NextResponse(JSON.stringify({ disabled: true }), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Location': '/manifest.json'
+    },
+    status: 308 // Permanent Redirect
   });
 }

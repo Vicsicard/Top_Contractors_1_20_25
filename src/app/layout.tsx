@@ -104,8 +104,7 @@ export default async function RootLayout({
         <link 
           rel="manifest" 
           href="/manifest.json" 
-          crossOrigin="use-credentials"
-          type="application/manifest+json"
+          type="application/json"
         />
         <script src="https://analytics.ahrefs.com/analytics.js" data-key="x9s4rXhtvM7jWVn7bFKrpA" async></script>
       </head>
