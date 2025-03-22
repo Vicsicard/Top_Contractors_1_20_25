@@ -122,7 +122,7 @@ async function generateSitemaps(): Promise<void> {
         for (const post of postsResult.posts) {
             currentUrls.push({
                 loc: `${SITE_URL}/blog/trades/${post.trade_category}/${post.slug}`,
-                lastmod: new Date(post.published_at).toISOString(),
+                lastmod: new Date(post.published_at || post.created_at || new Date()).toISOString(),
                 changefreq: 'weekly',
                 priority: 0.7
             });
