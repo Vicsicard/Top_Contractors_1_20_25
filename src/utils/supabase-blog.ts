@@ -1,4 +1,4 @@
-import { Post, Tag } from '@/types/blog';
+import { Post } from '@/types/blog';
 import { blogSupabase } from '@/utils/supabase-blog-client';
 import { getStandardCategory, isValidCategory } from '@/utils/category-mapper';
 
@@ -222,7 +222,7 @@ export async function getPostBySlug(slug: string, trade?: string): Promise<Post 
 /**
  * Gets all unique trade categories from posts
  */
-async function getTradeCategories(): Promise<string[]> {
+export async function getTradeCategories(): Promise<string[]> {
     try {
         const { data } = await blogSupabase
             .from('blog_posts')

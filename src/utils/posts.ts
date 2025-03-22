@@ -161,7 +161,6 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
       id: post.id,
       title: post.title,
       slug: post.slug,
-      content: post.content,
       html: htmlContent,
       excerpt: post.content.substring(0, 160),
       feature_image: imageUrl || post.image || featureImage,
@@ -220,7 +219,6 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     id: post.id,
     title: post.title,
     slug: post.slug,
-    content: post.content,
     html: htmlContent,
     excerpt: post.content.substring(0, 160), // Create excerpt from content if not available
     feature_image: imageUrl || post.image || featureImage,
@@ -229,9 +227,9 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     tags: post.tags,
     reading_time: estimateReadingTime(post.content),
     trade_category: post.trade_category || undefined,
-    published_at: post.created_at,
-    updated_at: post.created_at,
-    created_at: post.created_at
+    created_at: post.created_at || post.published_at || new Date().toISOString(),
+    published_at: post.published_at,
+    updated_at: post.updated_at
   };
 }
 
@@ -274,7 +272,6 @@ export async function getPostsByTag(tag: string, page = 1, perPage = 10): Promis
       id: post.id,
       title: post.title,
       slug: post.slug,
-      content: contentWithoutImage,
       html: htmlContent,
       excerpt: post.content.substring(0, 160),
       feature_image: featureImage,

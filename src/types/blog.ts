@@ -9,16 +9,20 @@ export interface Post {
     id: string;
     title: string;
     slug: string;
-    html: string;
+    content?: string;
+    html?: string; 
     excerpt?: string;
     feature_image?: string;
     feature_image_alt?: string;
     authors?: string[];
-    tags: Tag[];
+    tags: string | null; 
     reading_time?: number;
     trade_category?: string;
-    published_at: string;
+    published_at?: string;
+    created_at: string;
     updated_at?: string;
+    category?: string;
+    preview?: string;
 }
 
 export interface Author {
