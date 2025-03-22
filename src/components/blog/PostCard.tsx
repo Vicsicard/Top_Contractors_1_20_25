@@ -36,9 +36,11 @@ export function PostCard({ post }: PostCardProps) {
           <span className="text-sm text-gray-600">
             {typeof post.authors === 'string' ? post.authors : (post.authors?.[0] || 'Top Contractors Denver')}
           </span>
-          <time className="text-sm text-gray-500">
-            {new Date(post.published_at).toLocaleDateString()}
-          </time>
+          <div className="flex items-center text-sm text-gray-500 mt-2">
+            <span className="mr-2">
+              {new Date(post.published_at || post.created_at).toLocaleDateString()}
+            </span>
+          </div>
         </div>
       </div>
     </article>

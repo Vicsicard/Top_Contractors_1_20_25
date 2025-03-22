@@ -41,20 +41,22 @@ export function BlogPostCard({ post, showExcerpt = true, showAuthor = true }: Bl
               </span>
             )}
             <time className="text-sm text-gray-500" dateTime={post.published_at}>
-              {formatDate(post.published_at)}
+              {post.published_at ? formatDate(post.published_at) : ''}
             </time>
           </div>
 
-          {post.tags && post.tags.length > 0 && (
+          {post.tags && (
             <div className="mt-4 flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
-                <span
-                  key={typeof tag === 'string' ? tag : tag.slug}
-                  className="px-2 py-1 bg-gray-100 text-sm text-gray-600 rounded-full"
-                >
-                  {typeof tag === 'string' ? tag : tag.name}
-                </span>
-              ))}
+              {typeof post.tags === 'string' ? 
+                post.tags.split(',').filter(Boolean).map((tag: string) => (
+                  <span
+                    key={tag.trim()}
+                    className="px-2 py-1 bg-gray-100 text-sm text-gray-600 rounded-full"
+                  >
+                    {tag.trim()}
+                  </span>
+                ))
+              : null}
             </div>
           )}
         </div>

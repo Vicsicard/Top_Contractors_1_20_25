@@ -1,6 +1,38 @@
 export interface Database {
   public: {
     Tables: {
+      blog_posts: {
+        Row: {
+          id: string;
+          title: string;
+          slug: string;
+          content: string;
+          created_at: string;
+          tags: string | null;
+          posted_on_site: boolean | null;
+          images: string[] | null;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          slug: string;
+          content: string;
+          tags?: string | null;
+          created_at?: string;
+          posted_on_site?: boolean | null;
+          images?: string[] | null;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          slug?: string;
+          content?: string;
+          tags?: string | null;
+          created_at?: string;
+          posted_on_site?: boolean | null;
+          images?: string[] | null;
+        };
+      };
       categories: {
         Row: {
           id: number;

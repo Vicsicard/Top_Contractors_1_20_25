@@ -4,7 +4,7 @@ export interface TradeCategory {
   description: string;
 }
 
-const TRADE_CATEGORIES: TradeCategory[] = [
+export const TRADE_CATEGORIES: TradeCategory[] = [
   {
     id: 'bathroom-remodeling',
     title: 'Bathroom Remodeling',

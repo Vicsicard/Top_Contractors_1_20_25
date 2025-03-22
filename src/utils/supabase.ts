@@ -1,11 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Main Supabase client for videos and categories
+const mainSupabaseUrl = process.env.NEXT_PUBLIC_MAIN_SUPABASE_URL!;
+const mainSupabaseAnonKey = process.env.NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY!;
 
 // Create a single supabase client for interacting with your database
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const mainSupabase = createClient(mainSupabaseUrl, mainSupabaseAnonKey);
 
-export async function getSupabase() {
-  return supabase;
+export async function getMainSupabase() {
+  return mainSupabase;
 }

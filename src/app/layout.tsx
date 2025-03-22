@@ -1,4 +1,5 @@
 import './globals.css'
+import '@/styles/prism-theme.css'
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { headers } from 'next/headers'
@@ -96,14 +97,7 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://analytics.ahrefs.com" crossOrigin="anonymous" />
         
-        {/* Preload critical assets */}
-        <link 
-          rel="preload" 
-          href="/images/denver sky 666.jpg" 
-          as="image" 
-          type="image/jpeg"
-          fetchPriority="high"
-        />
+        {/* No longer preloading this image to avoid warnings */}
         
         {/* Web app manifest */}
         <link 

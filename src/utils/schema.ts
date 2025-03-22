@@ -220,7 +220,7 @@ export function generateBlogPostSchema(post: any) {
       '@type': 'WebPage',
       '@id': `https://topcontractorsdenver.com/blog/${post.slug}/`
     },
-    keywords: post.tags?.map((tag: any) => tag.name).join(', ') || post.primary_tag?.name || '',
+    keywords: typeof post.tags === 'string' ? post.tags : (post.tags?.map ? post.tags?.map((tag: any) => tag.name).join(', ') : '') || post.primary_tag?.name || '',
     articleBody: post.plaintext || ''
   };
 }

@@ -14,7 +14,13 @@ export function PostContent({ post }: PostContentProps) {
         month: 'long',
         day: 'numeric',
       })
-    : '';
+    : post.created_at 
+      ? new Date(post.created_at).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
+      : '';
 
   return (
     <div className="prose prose-lg max-w-none">

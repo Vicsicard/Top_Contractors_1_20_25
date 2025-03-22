@@ -45,8 +45,8 @@ export function BlogPostDisplay({ post }: BlogPostDisplayProps) {
                 )}
                 <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
                 <div className="flex items-center gap-4 text-gray-600 mb-4">
-                    <time dateTime={post.published_at}>
-                        {new Date(post.published_at).toLocaleDateString()}
+                    <time dateTime={post.published_at || post.created_at}>
+                        {new Date(post.published_at || post.created_at).toLocaleDateString()}
                     </time>
                     {post.reading_time && (
                         <>
@@ -58,7 +58,7 @@ export function BlogPostDisplay({ post }: BlogPostDisplayProps) {
             </header>
             <div 
                 className="blog-content prose prose-lg max-w-none"
-                dangerouslySetInnerHTML={{ __html: post.html }} 
+                dangerouslySetInnerHTML={{ __html: post.html || '' }} 
             />
         </article>
     );

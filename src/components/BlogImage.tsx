@@ -3,15 +3,16 @@
 import Image from 'next/image';
 import { useState } from 'react';
 
-interface BlogImageProps {
+export interface BlogImageProps {
     src: string;
     alt: string;
     className?: string;
     width?: number;
     height?: number;
+    priority?: boolean;
 }
 
-export function BlogImage({ src, alt, className = '', width = 800, height = 600 }: BlogImageProps) {
+export function BlogImage({ src, alt, className = '', width = 800, height = 600, priority = false }: BlogImageProps) {
     const [imgSrc, setImgSrc] = useState(src);
     const fallbackImage = '/images/denver-skyline.jpg';
 
@@ -28,6 +29,7 @@ export function BlogImage({ src, alt, className = '', width = 800, height = 600 
                 height={height}
                 className={className}
                 onError={handleError}
+                priority={priority}
             />
         </div>
     );

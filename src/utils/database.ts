@@ -1,5 +1,7 @@
-import { supabase } from './supabase';
+import { supabase } from '@/lib/supabase';
 import type { CategoryRecord, SubregionRecord, ContractorRecord } from '@/types/database';
+import { TRADE_CATEGORIES, TradeCategory } from './categories';
+import type { Category } from '@/types/category';
 
 import { PostgrestError } from '@supabase/supabase-js';
 
@@ -50,22 +52,46 @@ export async function getAllTrades(): Promise<CategoryRecord[]> {
         hint: error.hint,
         code: error.code
       });
-      // Return empty array instead of throwing during static generation
-      console.warn('[SERVER] Returning empty categories array due to error');
-      return [];
+      
+      // Use TRADE_CATEGORIES as fallback when database query fails
+      console.log('[SERVER] Using hardcoded categories as fallback');
+      return TRADE_CATEGORIES.map((category: TradeCategory) => ({
+        id: category.id,
+        category_name: category.title,
+        description: category.description,
+        slug: category.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }));
     }
 
     if (categoriesArray.length === 0) {
-      console.warn('[SERVER] No categories found in database');
-      return [];
+      console.log('[SERVER] No categories found in database, using hardcoded categories as fallback');
+      return TRADE_CATEGORIES.map((category: TradeCategory) => ({
+        id: category.id,
+        category_name: category.title,
+        description: category.description,
+        slug: category.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }));
     }
 
-    console.log('[SERVER] Successfully fetched categories count:', categoriesArray.length);
+    console.log(`[SERVER] Successfully fetched ${categoriesArray.length} categories`);
     return categoriesArray;
   } catch (error) {
-    console.error('[SERVER] Error in getAllTrades:', error);
-    // Return empty array instead of throwing during static generation
-    return [];
+    console.error('[SERVER] Error fetching categories:', error);
+    
+    // Use TRADE_CATEGORIES as fallback when an exception occurs
+    console.log('[SERVER] Using hardcoded categories as fallback due to error');
+    return TRADE_CATEGORIES.map((category: TradeCategory) => ({
+      id: category.id,
+      category_name: category.title,
+      description: category.description,
+      slug: category.id,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }));
   }
 }
 

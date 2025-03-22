@@ -35,6 +35,8 @@ const tagMappings: Record<string, ValidTag> = {
   'tub': 'bathroom remodeling',
   'walk-in shower': 'bathroom remodeling',
   'walk in shower': 'bathroom remodeling',
+  'bathroomredomeling': 'bathroom remodeling',
+  'bathroomremodeling': 'bathroom remodeling',
 
   // Deck variations
   'deck': 'decks',
@@ -85,6 +87,7 @@ const tagMappings: Record<string, ValidTag> = {
   'house renovation': 'home remodeling',
   'remodeling': 'home remodeling',
   'renovation': 'home remodeling',
+  'homeremodeling': 'home remodeling',
 
   // HVAC variations
   'hvac': 'hvac',
@@ -104,6 +107,7 @@ const tagMappings: Record<string, ValidTag> = {
   'kitchen renovations': 'kitchen remodeling',
   'kitchen update': 'kitchen remodeling',
   'kitchen upgrade': 'kitchen remodeling',
+  'kitchenremodeling': 'kitchen remodeling',
 
   // Landscaper variations
   'landscaper': 'landscaper',
@@ -147,6 +151,7 @@ const tagMappings: Record<string, ValidTag> = {
   'gutter': 'siding gutters',
   'siding installation': 'siding gutters',
   'gutter installation': 'siding gutters',
+  'sidinggutters': 'siding gutters',
 
   // Windows variations
   'window': 'windows',
