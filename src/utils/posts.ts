@@ -142,10 +142,40 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
   
   if (secondaryBlogSupabase) {
     try {
+      // First, check what tables are available in the secondary project
+      const { data: tables, error: tablesError } = await secondaryBlogSupabase
+        .from('_tables')
+        .select('*');
+        
+      console.log('Available tables in secondary project:', tables || 'Error fetching tables');
+      
+      // Try different table names that might contain blog posts
+      const tablesToTry = ['blog_posts', 'posts', 'articles', 'content'];
+      
+      for (const tableName of tablesToTry) {
+        console.log(`Trying to fetch from table: ${tableName}`);
+        
+        try {
+          const { data: posts, error } = await secondaryBlogSupabase
+            .from(tableName)
+            .select('*')
+            .limit(5);
+            
+          if (!error && posts && posts.length > 0) {
+            console.log(`Found ${posts.length} posts in table: ${tableName}`);
+            console.log('Sample post:', posts[0]);
+          } else if (error) {
+            console.log(`Error fetching from ${tableName}:`, error.message);
+          }
+        } catch (e) {
+          console.log(`Exception trying to access table ${tableName}:`, e);
+        }
+      }
+      
+      // Now try the original query
       const { data: secPosts, error: secondaryError, count: secCount } = await secondaryBlogSupabase
         .from('blog_posts')
         .select('*', { count: 'exact' })
-        // Don't filter by posted_on_site for the secondary project
         .order('created_at', { ascending: false });
       
       if (secondaryError) {
@@ -157,9 +187,9 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
         
         // Log some sample tags from secondary posts for debugging
         if (secondaryPosts.length > 0) {
-          console.log('Sample tags from secondary posts:');
+          console.log('Sample posts from secondary project:');
           secondaryPosts.slice(0, 5).forEach(post => {
-            console.log(`Post ID: ${post.id}, Title: ${post.title}, Tags: ${post.tags || 'No tags'}`);
+            console.log(`Post ID: ${post.id}, Title: ${post.title || 'No title'}, Tags: ${post.tags || 'No tags'}`);
           });
         }
       }
@@ -178,7 +208,11 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
   console.log(`Combined total: ${allPosts.length} posts`);
 
   // Sort all posts by creation date (newest first)
-  allPosts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  allPosts.sort((a, b) => {
+    const dateA = new Date(b.created_at || b.published_at || b.date || 0).getTime();
+    const dateB = new Date(a.created_at || a.published_at || a.date || 0).getTime();
+    return dateA - dateB;
+  });
 
   // For primary posts, filter by tags
   // For secondary posts, include all of them regardless of tags
@@ -196,29 +230,29 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
   // Map the blog_posts fields to the Post type
   const mappedPosts = paginatedPosts.map(post => {
     // Convert markdown to HTML
-    const htmlContent = convertMarkdownToHtml(post.content);
+    const htmlContent = convertMarkdownToHtml(post.content || post.html || '');
     
     // Extract image from images array if available
     const { imageUrl, imageAlt } = extractImageFromArray(post.images);
     
     // Fallback to extracting image from content if no image in array
-    const { featureImage, imageAlt: contentImageAlt } = extractFeatureImage(post.content);
+    const { featureImage, imageAlt: contentImageAlt } = extractFeatureImage(post.content || '');
 
     return {
       id: post.id,
-      title: post.title,
-      slug: post.slug,
+      title: post.title || 'Untitled Post',
+      slug: post.slug || `post-${post.id}`,
       html: htmlContent,
-      excerpt: post.content.substring(0, 160),
-      feature_image: imageUrl || post.image || featureImage,
-      feature_image_alt: imageAlt || post.image_alt || contentImageAlt || post.title,
-      authors: post.authors,
-      tags: post.tags,
-      reading_time: estimateReadingTime(post.content),
-      trade_category: post.trade_category || undefined,
-      published_at: post.created_at,
-      updated_at: post.created_at,
-      created_at: post.created_at
+      excerpt: (post.content || post.excerpt || '').substring(0, 160),
+      feature_image: imageUrl || post.image || post.feature_image || featureImage,
+      feature_image_alt: imageAlt || post.image_alt || post.feature_image_alt || contentImageAlt || post.title || 'Blog Image',
+      authors: post.authors || post.author || 'Anonymous',
+      tags: post.tags || '',
+      reading_time: estimateReadingTime(post.content || post.html || ''),
+      trade_category: post.trade_category || post.category || undefined,
+      published_at: post.created_at || post.published_at || post.date,
+      updated_at: post.updated_at || post.created_at || post.published_at || post.date,
+      created_at: post.created_at || post.published_at || post.date
     };
   });
 
