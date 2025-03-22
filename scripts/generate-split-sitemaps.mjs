@@ -131,7 +131,8 @@ async function generateBlogSitemap() {
     // Get blog posts from the blog Supabase instance
     const { data: posts, error } = await blogSupabase
         .from('blog_posts')
-        .select('slug, created_at')
+        .select('slug, created_at, posted_on_site')
+        .eq('posted_on_site', true)
         .order('created_at', { ascending: false });
 
     if (error) {
@@ -140,8 +141,32 @@ async function generateBlogSitemap() {
     }
 
     const urls = [];
+    
+    // Add the main blog page
+    urls.push({
+        loc: `${SITE_URL}/blog/`,
+        lastmod: new Date().toISOString(),
+        changefreq: 'daily',
+        priority: 0.8
+    });
+    
+    // Calculate total pages for pagination
+    const POSTS_PER_PAGE = 12;
+    const totalPages = Math.ceil((posts || []).length / POSTS_PER_PAGE);
+    
+    // Add paginated blog pages (skip page 1 as it's the same as /blog/)
+    for (let page = 2; page <= totalPages; page++) {
+        urls.push({
+            loc: `${SITE_URL}/blog/?page=${page}`,
+            lastmod: new Date().toISOString(),
+            changefreq: 'daily',
+            priority: 0.7
+        });
+    }
+    
+    // Add individual blog post pages
     for (const post of (posts || [])) {
-        const url = `${SITE_URL}/blog/${post.slug}`;
+        const url = `${SITE_URL}/blog/${post.slug}/`;
         urls.push({
             loc: url,
             lastmod: post.created_at,
