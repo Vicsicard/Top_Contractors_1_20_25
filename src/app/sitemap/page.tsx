@@ -114,7 +114,7 @@ export default async function SitemapPage() {
         <section className="space-y-6">
           <h2 className="text-2xl font-semibold">Recent Blog Posts</h2>
           <div className="space-y-4">
-            {posts?.map((post) => (
+            {posts?.map((post: { slug: string; title: string; published_at: string }) => (
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
@@ -139,7 +139,7 @@ export default async function SitemapPage() {
         <section className="space-y-6">
           <h2 className="text-2xl font-semibold">Recent Videos</h2>
           <div className="space-y-4">
-            {videos?.map((video) => (
+            {videos?.map((video: { id: string; category: string; title: string; created_at: string }) => (
               <Link
                 key={video.id}
                 href={`/videos/${video.category}/${video.id}`}
