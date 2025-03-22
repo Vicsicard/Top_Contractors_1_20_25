@@ -18,16 +18,42 @@ const mainSupabaseKey = process.env.NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY;
 const blogSupabaseUrl = process.env.NEXT_PUBLIC_BLOG_SUPABASE_URL;
 const blogSupabaseKey = process.env.NEXT_PUBLIC_BLOG_SUPABASE_ANON_KEY;
 
+// Create clients or mock clients based on environment variables
+let mainSupabase;
+let blogSupabase;
+
+// Check for main Supabase credentials
 if (!mainSupabaseUrl || !mainSupabaseKey) {
-    throw new Error('Missing Main Supabase environment variables');
+    console.warn('Missing Main Supabase environment variables, using mock data');
+    mainSupabase = createMockSupabaseClient();
+} else {
+    mainSupabase = createClient(mainSupabaseUrl, mainSupabaseKey);
 }
 
+// Check for blog Supabase credentials
 if (!blogSupabaseUrl || !blogSupabaseKey) {
-    throw new Error('Missing Blog Supabase environment variables');
+    console.warn('Missing Blog Supabase environment variables, using mock data');
+    blogSupabase = createMockSupabaseClient();
+} else {
+    blogSupabase = createClient(blogSupabaseUrl, blogSupabaseKey);
 }
 
-const mainSupabase = createClient(mainSupabaseUrl, mainSupabaseKey);
-const blogSupabase = createClient(blogSupabaseUrl, blogSupabaseKey);
+// Create a mock Supabase client for when environment variables are missing
+function createMockSupabaseClient() {
+    return {
+        from: () => ({
+            select: () => ({
+                execute: async () => ({ data: [], error: null }),
+                eq: () => ({
+                    execute: async () => ({ data: [], error: null })
+                }),
+                order: () => ({
+                    execute: async () => ({ data: [], error: null })
+                })
+            })
+        })
+    };
+}
 
 // URL validation function
 async function isUrlValid(url) {
@@ -88,10 +114,13 @@ async function generateBlogSitemap() {
         .select('slug, created_at')
         .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+        console.error('Error fetching blog posts for sitemap:', error);
+        return generateSitemapXml([], 'blog');
+    }
 
     const urls = [];
-    for (const post of posts) {
+    for (const post of (posts || [])) {
         const url = `${SITE_URL}/blog/${post.slug}`;
         urls.push({
             loc: url,
@@ -110,14 +139,20 @@ async function generateTradesSitemap() {
         .from('categories')
         .select('slug');
 
-    if (tradesError) throw tradesError;
+    if (tradesError) {
+        console.error('Error fetching trades for sitemap:', tradesError);
+        return generateSitemapXml([], 'trades');
+    }
 
     // Get subregions from the main Supabase instance
     const { data: subregions, error: subregionsError } = await mainSupabase
         .from('subregions')
         .select('slug');
 
-    if (subregionsError) throw subregionsError;
+    if (subregionsError) {
+        console.error('Error fetching subregions for sitemap:', subregionsError);
+        return generateSitemapXml([], 'trades');
+    }
 
     const urls = [];
     const currentDate = new Date().toISOString();
@@ -201,10 +236,13 @@ async function generateVideosSitemap() {
         .select('id, category, created_at')
         .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+        console.error('Error fetching videos for sitemap:', error);
+        return generateSitemapXml([], 'videos');
+    }
 
     const urls = [];
-    for (const video of videos) {
+    for (const video of (videos || [])) {
         const url = `${SITE_URL}/videos/${video.category}/${video.id}`;
         urls.push({
             loc: url,
