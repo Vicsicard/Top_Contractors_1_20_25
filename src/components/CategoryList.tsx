@@ -80,7 +80,7 @@ export function CategoryList({ categories }: CategoryListProps) {
           {categories.map((category) => (
             <Link
               key={category.id}
-              href={`/trades/${category.slug}`}
+              href={`/services/${category.slug}`}
               className="category-card bg-white p-6 rounded-xl shadow-md hover:shadow-xl border border-gray-100"
             >
               <div className="flex flex-col items-start space-y-2">
