@@ -15,9 +15,9 @@ export async function GET(
   request: Request,
   { params }: { params: { trade: string; region: string; area: string } }
 ) {
-  const supabase = createSupabaseClient();
-
   try {
+    const supabase = createSupabaseClient();
+
     // Decode URL parameters
     const decodedTrade = decodeURIComponent(params.trade);
     const decodedRegion = decodeURIComponent(params.region);

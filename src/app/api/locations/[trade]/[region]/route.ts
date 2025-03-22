@@ -12,9 +12,9 @@ export async function GET(
   request: Request,
   { params }: { params: { trade: string; region: string } }
 ) {
-  const supabase = createSupabaseClient();
-
   try {
+    const supabase = createSupabaseClient();
+
     // Decode URL parameters
     const decodedTrade = decodeURIComponent(params.trade);
     const decodedRegion = decodeURIComponent(params.region);
@@ -58,11 +58,11 @@ export async function GET(
 
     if (contractorsError) {
       console.error('Error fetching contractors:', contractorsError);
-      return NextResponse.json({ error: contractorsError.message }, { status: 500 });
+      return NextResponse.json({ error: 'Error fetching contractors' }, { status: 500 });
     }
 
     // Get unique areas
-    const areas = [...new Set(contractors?.map(c => c.area) || [])];
+    const areas = [...new Set(contractors?.map((c: any) => c.area) || [])];
 
     // Format the response
     const response = {

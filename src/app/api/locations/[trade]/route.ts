@@ -12,9 +12,9 @@ export async function GET(
   request: Request,
   { params }: { params: { trade: string } }
 ) {
-  const supabase = createSupabaseClient();
-
   try {
+    const supabase = createSupabaseClient();
+
     // Decode URL parameter
     const decodedTrade = decodeURIComponent(params.trade);
     const processedSlug = createTradeSlug(decodedTrade);
@@ -35,33 +35,26 @@ export async function GET(
       return NextResponse.json({ error: 'Trade category not found' }, { status: 404 });
     }
 
-    // Get all regions that have contractors in this trade
-    const { data: regions, error: regionsError } = await supabase
-      .from('regions')
+    // Get all locations for this trade
+    const { data: locations, error: locationsError } = await supabase
+      .from('subregions')
       .select('*')
-      .order('name');
+      .order('subregion_name', { ascending: true });
 
-    if (regionsError) {
-      console.error('Error fetching regions:', regionsError);
-      return NextResponse.json({ error: regionsError.message }, { status: 500 });
+    if (locationsError) {
+      console.error('Error fetching locations:', locationsError);
+      return NextResponse.json({ error: 'Error fetching locations' }, { status: 500 });
     }
 
-    // Format the response
-    const response = {
-      trade_category: {
-        name: categoryData.name,
-        slug: categoryData.slug,
-        description: categoryData.description
-      },
-      regions: regions || []
-    };
-
-    return NextResponse.json(response);
+    return NextResponse.json({
+      trade: categoryData,
+      locations: locations || []
+    });
   } catch (error) {
-    console.error('Error in GET handler:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('Unexpected error in locations API:', error);
+    return NextResponse.json({ 
+      error: 'An unexpected error occurred',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }

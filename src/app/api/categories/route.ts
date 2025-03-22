@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase-server';
+import { NextResponse } from 'next/server';
 
 // Enable caching with revalidation every hour
 export const revalidate = 3600;
@@ -9,27 +10,20 @@ export async function GET() {
     
     const { data, error } = await supabase
       .from('categories')
-      .select('id, name, slug, description')
-      .order('name');
-
+      .select('*')
+      .order('category_name', { ascending: true });
+    
     if (error) {
-      console.error('Database error:', error);
-      return new Response(JSON.stringify({ error: 'Failed to fetch categories' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      console.error('Error fetching categories:', error);
+      return NextResponse.json({ error: 'Error fetching categories' }, { status: 500 });
     }
-
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-
+    
+    return NextResponse.json(data || []);
   } catch (error) {
-    console.error('Unexpected error:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    console.error('Unexpected error in categories API:', error);
+    return NextResponse.json({ 
+      error: 'An unexpected error occurred',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 });
   }
 }
