@@ -61,10 +61,12 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  manifest: '/manifest.json',
+  // Temporarily remove manifest reference to fix 401 errors
+  // manifest: '/manifest.json',
   icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png'
+    icon: '/favicon.ico'
+    // Temporarily remove apple icon reference to fix 404 errors
+    // apple: '/apple-touch-icon.png'
   }
 }
 
@@ -99,12 +101,13 @@ export default async function RootLayout({
         
         {/* No longer preloading this image to avoid warnings */}
         
-        {/* Web app manifest */}
+        {/* Web app manifest - temporarily disabled to fix 401 errors
         <link 
           rel="manifest" 
           href="/manifest.json" 
           crossOrigin="use-credentials"
         />
+        */}
         
         {/* Defer non-critical scripts */}
         <script src="https://analytics.ahrefs.com/analytics.js" data-key="x9s4rXhtvM7jWVn7bFKrpA" async defer></script>
