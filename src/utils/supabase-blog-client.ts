@@ -7,13 +7,21 @@ if (process.env.NODE_ENV !== 'production') {
   config({ path: resolve(__dirname, '../../.env.local') });
 }
 
-// Check for both naming conventions
-const blogSupabaseUrl = process.env.NEXT_PUBLIC_BLOG_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-const blogSupabaseAnonKey = process.env.NEXT_PUBLIC_BLOG_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Log environment variables for debugging (without revealing sensitive values)
+if (process.env.NODE_ENV !== 'production') {
+  console.log('[DEBUG] Blog Supabase URL defined:', !!process.env.NEXT_PUBLIC_BLOG_SUPABASE_URL);
+  console.log('[DEBUG] Blog Supabase Anon Key defined:', !!process.env.NEXT_PUBLIC_BLOG_SUPABASE_ANON_KEY);
+  console.log('[DEBUG] Main Supabase URL defined:', !!process.env.NEXT_PUBLIC_MAIN_SUPABASE_URL);
+  console.log('[DEBUG] Main Supabase Anon Key defined:', !!process.env.NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY);
+}
 
-// Use the main Supabase project as the secondary blog source
-const secondaryBlogSupabaseUrl = process.env.NEXT_PUBLIC_MAIN_SUPABASE_URL;
-const secondaryBlogSupabaseAnonKey = process.env.NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY;
+// Get the blog Supabase credentials
+const blogSupabaseUrl = process.env.NEXT_PUBLIC_BLOG_SUPABASE_URL;
+const blogSupabaseAnonKey = process.env.NEXT_PUBLIC_BLOG_SUPABASE_ANON_KEY;
+
+// Get the main Supabase credentials for the secondary blog source
+const mainSupabaseUrl = process.env.NEXT_PUBLIC_MAIN_SUPABASE_URL;
+const mainSupabaseAnonKey = process.env.NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY;
 
 // Create a mock Supabase client for when environment variables are missing
 const createMockBlogClient = (): SupabaseClient => {
@@ -21,15 +29,16 @@ const createMockBlogClient = (): SupabaseClient => {
     from: () => ({
       select: () => ({
         eq: () => ({
-          single: async () => ({ data: null, error: null }),
-          execute: async () => ({ data: [], error: null })
+          order: () => ({
+            range: () => Promise.resolve({ data: [], error: null, count: 0 }),
+          }),
+          limit: () => Promise.resolve({ data: [], error: null, count: 0 }),
         }),
         order: () => ({
-          execute: async () => ({ data: [], error: null })
+          range: () => Promise.resolve({ data: [], error: null, count: 0 }),
         }),
-        execute: async () => ({ data: [], error: null })
-      })
-    })
+      }),
+    }),
   } as unknown as SupabaseClient;
 };
 
@@ -39,19 +48,22 @@ let secondaryBlogSupabase: SupabaseClient | null = null;
 // Initialize primary blog Supabase client
 if (!blogSupabaseUrl || !blogSupabaseAnonKey) {
   if (process.env.NODE_ENV === 'production') {
-    console.warn('Missing Blog Supabase environment variables in production, using mock client');
-    blogSupabase = createMockBlogClient();
+    console.warn('[WARN] Missing Blog Supabase environment variables in production, using mock client');
   } else {
-    throw new Error('Missing Blog Supabase credentials in environment variables');
+    console.log('[DEBUG] Using mock client for Blog Supabase in development');
   }
+  blogSupabase = createMockBlogClient();
 } else {
   blogSupabase = createClient(blogSupabaseUrl, blogSupabaseAnonKey);
+  console.log('[INFO] Primary blog Supabase client initialized');
 }
 
-// Initialize secondary blog Supabase client if credentials are available
-if (secondaryBlogSupabaseUrl && secondaryBlogSupabaseAnonKey) {
-  secondaryBlogSupabase = createClient(secondaryBlogSupabaseUrl, secondaryBlogSupabaseAnonKey);
-  console.log('Secondary blog Supabase client initialized using Main Supabase project');
+// Initialize secondary blog Supabase client using Main Supabase credentials
+if (mainSupabaseUrl && mainSupabaseAnonKey) {
+  secondaryBlogSupabase = createClient(mainSupabaseUrl, mainSupabaseAnonKey);
+  console.log('[INFO] Secondary blog Supabase client initialized using Main Supabase project');
+} else {
+  console.log('[WARN] Secondary blog Supabase client not initialized due to missing credentials');
 }
 
 export { blogSupabase, secondaryBlogSupabase };

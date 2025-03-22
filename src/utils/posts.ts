@@ -39,20 +39,53 @@ function postBelongsToProject(tags: string | null): boolean {
 // Helper function to convert markdown to HTML
 function convertMarkdownToHtml(markdown: string): string {
   try {
-    // Replace custom tags like [h3] with proper HTML
-    const cleanedMarkdown = markdown
-      .replace(/\[h3\]/g, '### ')
-      .replace(/\[\/h3\]/g, '')
-      .replace(/\[h2\]/g, '## ')
-      .replace(/\[\/h2\]/g, '')
-      .replace(/\[h1\]/g, '# ')
-      .replace(/\[\/h1\]/g, '');
+    if (!markdown) {
+      console.warn('[WARN] Empty markdown content received in convertMarkdownToHtml');
+      return '';
+    }
     
-    // Use marked.parse to ensure we get a string, not a Promise
-    return marked.parse(cleanedMarkdown) as string;
+    // Replace custom tags like [h3] with proper HTML
+    const customTagReplacements = [
+      { pattern: /\[h3\]/g, replacement: '### ' },
+      { pattern: /\[\/h3\]/g, replacement: '' },
+      { pattern: /\[h2\]/g, replacement: '## ' },
+      { pattern: /\[\/h2\]/g, replacement: '' },
+      { pattern: /\[h1\]/g, replacement: '# ' },
+      { pattern: /\[\/h1\]/g, replacement: '' },
+      { pattern: /\[b\]/g, replacement: '**' },
+      { pattern: /\[\/b\]/g, replacement: '**' },
+      { pattern: /\[i\]/g, replacement: '*' },
+      { pattern: /\[\/i\]/g, replacement: '*' },
+      { pattern: /\[ul\]/g, replacement: '' },
+      { pattern: /\[\/ul\]/g, replacement: '' },
+      { pattern: /\[li\]/g, replacement: '- ' },
+      { pattern: /\[\/li\]/g, replacement: '' },
+      { pattern: /\[p\]/g, replacement: '\n\n' },
+      { pattern: /\[\/p\]/g, replacement: '' }
+    ];
+    
+    let cleanedMarkdown = markdown;
+    
+    // Apply all custom tag replacements
+    customTagReplacements.forEach(({ pattern, replacement }) => {
+      cleanedMarkdown = cleanedMarkdown.replace(pattern, replacement);
+    });
+    
+    // Use marked.parse to convert markdown to HTML
+    const html = marked.parse(cleanedMarkdown) as string;
+    
+    // Log success for debugging
+    console.log('[DEBUG] Successfully converted markdown to HTML');
+    
+    return html;
   } catch (error) {
-    console.error('Error converting markdown to HTML:', error);
-    return markdown;
+    console.error('[ERROR] Error converting markdown to HTML:', error);
+    // Return a basic sanitized version of the markdown as fallback
+    return markdown
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\n/g, '<br>')
+      .replace(/\[.*?\]/g, ''); // Remove any remaining custom tags
   }
 }
 
@@ -118,123 +151,203 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
   totalPosts: number;
   hasMore: boolean;
 }> {
-  const start = (page - 1) * perPage;
-  const end = start + perPage - 1;
+  try {
+    console.log(`[DEBUG] Starting getPosts function for page ${page}, perPage ${perPage}`);
+    const start = (page - 1) * perPage;
+    
+    // Fetch posts from primary Supabase instance (blog project)
+    console.log('[DEBUG] Fetching posts from primary Supabase instance (blog project)');
+    const { data: primaryPosts, error: primaryError } = await blogSupabase
+      .from('blog_posts')
+      .select('*', { count: 'exact' })
+      // Remove the posted_on_site filter as we discovered none of the posts have this flag set to true
+      .order('created_at', { ascending: false });
 
-  console.log(`Fetching posts for page ${page}, perPage ${perPage}`);
-
-  // Fetch posts from primary Supabase instance
-  const { data: primaryPosts, error: primaryError, count: primaryCount } = await blogSupabase
-    .from('blog_posts')
-    .select('*', { count: 'exact' })
-    // Remove the posted_on_site filter since we found that no posts have this flag set to true
-    // .eq('posted_on_site', true)
-    .order('created_at', { ascending: false });
-
-  if (primaryError) {
-    console.error('Error fetching primary posts:', primaryError);
-  } else {
-    console.log(`Fetched ${primaryPosts?.length || 0} posts from primary Supabase project`);
-  }
-
-  // Fetch posts from secondary Supabase instance if available
-  let secondaryPosts: any[] = [];
-  let secondaryCount = 0;
-  
-  if (secondaryBlogSupabase) {
-    try {
-      // For the secondary project, we need to use the 'posts' table instead of 'blog_posts'
-      const { data: secPosts, error: secondaryError, count: secCount } = await secondaryBlogSupabase
-        .from('posts')
-        .select('*', { count: 'exact' })
-        .order('created_at', { ascending: false });
-      
-      if (secondaryError) {
-        console.error('Error fetching secondary posts:', secondaryError);
-      } else {
-        secondaryPosts = secPosts || [];
-        secondaryCount = secCount || 0;
-        console.log(`Fetched ${secondaryPosts.length} posts from secondary Supabase project`);
-        
-        // Log some sample tags from secondary posts for debugging
-        if (secondaryPosts.length > 0) {
-          console.log('Sample posts from secondary project:');
-          secondaryPosts.slice(0, 5).forEach(post => {
-            console.log(`Post ID: ${post.id}, Title: ${post.title || 'No title'}, Tags: ${post.tags ? (Array.isArray(post.tags) ? post.tags.join(', ') : post.tags) : 'No tags'}`);
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Error with secondary Supabase client:', error);
+    if (primaryError) {
+      console.error('[ERROR] Error fetching primary posts:', primaryError);
+      throw new Error(`Failed to fetch primary posts: ${primaryError.message}`);
+    } 
+    
+    console.log(`[DEBUG] Fetched ${primaryPosts?.length || 0} posts from primary Supabase project`);
+    
+    // Log sample post structure for debugging
+    if (primaryPosts && primaryPosts.length > 0) {
+      console.log('[DEBUG] Sample primary post structure:', JSON.stringify({
+        id: primaryPosts[0].id,
+        title: primaryPosts[0].title,
+        tags: primaryPosts[0].tags
+      }, null, 2));
     }
-  }
 
-  // Combine posts from both sources
-  const allPosts = [...(primaryPosts || []), ...secondaryPosts];
-  
-  if (!allPosts || allPosts.length === 0) {
-    return { posts: [], totalPosts: 0, hasMore: false };
-  }
-
-  console.log(`Combined total: ${allPosts.length} posts`);
-
-  // Sort all posts by creation date (newest first)
-  allPosts.sort((a, b) => {
-    const dateA = new Date(b.created_at || b.published_at || b.date || 0).getTime();
-    const dateB = new Date(a.created_at || a.published_at || a.date || 0).getTime();
-    return dateA - dateB;
-  });
-
-  // For primary posts, filter by tags
-  // For secondary posts, include all of them regardless of tags
-  const projectPosts = [
-    ...(primaryPosts || []).filter(post => postBelongsToProject(post.tags)),
-    ...secondaryPosts
-  ];
-  
-  console.log(`After filtering: ${projectPosts.length} posts match project criteria`);
-  
-  // Apply pagination after combining and filtering
-  const paginatedPosts = projectPosts.slice(start, start + perPage);
-  console.log(`Returning ${paginatedPosts.length} posts for current page`);
-
-  // Map the blog_posts fields to the Post type
-  const mappedPosts = paginatedPosts.map(post => {
-    // Convert markdown to HTML
-    const htmlContent = convertMarkdownToHtml(post.content || post.html || '');
+    // Fetch posts from secondary Supabase instance (main project)
+    let secondaryPosts: any[] = [];
     
-    // Extract image from images array if available
-    const { imageUrl, imageAlt } = extractImageFromArray(post.images);
-    
-    // Fallback to extracting image from content if no image in array
-    const { featureImage, imageAlt: contentImageAlt } = extractFeatureImage(post.content || '');
+    if (secondaryBlogSupabase) {
+      try {
+        console.log('[DEBUG] Fetching posts from secondary Supabase instance (main project)');
+        // For the secondary project, we need to use the 'posts' table instead of 'blog_posts'
+        const { data: secPosts, error: secondaryError } = await secondaryBlogSupabase
+          .from('posts')
+          .select('*', { count: 'exact' })
+          .order('created_at', { ascending: false });
+        
+        if (secondaryError) {
+          console.error('[ERROR] Error fetching secondary posts:', secondaryError);
+        } else {
+          secondaryPosts = secPosts || [];
+          console.log(`[DEBUG] Fetched ${secondaryPosts.length} posts from secondary Supabase project`);
+          
+          // Log sample post structure for debugging
+          if (secondaryPosts && secondaryPosts.length > 0) {
+            console.log('[DEBUG] Sample secondary post structure:', JSON.stringify({
+              id: secondaryPosts[0].id,
+              title: secondaryPosts[0].title,
+              tags: secondaryPosts[0].tags
+            }, null, 2));
+          }
+        }
+      } catch (error) {
+        console.error('[ERROR] Error with secondary Supabase client:', error);
+        // Continue with just the primary posts
+        secondaryPosts = [];
+      }
+    } else {
+      console.log('[DEBUG] Secondary Supabase client not available');
+    }
 
+    // Filter primary posts by project tags
+    const filteredPrimaryPosts = (primaryPosts || []).filter(post => {
+      const belongs = postBelongsToProject(post.tags);
+      if (belongs) {
+        console.log(`[DEBUG] Primary post matched project tags: ${post.title}`);
+      }
+      return belongs;
+    });
+    
+    console.log(`[DEBUG] After filtering: ${filteredPrimaryPosts.length} primary posts match project criteria`);
+
+    // Combine posts from both sources
+    const allPosts = [...filteredPrimaryPosts, ...secondaryPosts];
+    
+    if (!allPosts || allPosts.length === 0) {
+      console.log('[DEBUG] No posts found from either source');
+      return { posts: [], totalPosts: 0, hasMore: false };
+    }
+
+    console.log(`[DEBUG] Combined total: ${allPosts.length} posts`);
+
+    // Sort all posts by creation date (newest first)
+    allPosts.sort((a, b) => {
+      const dateA = new Date(b.created_at || b.published_at || b.date || 0).getTime();
+      const dateB = new Date(a.created_at || a.published_at || a.date || 0).getTime();
+      return dateA - dateB;
+    });
+    
+    // Apply pagination after combining and filtering
+    const paginatedPosts = allPosts.slice(start, start + perPage);
+    console.log(`[DEBUG] Returning ${paginatedPosts.length} posts for current page`);
+
+    // Map the posts fields to the Post type
+    const mappedPosts = paginatedPosts.map((post, index) => {
+      try {
+        console.log(`[DEBUG] Transforming post ${index + 1}/${paginatedPosts.length}: ${post.title || 'Untitled'}`);
+        
+        // Handle different tag formats between primary and secondary sources
+        let postTags = '';
+        if (post.tags) {
+          if (Array.isArray(post.tags)) {
+            // Handle array of tags (might be from secondary source)
+            postTags = post.tags.join(',');
+          } else {
+            // Handle string of tags (likely from primary source)
+            postTags = post.tags;
+          }
+        }
+        
+        // Convert markdown to HTML
+        const htmlContent = convertMarkdownToHtml(post.content || post.html || '');
+        
+        // Extract image from images array if available
+        const { imageUrl, imageAlt } = extractImageFromArray(post.images);
+        
+        // Fallback to extracting image from content if no image in array
+        const { featureImage, imageAlt: contentImageAlt, contentWithoutImage } = extractFeatureImage(post.content || '');
+
+        // Handle authors field to match the Post interface (string[])
+        let authors: string[] = [];
+        if (post.authors) {
+          if (typeof post.authors === 'string') {
+            authors = [post.authors];
+          } else if (Array.isArray(post.authors)) {
+            authors = post.authors;
+          }
+        } else if (post.author) {
+          if (typeof post.author === 'string') {
+            authors = [post.author];
+          } else if (Array.isArray(post.author)) {
+            authors = post.author;
+          }
+        } else {
+          authors = ['Top Contractors Denver'];
+        }
+
+        const transformedPost: Post = {
+          id: post.id || `post-${index}`,
+          title: post.title || 'Untitled Post',
+          slug: post.slug || `post-${post.id || index}`,
+          html: htmlContent,
+          excerpt: post.excerpt || (post.content || '').substring(0, 160),
+          feature_image: imageUrl || post.image || post.feature_image || featureImage || undefined,
+          feature_image_alt: imageAlt || post.image_alt || post.feature_image_alt || contentImageAlt || post.title || undefined,
+          authors: authors,
+          tags: postTags || null,
+          reading_time: estimateReadingTime(post.content || post.html || ''),
+          trade_category: post.trade_category || post.category,
+          published_at: post.published_at || post.created_at || post.date || new Date().toISOString(),
+          updated_at: post.updated_at || post.created_at || post.published_at || post.date || new Date().toISOString(),
+          created_at: post.created_at || post.published_at || post.date || new Date().toISOString()
+        };
+        
+        return transformedPost;
+      } catch (error) {
+        console.error(`[ERROR] Error transforming post ${post.id || index}:`, error);
+        // Return a minimal valid post to prevent the entire page from failing
+        return {
+          id: post.id || `error-post-${index}`,
+          title: post.title || `Error Processing Post ${index + 1}`,
+          slug: post.slug || `error-post-${index}`,
+          html: '<p>Error processing post content</p>',
+          excerpt: 'Error processing post content',
+          feature_image: undefined,
+          feature_image_alt: undefined,
+          authors: ['Top Contractors Denver'],
+          tags: null,
+          reading_time: 1,
+          published_at: post.created_at || new Date().toISOString(),
+          updated_at: post.created_at || new Date().toISOString(),
+          created_at: post.created_at || new Date().toISOString(),
+        } as Post;
+      }
+    });
+
+    const totalPosts = allPosts.length;
+    const hasMore = totalPosts > (page * perPage);
+
+    console.log(`[DEBUG] getPosts function completed successfully. Returning ${mappedPosts.length} posts.`);
     return {
-      id: post.id,
-      title: post.title || 'Untitled Post',
-      slug: post.slug || `post-${post.id}`,
-      html: htmlContent,
-      excerpt: (post.content || post.excerpt || '').substring(0, 160),
-      feature_image: imageUrl || post.image || post.feature_image || featureImage,
-      feature_image_alt: imageAlt || post.image_alt || post.feature_image_alt || contentImageAlt || post.title || 'Blog Image',
-      authors: post.authors || post.author || 'Anonymous',
-      tags: post.tags || '',
-      reading_time: estimateReadingTime(post.content || post.html || ''),
-      trade_category: post.trade_category || post.category || undefined,
-      published_at: post.created_at || post.published_at || post.date,
-      updated_at: post.updated_at || post.created_at || post.published_at || post.date,
-      created_at: post.created_at || post.published_at || post.date
+      posts: mappedPosts,
+      totalPosts,
+      hasMore
     };
-  });
-
-  const totalPosts = projectPosts.length;
-  const hasMore = totalPosts > (page * perPage);
-
-  return {
-    posts: mappedPosts,
-    totalPosts,
-    hasMore
-  };
+  } catch (error) {
+    console.error('[ERROR] Fatal error in getPosts function:', error);
+    // Return empty result instead of throwing to prevent page from crashing
+    return {
+      posts: [],
+      totalPosts: 0,
+      hasMore: false
+    };
+  }
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
@@ -273,8 +386,8 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     slug: post.slug,
     html: htmlContent,
     excerpt: post.content.substring(0, 160), // Create excerpt from content if not available
-    feature_image: imageUrl || post.image || featureImage,
-    feature_image_alt: imageAlt || post.image_alt || contentImageAlt || post.title,
+    feature_image: imageUrl || post.image || post.feature_image || featureImage,
+    feature_image_alt: imageAlt || post.image_alt || post.feature_image_alt || contentImageAlt || post.title,
     authors: post.authors,
     tags: post.tags,
     reading_time: estimateReadingTime(post.content),
