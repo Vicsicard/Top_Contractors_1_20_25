@@ -106,7 +106,8 @@ const config = {
       '6be7e0906f1487fecf0b9cbd301defd6.cdn.bubble.io',
       'img.youtube.com',
       'www.youtube.com',
-      'youtube.com'
+      'youtube.com',
+      'im.runware.ai'
     ],
     remotePatterns: [
       {
