@@ -26,16 +26,16 @@ export async function GET() {
         }
 
         // Count posts by category
-        const uniqueCategories = [...new Set(categories?.map(p => p.trade_category))];
+        const uniqueCategories = [...new Set(categories?.map((p: { trade_category: string }) => p.trade_category))];
         const categoryCounts: Record<string, number | null> = {};
         
         for (const category of uniqueCategories) {
             const { count } = await supabase
                 .from('posts')
                 .select('*', { count: 'exact', head: true })
-                .eq('trade_category', category);
+                .eq('trade_category', category as string);
             
-            categoryCounts[category] = count;
+            categoryCounts[category as string] = count;
         }
 
         // Test getting posts for home-remodeling category
