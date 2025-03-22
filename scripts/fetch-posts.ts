@@ -74,6 +74,9 @@ async function fetchPosts() {
 
     console.log(`\nFound ${validPosts.length} contractor-related posts:\n`);
     
+    // Track posts that need to be updated
+    const postsToUpdate: string[] = [];
+
     validPosts.forEach((post, index) => {
       const matchingCategories = findMatchingCategories(`${post.title} ${post.content}`);
       const preview = generatePreview(post.content);
@@ -84,8 +87,32 @@ async function fetchPosts() {
       console.log(`   Tags: ${post.tags || 'No tags'}`);
       console.log(`   Preview: ${preview}`);
       console.log(`   URL: /blog/${post.slug}`);
+      console.log(`   Posted on site: ${post.posted_on_site ? 'Yes' : 'No'}`);
       console.log(''); // Empty line for readability
+      
+      // Add post to the update list if it's not already marked as posted
+      if (post.posted_on_site !== true) {
+        postsToUpdate.push(post.id);
+      }
     });
+
+    // Update posts that are not marked as posted_on_site
+    if (postsToUpdate.length > 0) {
+      console.log(`\nUpdating ${postsToUpdate.length} posts to mark them as posted on site...`);
+      
+      const { error: updateError } = await blogSupabase
+        .from('blog_posts')
+        .update({ posted_on_site: true })
+        .in('id', postsToUpdate);
+      
+      if (updateError) {
+        console.error('Error updating posts:', updateError);
+      } else {
+        console.log(`Successfully marked ${postsToUpdate.length} posts as posted on site.`);
+      }
+    } else {
+      console.log('\nAll valid posts are already marked as posted on site.');
+    }
 
     if (validPosts.length === 0) {
       console.log('\nNo contractor-related posts found. Consider:');
