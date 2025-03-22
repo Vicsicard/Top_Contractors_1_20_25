@@ -21,7 +21,15 @@ export const revalidate = 3600; // Revalidate every hour
 
 export default async function HomePage() {
   try {
+    console.log('[HomePage] Fetching categories...');
     const categories = await getAllTrades();
+    console.log(`[HomePage] Successfully fetched ${categories?.length || 0} categories`);
+    
+    if (!categories || categories.length === 0) {
+      console.error('[HomePage] No categories returned from getAllTrades');
+    } else {
+      console.log('[HomePage] First few categories:', categories.slice(0, 3).map(c => c.category_name));
+    }
 
     // Generate website and organization schemas
     const organizationSchema = generateOrganizationSchema();

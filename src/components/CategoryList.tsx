@@ -32,13 +32,18 @@ interface CategoryListProps {
 }
 
 export function CategoryList({ categories }: CategoryListProps) {
-  console.log('CategoryList rendering with categories:', categories);
+  console.log('CategoryList rendering with categories:', 
+    Array.isArray(categories) 
+      ? `${categories.length} items, first few: ${JSON.stringify(categories.slice(0, 2))}`
+      : `Invalid data: ${JSON.stringify(categories)}`
+  );
 
   if (!Array.isArray(categories)) {
     console.error('Categories is not an array:', categories);
     return (
       <div className="text-center p-4 bg-red-50 rounded-lg">
         <p className="text-red-600">Error: Invalid categories data</p>
+        <p className="text-sm text-red-400">Received: {typeof categories}</p>
       </div>
     );
   }
@@ -48,6 +53,7 @@ export function CategoryList({ categories }: CategoryListProps) {
     return (
       <div className="text-center p-4 bg-yellow-50 rounded-lg">
         <p className="text-yellow-600">No categories available</p>
+        <p className="text-sm text-yellow-500">Please try again later</p>
       </div>
     );
   }
