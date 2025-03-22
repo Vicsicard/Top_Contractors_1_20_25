@@ -1,6 +1,6 @@
 import { config } from 'dotenv';
 import { resolve } from 'path';
-import { supabase } from '../src/utils/supabase';
+import { blogSupabase } from '../src/utils/supabase-blog-client';
 import type { Post } from '../src/types/blog';
 
 // Load environment variables from .env.local
@@ -13,8 +13,8 @@ async function testBlogIntegration() {
 
     try {
         // Test database connection
-        const { data: connectionTest, error: connectionError } = await supabase
-            .from('posts')
+        const { data: connectionTest, error: connectionError } = await blogSupabase
+            .from('blog_posts')
             .select('count')
             .single();
 
@@ -25,8 +25,8 @@ async function testBlogIntegration() {
         console.log('✓ Database connection successful');
 
         // Test post retrieval
-        const { data: posts, error: postsError } = await supabase
-            .from('posts')
+        const { data: posts, error: postsError } = await blogSupabase
+            .from('blog_posts')
             .select('*')
             .order('published_at', { ascending: false })
             .limit(10);
@@ -55,7 +55,7 @@ async function testBlogIntegration() {
             hasSlug: !!samplePost.slug,
             hasHtml: !!samplePost.html,
             hasFeatureImage: 'feature_image' in samplePost,
-            hasTags: Array.isArray(samplePost.tags),
+            hasTags: typeof samplePost.tags === 'string',
             hasPublishDate: !!samplePost.published_at,
             hasUpdateDate: !!samplePost.updated_at
         };
@@ -66,15 +66,15 @@ async function testBlogIntegration() {
             titleIsString: typeof samplePost.title === 'string',
             slugIsValid: /^[a-z0-9-]+$/.test(samplePost.slug),
             hasPublishDate: !!samplePost.published_at,
-            validPublishDate: !isNaN(new Date(samplePost.published_at).getTime()),
-            tagsAreValid: !samplePost.tags || samplePost.tags.every(tag => tag.name && tag.slug),
+            validPublishDate: samplePost.published_at ? !isNaN(new Date(samplePost.published_at).getTime()) : false,
+            tagsAreValid: !samplePost.tags || typeof samplePost.tags === 'string',
             authorsAreValid: !samplePost.authors || Array.isArray(samplePost.authors)
         };
         console.log('✓ Content integrity checks:', contentChecks);
 
         // Test relationships
-        const { data: relatedPosts, error: relatedError } = await supabase
-            .from('posts')
+        const { data: relatedPosts, error: relatedError } = await blogSupabase
+            .from('blog_posts')
             .select('*')
             .eq('trade_category', samplePost.trade_category)
             .neq('id', samplePost.id)
