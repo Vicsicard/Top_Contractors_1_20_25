@@ -66,13 +66,33 @@ async function isUrlValid(url) {
     }
 }
 
+// Format date to ISO 8601 format for sitemaps
+function formatDateForSitemap(date) {
+    if (!date) return '';
+    
+    // If date is already in ISO format, return it
+    if (typeof date === 'string' && date.match(/^\d{4}-\d{2}-\d{2}T/)) {
+        return date;
+    }
+    
+    // Convert to Date object if it's a string
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    
+    // Check if valid date
+    if (isNaN(dateObj.getTime())) {
+        return new Date().toISOString();
+    }
+    
+    return dateObj.toISOString();
+}
+
 // Generate XML for a set of URLs
 function generateSitemapXml(urls, type) {
     return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map(url => `    <url>
         <loc>${url.loc}</loc>
-        ${url.lastmod ? `<lastmod>${url.lastmod}</lastmod>` : ''}
+        ${url.lastmod ? `<lastmod>${formatDateForSitemap(url.lastmod)}</lastmod>` : ''}
         <changefreq>${url.changefreq}</changefreq>
         <priority>${url.priority}</priority>
     </url>`).join('\n')}

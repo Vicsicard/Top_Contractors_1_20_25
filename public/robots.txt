@@ -3,12 +3,12 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://www.topcontractorsdenver.com/sitemap.xml
-Sitemap: https://www.topcontractorsdenver.com/sitemap-static.xml
-Sitemap: https://www.topcontractorsdenver.com/sitemap-blog.xml
-Sitemap: https://www.topcontractorsdenver.com/sitemap-trades.xml
-Sitemap: https://www.topcontractorsdenver.com/sitemap-videos.xml
-Sitemap: https://www.topcontractorsdenver.com/video-sitemap.xml
+Sitemap: https://topcontractorsdenver.com/sitemap.xml
+Sitemap: https://topcontractorsdenver.com/sitemap-static.xml
+Sitemap: https://topcontractorsdenver.com/sitemap-blog.xml
+Sitemap: https://topcontractorsdenver.com/sitemap-trades.xml
+Sitemap: https://topcontractorsdenver.com/sitemap-videos.xml
+Sitemap: https://topcontractorsdenver.com/video-sitemap.xml
 
 # Important sections
 Allow: /blog/
