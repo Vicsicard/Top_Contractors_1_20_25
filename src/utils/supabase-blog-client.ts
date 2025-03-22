@@ -11,6 +11,10 @@ if (process.env.NODE_ENV !== 'production') {
 const blogSupabaseUrl = process.env.NEXT_PUBLIC_BLOG_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const blogSupabaseAnonKey = process.env.NEXT_PUBLIC_BLOG_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+// Get the secondary project credentials
+const secondaryBlogSupabaseUrl = process.env.NEXT_PUBLIC_SECONDARY_BLOG_SUPABASE_URL;
+const secondaryBlogSupabaseAnonKey = process.env.NEXT_PUBLIC_SECONDARY_BLOG_SUPABASE_ANON_KEY;
+
 // Create a mock Supabase client for when environment variables are missing
 const createMockBlogClient = (): SupabaseClient => {
   return {
@@ -30,7 +34,9 @@ const createMockBlogClient = (): SupabaseClient => {
 };
 
 let blogSupabase: SupabaseClient;
+let secondaryBlogSupabase: SupabaseClient | null = null;
 
+// Initialize primary blog Supabase client
 if (!blogSupabaseUrl || !blogSupabaseAnonKey) {
   if (process.env.NODE_ENV === 'production') {
     console.warn('Missing Blog Supabase environment variables in production, using mock client');
@@ -42,4 +48,10 @@ if (!blogSupabaseUrl || !blogSupabaseAnonKey) {
   blogSupabase = createClient(blogSupabaseUrl, blogSupabaseAnonKey);
 }
 
-export { blogSupabase };
+// Initialize secondary blog Supabase client if credentials are available
+if (secondaryBlogSupabaseUrl && secondaryBlogSupabaseAnonKey) {
+  secondaryBlogSupabase = createClient(secondaryBlogSupabaseUrl, secondaryBlogSupabaseAnonKey);
+  console.log('Secondary blog Supabase client initialized');
+}
+
+export { blogSupabase, secondaryBlogSupabase };

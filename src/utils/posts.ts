@@ -1,4 +1,4 @@
-import { blogSupabase } from './supabase-blog-client';
+import { blogSupabase, secondaryBlogSupabase } from './supabase-blog-client';
 import type { Post } from '@/types/blog';
 import { marked } from 'marked';
 
@@ -114,26 +114,60 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
   const start = (page - 1) * perPage;
   const end = start + perPage - 1;
 
-  const { data: posts, error, count: totalCount } = await blogSupabase
+  // Fetch posts from primary Supabase instance
+  const { data: primaryPosts, error: primaryError, count: primaryCount } = await blogSupabase
     .from('blog_posts')
     .select('*', { count: 'exact' })
-    .order('created_at', { ascending: false })
-    .range(start, end);
+    .eq('posted_on_site', true)
+    .order('created_at', { ascending: false });
 
-  if (error) {
-    console.error('Error fetching posts:', error);
+  if (primaryError) {
+    console.error('Error fetching primary posts:', primaryError);
+  }
+
+  // Fetch posts from secondary Supabase instance if available
+  let secondaryPosts: any[] = [];
+  let secondaryCount = 0;
+  
+  if (secondaryBlogSupabase) {
+    try {
+      const { data: secPosts, error: secondaryError, count: secCount } = await secondaryBlogSupabase
+        .from('blog_posts')
+        .select('*', { count: 'exact' })
+        .eq('posted_on_site', true)
+        .order('created_at', { ascending: false });
+      
+      if (secondaryError) {
+        console.error('Error fetching secondary posts:', secondaryError);
+      } else {
+        secondaryPosts = secPosts || [];
+        secondaryCount = secCount || 0;
+        console.log(`Fetched ${secondaryPosts.length} posts from secondary Supabase project`);
+      }
+    } catch (error) {
+      console.error('Error with secondary Supabase client:', error);
+    }
+  }
+
+  // Combine posts from both sources
+  const allPosts = [...(primaryPosts || []), ...secondaryPosts];
+  const totalCount = (primaryCount || 0) + secondaryCount;
+
+  if (!allPosts || allPosts.length === 0) {
     return { posts: [], totalPosts: 0, hasMore: false };
   }
 
-  if (!posts) {
-    return { posts: [], totalPosts: 0, hasMore: false };
-  }
+  // Sort all posts by creation date (newest first)
+  allPosts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   // Filter posts that belong to this project based on tags
-  const projectPosts = posts.filter(post => postBelongsToProject(post.tags));
+  const projectPosts = allPosts.filter(post => postBelongsToProject(post.tags));
+  
+  // Apply pagination after combining and filtering
+  const paginatedPosts = projectPosts.slice(start, start + perPage);
 
   // Map the blog_posts fields to the Post type
-  const mappedPosts = projectPosts.map(post => {
+  const mappedPosts = paginatedPosts.map(post => {
     // Convert markdown to HTML
     const htmlContent = convertMarkdownToHtml(post.content);
     
@@ -161,7 +195,7 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
     };
   });
 
-  const totalPosts = totalCount || 0;
+  const totalPosts = projectPosts.length;
   const hasMore = totalPosts > (page * perPage);
 
   return {
