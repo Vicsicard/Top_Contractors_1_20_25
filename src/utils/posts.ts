@@ -134,7 +134,7 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
       const { data: secPosts, error: secondaryError, count: secCount } = await secondaryBlogSupabase
         .from('blog_posts')
         .select('*', { count: 'exact' })
-        .eq('posted_on_site', true)
+        // Don't filter by posted_on_site for the secondary project
         .order('created_at', { ascending: false });
       
       if (secondaryError) {
