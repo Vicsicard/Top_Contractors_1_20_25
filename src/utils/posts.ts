@@ -155,13 +155,52 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
     console.log(`[DEBUG] Starting getPosts function for page ${page}, perPage ${perPage}`);
     const start = (page - 1) * perPage;
     
-    // Fetch posts from primary Supabase instance (blog project)
+    // Set a reasonable limit for database queries to prevent timeouts
+    const DB_QUERY_LIMIT = 100;
+    
+    // For the first page, we need to get the total counts to calculate pagination
+    let primaryTotalCount = 0;
+    let secondaryTotalCount = 0;
+    
+    if (page === 1) {
+      try {
+        // Get count of primary posts with project tags
+        const { count, error } = await blogSupabase
+          .from('blog_posts')
+          .select('*', { count: 'exact', head: true });
+          
+        if (!error) {
+          primaryTotalCount = count || 0;
+          console.log(`[DEBUG] Primary Supabase has ${primaryTotalCount} total posts`);
+        }
+      } catch (error) {
+        console.error('[ERROR] Error getting primary post count:', error);
+      }
+      
+      try {
+        // Get count of secondary posts
+        if (secondaryBlogSupabase) {
+          const { count, error } = await secondaryBlogSupabase
+            .from('posts')
+            .select('*', { count: 'exact', head: true });
+            
+          if (!error) {
+            secondaryTotalCount = count || 0;
+            console.log(`[DEBUG] Secondary Supabase has ${secondaryTotalCount} total posts`);
+          }
+        }
+      } catch (error) {
+        console.error('[ERROR] Error getting secondary post count:', error);
+      }
+    }
+    
+    // Fetch posts from primary Supabase instance (blog project) with pagination
     console.log('[DEBUG] Fetching posts from primary Supabase instance (blog project)');
     const { data: primaryPosts, error: primaryError } = await blogSupabase
       .from('blog_posts')
-      .select('*', { count: 'exact' })
-      // Remove the posted_on_site filter as we discovered none of the posts have this flag set to true
-      .order('created_at', { ascending: false });
+      .select('*')
+      .order('created_at', { ascending: false })
+      .range(0, DB_QUERY_LIMIT - 1); // Limit the number of posts fetched
 
     if (primaryError) {
       console.error('[ERROR] Error fetching primary posts:', primaryError);
@@ -170,51 +209,6 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
     
     console.log(`[DEBUG] Fetched ${primaryPosts?.length || 0} posts from primary Supabase project`);
     
-    // Log sample post structure for debugging
-    if (primaryPosts && primaryPosts.length > 0) {
-      console.log('[DEBUG] Sample primary post structure:', JSON.stringify({
-        id: primaryPosts[0].id,
-        title: primaryPosts[0].title,
-        tags: primaryPosts[0].tags
-      }, null, 2));
-    }
-
-    // Fetch posts from secondary Supabase instance (main project)
-    let secondaryPosts: any[] = [];
-    
-    if (secondaryBlogSupabase) {
-      try {
-        console.log('[DEBUG] Fetching posts from secondary Supabase instance (main project)');
-        // For the secondary project, we need to use the 'posts' table instead of 'blog_posts'
-        const { data: secPosts, error: secondaryError } = await secondaryBlogSupabase
-          .from('posts')
-          .select('*', { count: 'exact' })
-          .order('created_at', { ascending: false });
-        
-        if (secondaryError) {
-          console.error('[ERROR] Error fetching secondary posts:', secondaryError);
-        } else {
-          secondaryPosts = secPosts || [];
-          console.log(`[DEBUG] Fetched ${secondaryPosts.length} posts from secondary Supabase project`);
-          
-          // Log sample post structure for debugging
-          if (secondaryPosts && secondaryPosts.length > 0) {
-            console.log('[DEBUG] Sample secondary post structure:', JSON.stringify({
-              id: secondaryPosts[0].id,
-              title: secondaryPosts[0].title,
-              tags: secondaryPosts[0].tags
-            }, null, 2));
-          }
-        }
-      } catch (error) {
-        console.error('[ERROR] Error with secondary Supabase client:', error);
-        // Continue with just the primary posts
-        secondaryPosts = [];
-      }
-    } else {
-      console.log('[DEBUG] Secondary Supabase client not available');
-    }
-
     // Filter primary posts by project tags
     const filteredPrimaryPosts = (primaryPosts || []).filter(post => {
       const belongs = postBelongsToProject(post.tags);
@@ -226,15 +220,42 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
     
     console.log(`[DEBUG] After filtering: ${filteredPrimaryPosts.length} primary posts match project criteria`);
 
+    // Fetch posts from secondary Supabase instance (main project) with pagination
+    let secondaryPosts: any[] = [];
+    
+    if (secondaryBlogSupabase) {
+      try {
+        console.log('[DEBUG] Fetching posts from secondary Supabase instance (main project)');
+        // For the secondary project, we need to use the 'posts' table instead of 'blog_posts'
+        const { data: secPosts, error: secondaryError } = await secondaryBlogSupabase
+          .from('posts')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .range(0, DB_QUERY_LIMIT - 1); // Limit the number of posts fetched
+        
+        if (secondaryError) {
+          console.error('[ERROR] Error fetching secondary posts:', secondaryError);
+        } else {
+          secondaryPosts = secPosts || [];
+          console.log(`[DEBUG] Fetched ${secondaryPosts.length} posts from secondary Supabase project`);
+        }
+      } catch (error) {
+        console.error('[ERROR] Error with secondary Supabase client:', error);
+        secondaryPosts = [];
+      }
+    } else {
+      console.log('[DEBUG] Secondary Supabase client not available');
+    }
+
     // Combine posts from both sources
-    const allPosts = [...filteredPrimaryPosts, ...secondaryPosts];
+    let allPosts = [...filteredPrimaryPosts, ...secondaryPosts];
     
     if (!allPosts || allPosts.length === 0) {
       console.log('[DEBUG] No posts found from either source');
       return { posts: [], totalPosts: 0, hasMore: false };
     }
 
-    console.log(`[DEBUG] Combined total: ${allPosts.length} posts`);
+    console.log(`[DEBUG] Combined total: ${allPosts.length} posts before pagination`);
 
     // Sort all posts by creation date (newest first)
     allPosts.sort((a, b) => {
@@ -243,15 +264,13 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
       return dateA - dateB;
     });
     
-    // Apply pagination after combining and filtering
+    // Apply pagination to the combined and sorted posts
     const paginatedPosts = allPosts.slice(start, start + perPage);
-    console.log(`[DEBUG] Returning ${paginatedPosts.length} posts for current page`);
+    console.log(`[DEBUG] Returning ${paginatedPosts.length} posts for current page ${page}`);
 
     // Map the posts fields to the Post type
     const mappedPosts = paginatedPosts.map((post, index) => {
       try {
-        console.log(`[DEBUG] Transforming post ${index + 1}/${paginatedPosts.length}: ${post.title || 'Untitled'}`);
-        
         // Handle different tag formats between primary and secondary sources
         let postTags = '';
         if (post.tags) {
@@ -330,13 +349,19 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
       }
     });
 
-    const totalPosts = allPosts.length;
-    const hasMore = totalPosts > (page * perPage);
+    // Calculate total posts - use either the counts from the database or the length of filtered posts
+    const estimatedTotalPosts = Math.max(
+      filteredPrimaryPosts.length + secondaryPosts.length,
+      primaryTotalCount + secondaryTotalCount
+    );
+    
+    // Determine if there are more posts to load
+    const hasMore = estimatedTotalPosts > (page * perPage);
 
-    console.log(`[DEBUG] getPosts function completed successfully. Returning ${mappedPosts.length} posts.`);
+    console.log(`[DEBUG] getPosts function completed successfully. Returning ${mappedPosts.length} posts with estimated total of ${estimatedTotalPosts}.`);
     return {
       posts: mappedPosts,
-      totalPosts,
+      totalPosts: estimatedTotalPosts,
       hasMore
     };
   } catch (error) {
@@ -385,14 +410,14 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     title: post.title,
     slug: post.slug,
     html: htmlContent,
-    excerpt: post.content.substring(0, 160), // Create excerpt from content if not available
+    excerpt: post.excerpt || (post.content || '').substring(0, 160),
     feature_image: imageUrl || post.image || post.feature_image || featureImage,
     feature_image_alt: imageAlt || post.image_alt || post.feature_image_alt || contentImageAlt || post.title,
     authors: post.authors,
     tags: post.tags,
     reading_time: estimateReadingTime(post.content),
     trade_category: post.trade_category || undefined,
-    created_at: post.created_at || post.published_at || new Date().toISOString(),
+    created_at: post.created_at || post.published_at || post.date || new Date().toISOString(),
     published_at: post.published_at,
     updated_at: post.updated_at
   };
