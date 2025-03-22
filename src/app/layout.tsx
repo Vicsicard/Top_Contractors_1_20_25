@@ -103,7 +103,7 @@ export default async function RootLayout({
         <link 
           rel="manifest" 
           href="/manifest.json" 
-          type="application/json"
+          crossOrigin="use-credentials"
         />
         
         {/* Defer non-critical scripts */}
