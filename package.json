@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build && npm run generate-sitemaps",
+    "build:with-sitemaps": "next build && npm run generate-sitemaps",
     "start": "next start",
     "lint": "next lint",
     "clean": "rimraf .next node_modules",
