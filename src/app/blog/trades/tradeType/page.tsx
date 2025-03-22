@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import { getPosts } from '@/utils/posts';
-import { BlogPostGrid } from '@/components/blog/BlogPostGrid';
 import { BreadcrumbNav } from '@/components/BreadcrumbNav';
 
 export const metadata: Metadata = {
@@ -16,9 +15,18 @@ interface Props {
   };
 }
 
+/**
+ * TradeTypesPage component
+ * 
+ * This component is responsible for rendering the trade types page.
+ * It fetches posts from the API, groups them by trade type, and displays them in a grid.
+ * 
+ * @param {Props} props - The component props
+ * @returns {JSX.Element} The trade types page component
+ */
 export default async function TradeTypesPage({ searchParams }: Props) {
   const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
-  const { posts, totalPosts, hasMore } = await getPosts(currentPage, POSTS_PER_PAGE);
+  const { posts } = await getPosts(currentPage, POSTS_PER_PAGE);
 
   // Group posts by trade type
   const tradeTypeMap = new Map<string, typeof posts>();

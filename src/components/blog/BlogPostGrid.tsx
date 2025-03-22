@@ -7,10 +7,9 @@ interface BlogPostGridProps {
   currentPage: number;
   totalPosts: number;
   postsPerPage: number;
-  hasMore: boolean;
 }
 
-export function BlogPostGrid({ posts, currentPage, totalPosts, postsPerPage, hasMore }: BlogPostGridProps) {
+export function BlogPostGrid({ posts, currentPage, totalPosts, postsPerPage }: BlogPostGridProps) {
   const totalPages = Math.ceil(totalPosts / postsPerPage);
   const offset = (currentPage - 1) * postsPerPage;
 

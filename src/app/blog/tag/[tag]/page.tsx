@@ -25,7 +25,7 @@ const POSTS_PER_PAGE = 12;
 export default async function TagPage({ params, searchParams }: Props) {
   const tag = decodeURIComponent(params.tag);
   const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
-  const { posts, totalPosts, hasMore } = await getPostsByTag(tag, currentPage, POSTS_PER_PAGE);
+  const { posts, totalPosts } = await getPostsByTag(tag, currentPage, POSTS_PER_PAGE);
 
   const breadcrumbs = [
     { label: 'Home', href: '/' },
@@ -56,7 +56,6 @@ export default async function TagPage({ params, searchParams }: Props) {
         currentPage={currentPage}
         totalPosts={totalPosts}
         postsPerPage={POSTS_PER_PAGE}
-        hasMore={hasMore}
       />
     </main>
   );

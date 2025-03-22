@@ -19,7 +19,7 @@ const TRADE = 'bathroom-remodeling';
 
 export default async function BathroomRemodelingPage({ searchParams }: Props) {
   const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
-  const { posts, totalPosts, hasMore } = await getPosts(currentPage, POSTS_PER_PAGE);
+  const { posts } = await getPosts(currentPage, POSTS_PER_PAGE);
 
   // Filter posts by category
   const categoryPosts = posts.filter(post => {
@@ -59,7 +59,6 @@ export default async function BathroomRemodelingPage({ searchParams }: Props) {
         currentPage={currentPage}
         totalPosts={categoryPosts.length}
         postsPerPage={POSTS_PER_PAGE}
-        hasMore={false}
       />
     </main>
   );

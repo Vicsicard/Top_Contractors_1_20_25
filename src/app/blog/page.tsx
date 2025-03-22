@@ -28,7 +28,7 @@ interface Props {
 
 export default async function BlogPage({ searchParams }: Props) {
   const currentPage = searchParams?.page ? parseInt(searchParams.page) : 1;
-  const { posts, totalPosts, hasMore } = await getPosts(currentPage, POSTS_PER_PAGE);
+  const { posts, totalPosts } = await getPosts(currentPage, POSTS_PER_PAGE);
 
   const breadcrumbs = [
     { label: 'Home', href: '/' },
@@ -72,7 +72,6 @@ export default async function BlogPage({ searchParams }: Props) {
         currentPage={currentPage}
         totalPosts={totalPosts}
         postsPerPage={POSTS_PER_PAGE}
-        hasMore={hasMore}
       />
     </main>
   );

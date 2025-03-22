@@ -25,7 +25,7 @@ const POSTS_PER_PAGE = 12;
 export default async function TradeTypePage({ params, searchParams }: Props) {
   const tradeType = decodeURIComponent(params.slug);
   const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
-  const { posts, totalPosts, hasMore } = await getPosts(currentPage, POSTS_PER_PAGE);
+  const { posts } = await getPosts(currentPage, POSTS_PER_PAGE);
 
   // Filter posts by trade type
   const tradePosts = posts.filter(post => {
@@ -65,7 +65,6 @@ export default async function TradeTypePage({ params, searchParams }: Props) {
         currentPage={currentPage}
         totalPosts={tradePosts.length}
         postsPerPage={POSTS_PER_PAGE}
-        hasMore={false}
       />
     </main>
   );

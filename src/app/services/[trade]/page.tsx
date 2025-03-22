@@ -25,12 +25,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       notFound();
     }
 
-    // Create a mock location object for Denver
-    const denverLocation = {
-      subregion_name: 'Denver',
-      slug: 'denver'
-    };
-
     return {
       title: `${trade.category_name} in Denver | Top Contractors Denver`,
       description: `Find ${trade.category_name.toLowerCase()} in the Denver metro area. Browse our directory of local ${trade.category_name.toLowerCase()} by location.`,
@@ -151,9 +145,9 @@ export default async function TradePage({ params }: Props) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify([
-              generateLocalBusinessSchema(trade, { subregion_name: 'Denver', slug: 'denver' }),
+              generateLocalBusinessSchema(trade, denverLocation),
               generateBreadcrumbSchema(trade, null),
-              generateServiceSchema(trade, { subregion_name: 'Denver', slug: 'denver' }),
+              generateServiceSchema(trade, denverLocation),
             ]),
           }}
         />
@@ -164,3 +158,5 @@ export default async function TradePage({ params }: Props) {
     notFound()
   }
 }
+
+const denverLocation = { subregion_name: 'Denver', slug: 'denver' };

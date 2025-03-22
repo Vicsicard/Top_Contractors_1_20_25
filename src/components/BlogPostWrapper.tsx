@@ -16,7 +16,8 @@ export class BlogPostWrapper extends Component<Props, State> {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(_: Error): State {
+  static getDerivedStateFromError(error: Error): State {
+    console.error('Error caught in getDerivedStateFromError:', error);
     return { hasError: true };
   }
 

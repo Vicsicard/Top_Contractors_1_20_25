@@ -25,7 +25,7 @@ const POSTS_PER_PAGE = 12;
 export default async function CategoryPage({ params, searchParams }: Props) {
   const category = decodeURIComponent(params.category);
   const currentPage = searchParams.page ? parseInt(searchParams.page) : 1;
-  const { posts, totalPosts, hasMore } = await getPosts(currentPage, POSTS_PER_PAGE);
+  const { posts } = await getPosts(currentPage, POSTS_PER_PAGE);
 
   // Filter posts by category (case-insensitive)
   const categoryPosts = posts.filter(post => {
@@ -65,7 +65,6 @@ export default async function CategoryPage({ params, searchParams }: Props) {
         currentPage={currentPage}
         totalPosts={categoryPosts.length}
         postsPerPage={POSTS_PER_PAGE}
-        hasMore={false}
       />
     </main>
   );
