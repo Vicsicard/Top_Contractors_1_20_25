@@ -75,7 +75,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .order('created_at', { ascending: false })
 
     // Generate sitemap entries for video pages
-    const videoEntries = videos?.map((video) => ({
+    const videoEntries = videos?.map((video: { category: string; id: string; created_at: string }) => ({
         url: `${baseUrl}/videos/${video.category}/${video.id}`,
         lastModified: video.created_at,
         changeFrequency: 'weekly' as const,
