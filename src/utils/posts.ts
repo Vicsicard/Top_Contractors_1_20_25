@@ -127,7 +127,8 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
   const { data: primaryPosts, error: primaryError, count: primaryCount } = await blogSupabase
     .from('blog_posts')
     .select('*', { count: 'exact' })
-    .eq('posted_on_site', true)
+    // Remove the posted_on_site filter since we found that no posts have this flag set to true
+    // .eq('posted_on_site', true)
     .order('created_at', { ascending: false });
 
   if (primaryError) {
@@ -142,39 +143,9 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
   
   if (secondaryBlogSupabase) {
     try {
-      // First, check what tables are available in the secondary project
-      const { data: tables, error: tablesError } = await secondaryBlogSupabase
-        .from('_tables')
-        .select('*');
-        
-      console.log('Available tables in secondary project:', tables || 'Error fetching tables');
-      
-      // Try different table names that might contain blog posts
-      const tablesToTry = ['blog_posts', 'posts', 'articles', 'content'];
-      
-      for (const tableName of tablesToTry) {
-        console.log(`Trying to fetch from table: ${tableName}`);
-        
-        try {
-          const { data: posts, error } = await secondaryBlogSupabase
-            .from(tableName)
-            .select('*')
-            .limit(5);
-            
-          if (!error && posts && posts.length > 0) {
-            console.log(`Found ${posts.length} posts in table: ${tableName}`);
-            console.log('Sample post:', posts[0]);
-          } else if (error) {
-            console.log(`Error fetching from ${tableName}:`, error.message);
-          }
-        } catch (e) {
-          console.log(`Exception trying to access table ${tableName}:`, e);
-        }
-      }
-      
-      // Now try the original query
+      // For the secondary project, we need to use the 'posts' table instead of 'blog_posts'
       const { data: secPosts, error: secondaryError, count: secCount } = await secondaryBlogSupabase
-        .from('blog_posts')
+        .from('posts')
         .select('*', { count: 'exact' })
         .order('created_at', { ascending: false });
       
@@ -189,7 +160,7 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
         if (secondaryPosts.length > 0) {
           console.log('Sample posts from secondary project:');
           secondaryPosts.slice(0, 5).forEach(post => {
-            console.log(`Post ID: ${post.id}, Title: ${post.title || 'No title'}, Tags: ${post.tags || 'No tags'}`);
+            console.log(`Post ID: ${post.id}, Title: ${post.title || 'No title'}, Tags: ${post.tags ? (Array.isArray(post.tags) ? post.tags.join(', ') : post.tags) : 'No tags'}`);
           });
         }
       }
