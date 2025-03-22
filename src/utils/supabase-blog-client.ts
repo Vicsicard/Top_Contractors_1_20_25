@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { config } from 'dotenv';
 import { resolve } from 'path';
 
@@ -12,7 +12,7 @@ const blogSupabaseUrl = process.env.NEXT_PUBLIC_BLOG_SUPABASE_URL || process.env
 const blogSupabaseAnonKey = process.env.NEXT_PUBLIC_BLOG_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Create a mock Supabase client for when environment variables are missing
-const createMockBlogClient = () => {
+const createMockBlogClient = (): SupabaseClient => {
   return {
     from: () => ({
       select: () => ({
@@ -26,10 +26,10 @@ const createMockBlogClient = () => {
         execute: async () => ({ data: [], error: null })
       })
     })
-  };
+  } as unknown as SupabaseClient;
 };
 
-let blogSupabase;
+let blogSupabase: SupabaseClient;
 
 if (!blogSupabaseUrl || !blogSupabaseAnonKey) {
   if (process.env.NODE_ENV === 'production') {
