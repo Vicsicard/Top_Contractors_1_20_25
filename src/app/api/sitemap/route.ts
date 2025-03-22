@@ -10,7 +10,7 @@ export async function GET() {
       headers: {
         'Content-Type': 'application/xml',
         'Cache-Control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
-        'X-Robots-Tag': 'noindex',  // Don't index the sitemap itself
+        // Removed 'X-Robots-Tag': 'noindex' to allow Google to index the sitemap
         'Access-Control-Allow-Origin': '*',
       },
     });
