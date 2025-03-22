@@ -26,7 +26,14 @@ function postBelongsToProject(tags: string | null): boolean {
   if (!tags) return false;
   
   const tagList = tags.split(',').map(tag => tag.trim().toLowerCase());
-  return tagList.some(tag => VALID_PROJECT_TAGS.includes(tag));
+  const belongs = tagList.some(tag => VALID_PROJECT_TAGS.includes(tag));
+  
+  // For debugging purposes
+  if (!belongs) {
+    console.log(`Post tags not matching: ${tags}`);
+  }
+  
+  return belongs;
 }
 
 // Helper function to convert markdown to HTML
@@ -114,6 +121,8 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
   const start = (page - 1) * perPage;
   const end = start + perPage - 1;
 
+  console.log(`Fetching posts for page ${page}, perPage ${perPage}`);
+
   // Fetch posts from primary Supabase instance
   const { data: primaryPosts, error: primaryError, count: primaryCount } = await blogSupabase
     .from('blog_posts')
@@ -123,6 +132,8 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
 
   if (primaryError) {
     console.error('Error fetching primary posts:', primaryError);
+  } else {
+    console.log(`Fetched ${primaryPosts?.length || 0} posts from primary Supabase project`);
   }
 
   // Fetch posts from secondary Supabase instance if available
@@ -143,6 +154,14 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
         secondaryPosts = secPosts || [];
         secondaryCount = secCount || 0;
         console.log(`Fetched ${secondaryPosts.length} posts from secondary Supabase project`);
+        
+        // Log some sample tags from secondary posts for debugging
+        if (secondaryPosts.length > 0) {
+          console.log('Sample tags from secondary posts:');
+          secondaryPosts.slice(0, 5).forEach(post => {
+            console.log(`Post ID: ${post.id}, Title: ${post.title}, Tags: ${post.tags || 'No tags'}`);
+          });
+        }
       }
     } catch (error) {
       console.error('Error with secondary Supabase client:', error);
@@ -151,20 +170,28 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
 
   // Combine posts from both sources
   const allPosts = [...(primaryPosts || []), ...secondaryPosts];
-  const totalCount = (primaryCount || 0) + secondaryCount;
-
+  
   if (!allPosts || allPosts.length === 0) {
     return { posts: [], totalPosts: 0, hasMore: false };
   }
 
+  console.log(`Combined total: ${allPosts.length} posts`);
+
   // Sort all posts by creation date (newest first)
   allPosts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-  // Filter posts that belong to this project based on tags
-  const projectPosts = allPosts.filter(post => postBelongsToProject(post.tags));
+  // For primary posts, filter by tags
+  // For secondary posts, include all of them regardless of tags
+  const projectPosts = [
+    ...(primaryPosts || []).filter(post => postBelongsToProject(post.tags)),
+    ...secondaryPosts
+  ];
+  
+  console.log(`After filtering: ${projectPosts.length} posts match project criteria`);
   
   // Apply pagination after combining and filtering
   const paginatedPosts = projectPosts.slice(start, start + perPage);
+  console.log(`Returning ${paginatedPosts.length} posts for current page`);
 
   // Map the blog_posts fields to the Post type
   const mappedPosts = paginatedPosts.map(post => {
