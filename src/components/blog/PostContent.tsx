@@ -59,8 +59,8 @@ export function PostContent({ post }: PostContentProps) {
         <div className="mt-8 pt-4 border-t">
           <h2 className="text-lg font-semibold mb-2">Tags</h2>
           <div className="flex flex-wrap gap-2">
-            {typeof post.tags === 'string' && 
-              post.tags.split(',').filter(Boolean).map((tag: string) => (
+            {typeof post.tags === 'string' && post.tags !== null && 
+              (post.tags as string).split(',').filter(Boolean).map((tag: string) => (
                 <Link
                   key={tag.trim()}
                   href={`/blog/tag/${tag.trim()}`}
