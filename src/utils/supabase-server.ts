@@ -7,8 +7,9 @@ let client: SupabaseClient<Database> | null = null;
 export const createClient = (): SupabaseClient<Database> | any => {
   if (client) return client;
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_MAIN_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY;
+  // Check for both naming conventions
+  const supabaseUrl = process.env.NEXT_PUBLIC_MAIN_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
     // In production, return a mock client that returns empty data instead of throwing
@@ -50,11 +51,11 @@ export const createClient = (): SupabaseClient<Database> | any => {
     
     // In development, still throw an error to ensure proper setup
     if (!supabaseUrl) {
-      throw new Error('NEXT_PUBLIC_MAIN_SUPABASE_URL is not defined');
+      throw new Error('NEXT_PUBLIC_MAIN_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_URL is not defined');
     }
 
     if (!supabaseKey) {
-      throw new Error('NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY is not defined');
+      throw new Error('NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY is not defined');
     }
   }
 

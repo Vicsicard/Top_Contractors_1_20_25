@@ -2,8 +2,9 @@ import { createClient } from '@supabase/supabase-js';
 
 // Function to create a Supabase client with proper error handling
 const createSupabaseClient = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_MAIN_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY;
+  // Check for both naming conventions
+  const supabaseUrl = process.env.NEXT_PUBLIC_MAIN_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
     // In production, return a mock client that returns empty data instead of throwing
