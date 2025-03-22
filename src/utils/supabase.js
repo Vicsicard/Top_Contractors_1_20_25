@@ -38,15 +38,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mainSupabase = void 0;
 exports.getMainSupabase = getMainSupabase;
-var supabase_js_1 = require("@supabase/supabase-js");
+import { createClient } from "@supabase/supabase-js";
 // Main Supabase client for videos and categories
 var mainSupabaseUrl = process.env.NEXT_PUBLIC_MAIN_SUPABASE_URL;
 var mainSupabaseAnonKey = process.env.NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY;
 // Create a single supabase client for interacting with your database
-exports.mainSupabase = (0, supabase_js_1.createClient)(mainSupabaseUrl, mainSupabaseAnonKey);
+exports.mainSupabase = createClient(mainSupabaseUrl, mainSupabaseAnonKey);
 function getMainSupabase() {
     return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
+        return __generator(this, function (_) {
             return [2 /*return*/, exports.mainSupabase];
         });
     });

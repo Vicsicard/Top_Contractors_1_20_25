@@ -1,7 +1,7 @@
 import Parser from 'rss-parser';
 import fetch from 'node-fetch';
 import { scriptSupabase } from './script-supabase';
-import { getStandardCategory } from './category-mapper';
+// import { getStandardCategory } from './category-mapper';
 import { Post } from '@/types/blog';
 import { extractFirstImage } from './html-processor';
 
@@ -91,12 +91,7 @@ function transformRSSItem(item: HashnodeRSSItem): Partial<Post> {
     trade_category: extractTradeCategory(item.categories),
     reading_time: Math.ceil((html.length || 0) / 1500), // Rough estimate: 1500 chars ≈ 1 minute
     authors: item.creator ? [item.creator] : undefined,
-    tags: item.categories?.map(cat => ({
-      id: cat.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      name: cat,
-      slug: cat.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      description: null
-    })) || [],
+    tags: item.categories?.join(',') || '',
   };
 }
 

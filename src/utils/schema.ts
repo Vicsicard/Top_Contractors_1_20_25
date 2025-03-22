@@ -1,8 +1,3 @@
-interface SchemaParams {
-  trade?: any;
-  location?: any;
-}
-
 export function generateOrganizationSchema() {
   return {
     '@context': 'https://schema.org',

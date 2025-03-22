@@ -1,7 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import type { CategoryRecord, SubregionRecord, ContractorRecord } from '@/types/database';
 import { TRADE_CATEGORIES, TradeCategory } from './categories';
-import type { Category } from '@/types/category';
 
 import { PostgrestError } from '@supabase/supabase-js';
 

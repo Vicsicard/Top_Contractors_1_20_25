@@ -1,7 +1,5 @@
-import { supabase } from '@/lib/supabase';
 import { blogSupabase } from './supabase-blog-client';
 import type { Post } from '@/types/blog';
-import type { ValidTag } from './tag-mapper';
 import { marked } from 'marked';
 
 // List of valid tags for this project (from tag-mapper.ts)
@@ -49,18 +47,6 @@ function convertMarkdownToHtml(markdown: string): string {
     console.error('Error converting markdown to HTML:', error);
     return markdown;
   }
-}
-
-function extractFirstImage(html: string): { url: string; alt: string } | null {
-  const imgRegex = /<img[^>]+src="([^">]+)"[^>]*alt="([^">]*)"[^>]*>/i;
-  const match = html.match(imgRegex);
-  if (match && match[1]) {
-    return {
-      url: match[1],
-      alt: match[2] || ''
-    };
-  }
-  return null;
 }
 
 // Helper function to extract feature image from content
@@ -128,7 +114,7 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
   const start = (page - 1) * perPage;
   const end = start + perPage - 1;
 
-  const { data: posts, error, count } = await blogSupabase
+  const { data: posts, error, count: totalCount } = await blogSupabase
     .from('blog_posts')
     .select('*', { count: 'exact' })
     .order('created_at', { ascending: false })
@@ -175,7 +161,7 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
     };
   });
 
-  const totalPosts = mappedPosts.length;
+  const totalPosts = totalCount || 0;
   const hasMore = totalPosts > (page * perPage);
 
   return {
@@ -241,7 +227,7 @@ export async function getPostsByTag(tag: string, page = 1, perPage = 10): Promis
   const start = (page - 1) * perPage;
   const end = start + perPage - 1;
 
-  const { data: posts, error, count } = await blogSupabase
+  const { data: posts, error, count: totalCount } = await blogSupabase
     .from('blog_posts')
     .select('*', { count: 'exact' })
     .ilike('tags', `%${tag}%`)
@@ -286,7 +272,7 @@ export async function getPostsByTag(tag: string, page = 1, perPage = 10): Promis
     };
   });
 
-  const totalPosts = mappedPosts.length;
+  const totalPosts = totalCount || 0;
   const hasMore = totalPosts > (page * perPage);
 
   return {
