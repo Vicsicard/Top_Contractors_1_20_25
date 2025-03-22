@@ -35,13 +35,7 @@ export async function GET() {
 }
 */
 
-// Placeholder response to prevent 404s
+// Properly redirect to the static manifest.json file
 export async function GET() {
-  return new NextResponse(JSON.stringify({ disabled: true }), {
-    headers: {
-      'Content-Type': 'application/json',
-      'Location': '/manifest.json'
-    },
-    status: 308 // Permanent Redirect
-  });
+  return NextResponse.redirect(new URL('/manifest.json', 'https://topcontractorsdenver.com'), 308);
 }
