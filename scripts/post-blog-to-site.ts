@@ -104,7 +104,7 @@ async function postBlogToSite() {
       return;
     }
 
-    const existingSlugs = new Set((existingPosts || []).map(post => post.slug));
+    const existingSlugs = new Set((existingPosts || []).map((post: { slug: string }) => post.slug));
     let postsAdded = 0;
     let postsSkipped = 0;
 

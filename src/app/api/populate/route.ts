@@ -1,6 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-import type { PostgrestResponse } from '@supabase/supabase-js';
 
 // Create a function to get the Supabase client with proper error handling
 const getSupabaseClient = () => {
