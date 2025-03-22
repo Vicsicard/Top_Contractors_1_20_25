@@ -6,7 +6,7 @@ import { generateBreadcrumbSchema } from '@/utils/schema';
 
 export async function generateMetadata({ searchParams }: { searchParams?: { page?: string } }): Promise<Metadata> {
   const currentPage = searchParams?.page ? parseInt(searchParams.page) : 1;
-  const totalPosts = (await getPosts(1, 1)).totalPosts;
+  const { totalPosts } = await getPosts(1, 1);
   const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
   
   return {
@@ -139,7 +139,7 @@ export default async function BlogPage({ searchParams }: Props) {
           <div className="text-center py-12">
             <h2 className="text-2xl font-semibold text-gray-700 mb-4">No blog posts found</h2>
             <p className="text-gray-600 mb-4">
-              We're experiencing technical difficulties loading our blog posts at the moment.
+              We&apos;re experiencing technical difficulties loading our blog posts at the moment.
             </p>
             <p className="text-gray-600">
               Please try refreshing the page or check back later.
@@ -164,7 +164,7 @@ export default async function BlogPage({ searchParams }: Props) {
         <div className="text-center py-12">
           <h2 className="text-2xl font-semibold text-gray-700 mb-4">Temporarily Unavailable</h2>
           <p className="text-gray-600 mb-4">
-            We're experiencing technical difficulties with our blog at the moment.
+            We&apos;re experiencing technical difficulties with our blog at the moment.
           </p>
           <p className="text-gray-600">
             Please try refreshing the page or check back later.

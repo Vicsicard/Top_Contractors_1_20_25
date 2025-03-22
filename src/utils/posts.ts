@@ -120,7 +120,7 @@ function extractFeatureImage(content: string): { featureImage: string | undefine
   }
   
   // If no image found, return original content
-  return { featureImage, imageAlt, contentWithoutImage };
+  return { featureImage, imageAlt, contentWithoutImage: content };
 }
 
 // Helper function to extract image from the images array
@@ -248,7 +248,7 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
     }
 
     // Combine posts from both sources
-    let allPosts = [...filteredPrimaryPosts, ...secondaryPosts];
+    const allPosts = [...filteredPrimaryPosts, ...secondaryPosts];
     
     if (!allPosts || allPosts.length === 0) {
       console.log('[DEBUG] No posts found from either source');
@@ -291,7 +291,7 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
         
         // Fallback to extracting image from content if no image in array
         const { featureImage, imageAlt: contentImageAlt, contentWithoutImage } = extractFeatureImage(post.content || '');
-
+        
         // Handle authors field to match the Post interface (string[])
         let authors: string[] = [];
         if (post.authors) {
@@ -402,7 +402,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
   const { imageUrl, imageAlt } = extractImageFromArray(post.images);
   
   // Fallback to extracting image from content if no image in array
-  const { featureImage, imageAlt: contentImageAlt } = extractFeatureImage(post.content);
+  const { featureImage, imageAlt: contentImageAlt, contentWithoutImage } = extractFeatureImage(post.content);
 
   // Map the blog_posts fields to the Post type
   return {
@@ -463,12 +463,12 @@ export async function getPostsByTag(tag: string, page = 1, perPage = 10): Promis
       title: post.title,
       slug: post.slug,
       html: htmlContent,
-      excerpt: post.content.substring(0, 160),
+      excerpt: contentWithoutImage.substring(0, 160),
       feature_image: featureImage,
       feature_image_alt: imageAlt || post.title,
       authors: post.authors,
       tags: post.tags,
-      reading_time: estimateReadingTime(post.content),
+      reading_time: estimateReadingTime(contentWithoutImage),
       trade_category: post.trade_category || undefined,
       published_at: post.created_at,
       updated_at: post.created_at,
