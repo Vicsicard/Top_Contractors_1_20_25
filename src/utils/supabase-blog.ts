@@ -1,5 +1,5 @@
-import { Post, Author, Tag } from '@/types/blog';
-import { supabase } from '@/utils/supabase';
+import { Post, Tag } from '@/types/blog';
+import { blogSupabase } from '@/utils/supabase-blog-client';
 import { getStandardCategory, isValidCategory } from '@/utils/category-mapper';
 
 const POSTS_PER_PAGE = 12; // Standardized posts per page across the site - optimized for 3-column grid
@@ -18,8 +18,8 @@ interface PaginatedPosts {
  */
 async function validateSupabaseConnection() {
     try {
-        const { data, error } = await supabase
-            .from('posts')
+        const { data, error } = await blogSupabase
+            .from('blog_posts')
             .select('id, trade_category')
             .limit(1);
             
@@ -49,21 +49,18 @@ function transformPost(post: any): Post {
         id: post.id,
         title: post.title,
         slug: post.slug,
+        content: post.content || '',
         html: post.html,
         excerpt: post.excerpt,
         feature_image: post.feature_image,
         feature_image_alt: post.feature_image_alt,
         published_at: post.published_at,
         updated_at: post.updated_at,
+        created_at: post.created_at || post.published_at || new Date().toISOString(),
         reading_time: post.reading_time,
         trade_category: post.trade_category,
-        authors: post.authors ? [post.authors].flat() : undefined,
-        tags: post.tags ? post.tags.map((tag: any): Tag => ({
-            id: tag.id,
-            name: tag.name,
-            slug: tag.slug,
-            description: tag.description
-        })) : []
+        authors: post.authors ? (Array.isArray(post.authors) ? post.authors : [post.authors]) : undefined,
+        tags: post.tags
     };
 }
 
@@ -79,8 +76,8 @@ export async function getPosts(page = 1, limit = POSTS_PER_PAGE): Promise<Pagina
         }
 
         // Get total count for pagination
-        const { count } = await supabase
-            .from('posts')
+        const { count } = await blogSupabase
+            .from('blog_posts')
             .select('*', { count: 'exact', head: true });
 
         const totalCount = count || 0;
@@ -90,18 +87,20 @@ export async function getPosts(page = 1, limit = POSTS_PER_PAGE): Promise<Pagina
         const to = from + limit - 1;
 
         // Fetch posts with authors and tags
-        const { data: posts, error } = await supabase
-            .from('posts')
+        const { data: posts, error } = await blogSupabase
+            .from('blog_posts')
             .select(`
                 id,
                 title,
                 slug,
+                content,
                 html,
                 excerpt,
                 feature_image,
                 feature_image_alt,
                 published_at,
                 updated_at,
+                created_at,
                 reading_time,
                 authors,
                 tags (*),
@@ -158,18 +157,20 @@ export async function getPostBySlug(slug: string, trade?: string): Promise<Post 
 
         // Only select the fields we need
         // Build query with case-insensitive slug matching
-        const query = supabase
-            .from('posts')
+        const query = blogSupabase
+            .from('blog_posts')
             .select(`
                 id,
                 title,
                 slug,
+                content,
                 html,
                 excerpt,
                 feature_image,
                 feature_image_alt,
                 published_at,
                 updated_at,
+                created_at,
                 reading_time,
                 trade_category
             `)
@@ -221,28 +222,21 @@ export async function getPostBySlug(slug: string, trade?: string): Promise<Post 
 /**
  * Gets all unique trade categories from posts
  */
-export async function getTradeCategories(): Promise<string[]> {
+async function getTradeCategories(): Promise<string[]> {
     try {
-        const { data, error } = await supabase
-            .from('posts')
+        const { data } = await blogSupabase
+            .from('blog_posts')
             .select('trade_category')
-            .not('trade_category', 'is', null)
-            .order('trade_category');
+            .not('trade_category', 'is', null);
 
-        if (error) {
-            console.error('Error fetching trade categories:', error);
-            return [];
-        }
-
-        // Get unique categories and filter out any null/undefined values
-        const categories = [...new Set(data
-            .map(post => post.trade_category)
-            .filter(category => category)
-        )];
-        console.log('Available trade categories:', categories);
-        return categories;
+        // Filter out null values and return unique categories
+        const categories = data
+            ?.map((post: { trade_category: string }) => post.trade_category)
+            .filter(Boolean) as string[];
+            
+        return [...new Set(categories)];
     } catch (error) {
-        console.error('Error in getTradeCategories:', error);
+        console.error('Error fetching trade categories:', error);
         return [];
     }
 }
@@ -286,8 +280,8 @@ export async function getPostsByCategory(
         const to = from + limit - 1;
 
         // Get count first to ensure it's properly retrieved
-        const countResult = await supabase
-            .from('posts')
+        const countResult = await blogSupabase
+            .from('blog_posts')
             .select('*', { count: 'exact', head: true })
             .or(`trade_category.ilike.${category},trade_category.ilike.${standardizedCategory}`)
             .not('trade_category', 'is', null)
@@ -298,17 +292,19 @@ export async function getPostsByCategory(
         const totalCount = countResult.count || 0;
 
         // Then get posts
-        const postsResult = await supabase
-            .from('posts')
+        const postsResult = await blogSupabase
+            .from('blog_posts')
             .select(`
                 id,
                 title,
                 slug,
+                content,
                 excerpt,
                 feature_image,
                 feature_image_alt,
                 published_at,
                 updated_at,
+                created_at,
                 reading_time,
                 authors,
                 tags (*),
@@ -372,8 +368,8 @@ export async function getPostsByTag(tag: string, page = 1, limit = POSTS_PER_PAG
         }
 
         // Get total count for pagination
-        const { count } = await supabase
-            .from('posts')
+        const { count } = await blogSupabase
+            .from('blog_posts')
             .select('*', { count: 'exact', head: true })
             .contains('tags', [{ slug: tag }]);
 
@@ -384,18 +380,20 @@ export async function getPostsByTag(tag: string, page = 1, limit = POSTS_PER_PAG
         const to = from + limit - 1;
 
         // Fetch posts with authors and tags
-        const { data: posts, error } = await supabase
-            .from('posts')
+        const { data: posts, error } = await blogSupabase
+            .from('blog_posts')
             .select(`
                 id,
                 title,
                 slug,
+                content,
                 html,
                 excerpt,
                 feature_image,
                 feature_image_alt,
                 published_at,
                 updated_at,
+                created_at,
                 reading_time,
                 authors,
                 tags (*),

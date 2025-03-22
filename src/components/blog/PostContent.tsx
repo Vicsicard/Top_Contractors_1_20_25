@@ -53,7 +53,7 @@ export function PostContent({ post }: PostContentProps) {
         </div>
       )}
 
-      <div dangerouslySetInnerHTML={{ __html: post.html || post.content || '' }} />
+      <div dangerouslySetInnerHTML={{ __html: post.html || '' }} />
 
       {post.tags && (
         <div className="mt-8 pt-4 border-t">
