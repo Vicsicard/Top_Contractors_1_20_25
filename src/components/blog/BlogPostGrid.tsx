@@ -11,6 +11,7 @@ interface BlogPostGridProps {
 
 export function BlogPostGrid({ posts, currentPage, totalPosts, postsPerPage }: BlogPostGridProps) {
   const totalPages = Math.ceil(totalPosts / postsPerPage);
+  console.log(`[DEBUG] BlogPostGrid: totalPosts=${totalPosts}, postsPerPage=${postsPerPage}, totalPages=${totalPages}`);
 
   // Function to generate pagination links with ellipsis for better UX
   const getPaginationLinks = () => {
@@ -20,7 +21,7 @@ export function BlogPostGrid({ posts, currentPage, totalPosts, postsPerPage }: B
     links.push(
       <Link
         key={1}
-        href={`/blog${1 === 1 ? '' : `?page=${1}`}`}
+        href={currentPage === 1 ? '/blog' : '/blog'}
         className={`px-4 py-2 rounded-lg transition-colors ${
           currentPage === 1
             ? 'bg-blue-600 text-white'
@@ -48,7 +49,7 @@ export function BlogPostGrid({ posts, currentPage, totalPosts, postsPerPage }: B
       links.push(
         <Link
           key={i}
-          href={`/blog${i === 1 ? '' : `?page=${i}`}`}
+          href={`/blog?page=${i}`}
           className={`px-4 py-2 rounded-lg transition-colors ${
             currentPage === i
               ? 'bg-blue-600 text-white'
@@ -95,7 +96,7 @@ export function BlogPostGrid({ posts, currentPage, totalPosts, postsPerPage }: B
       <>
         {currentPage > 1 && (
           <Link
-            href={`/blog${currentPage - 1 === 1 ? '' : `?page=${currentPage - 1}`}`}
+            href={currentPage - 1 === 1 ? '/blog' : `/blog?page=${currentPage - 1}`}
             className="px-4 py-2 rounded-lg bg-white text-gray-700 hover:bg-gray-50 mr-2"
             aria-label="Previous page"
           >
@@ -134,7 +135,7 @@ export function BlogPostGrid({ posts, currentPage, totalPosts, postsPerPage }: B
       )}
 
       <div className="mt-8 text-center text-gray-600">
-        Page {currentPage} of {totalPages}
+        Page {currentPage} of {totalPages} • {totalPosts} total posts
       </div>
     </div>
   );

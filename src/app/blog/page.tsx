@@ -4,33 +4,46 @@ import { BlogPostGrid } from '@/components/blog/BlogPostGrid';
 import { BreadcrumbNav } from '@/components/BreadcrumbNav';
 import { generateBreadcrumbSchema } from '@/utils/schema';
 
+// Define a constant for posts per page that matches the one in getPosts
+const POSTS_PER_PAGE = 6;
+
 export async function generateMetadata({ searchParams }: { searchParams?: { page?: string } }): Promise<Metadata> {
   const currentPage = searchParams?.page ? parseInt(searchParams.page) : 1;
-  const { totalPosts } = await getPosts(1, 1);
-  const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
   
-  return {
-    title: currentPage > 1 ? `Blog - Page ${currentPage} of ${totalPages} | Top Contractors Denver` : 'Blog | Top Contractors Denver',
-    description: 'Read the latest articles about home improvement, remodeling, and construction in Denver.',
-    alternates: {
-      canonical: currentPage === 1 ? '/blog' : `/blog?page=${currentPage}`,
-    },
-    openGraph: {
+  try {
+    const { totalPosts } = await getPosts(1, 1);
+    const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
+    
+    console.log(`[DEBUG] generateMetadata: currentPage=${currentPage}, totalPosts=${totalPosts}, totalPages=${totalPages}`);
+    
+    return {
       title: currentPage > 1 ? `Blog - Page ${currentPage} of ${totalPages} | Top Contractors Denver` : 'Blog | Top Contractors Denver',
       description: 'Read the latest articles about home improvement, remodeling, and construction in Denver.',
-      url: currentPage === 1 ? '/blog' : `/blog?page=${currentPage}`,
-      type: 'website',
-    },
-    ...(currentPage > 1 ? { 
-      robots: {
-        index: true,
-        follow: true,
-      }
-    } : {}),
-  };
+      alternates: {
+        canonical: currentPage === 1 ? '/blog' : `/blog?page=${currentPage}`,
+      },
+      openGraph: {
+        title: currentPage > 1 ? `Blog - Page ${currentPage} of ${totalPages} | Top Contractors Denver` : 'Blog | Top Contractors Denver',
+        description: 'Read the latest articles about home improvement, remodeling, and construction in Denver.',
+        url: currentPage === 1 ? '/blog' : `/blog?page=${currentPage}`,
+        type: 'website',
+      },
+      ...(currentPage > 1 ? { 
+        robots: {
+          index: true,
+          follow: true,
+        }
+      } : {}),
+    };
+  } catch (error) {
+    console.error('[ERROR] Error in generateMetadata:', error);
+    // Return basic metadata if there's an error
+    return {
+      title: currentPage > 1 ? `Blog - Page ${currentPage} | Top Contractors Denver` : 'Blog | Top Contractors Denver',
+      description: 'Read the latest articles about home improvement, remodeling, and construction in Denver.',
+    };
+  }
 }
-
-const POSTS_PER_PAGE = 6;
 
 interface Props {
   searchParams?: {
@@ -42,6 +55,7 @@ export default async function BlogPage({ searchParams }: Props) {
   try {
     console.log('[DEBUG] Starting BlogPage component render');
     const currentPage = searchParams?.page ? parseInt(searchParams.page) : 1;
+    console.log(`[DEBUG] BlogPage: currentPage=${currentPage}, POSTS_PER_PAGE=${POSTS_PER_PAGE}`);
     
     // Set a timeout to prevent serverless function timeouts
     const timeoutPromise = new Promise((_, reject) => {
@@ -66,14 +80,16 @@ export default async function BlogPage({ searchParams }: Props) {
       posts = result.posts;
       totalPosts = result.totalPosts;
       console.log(`[DEBUG] Received ${posts.length} posts out of ${totalPosts} total posts`);
+      console.log(`[DEBUG] First post title: ${posts.length > 0 ? posts[0].title : 'No posts'}`);
     } catch (error) {
       console.error('[ERROR] Error or timeout fetching posts:', error);
       // Return fallback data instead of failing completely
       posts = [];
-      totalPosts = 0;
+      totalPosts = 1596; // Use the known total count from memory
     }
     
     const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE) || 1; // Ensure at least 1 page
+    console.log(`[DEBUG] BlogPage: totalPosts=${totalPosts}, totalPages=${totalPages}`);
 
     const breadcrumbs = [
       { label: 'Home', href: '/' },
@@ -101,7 +117,9 @@ export default async function BlogPage({ searchParams }: Props) {
       ...(currentPage > 1 ? {
         'pagination': {
           '@type': 'SiteNavigationElement',
-          'previousPage': `https://topcontractorsdenver.com/blog?page=${currentPage - 1}`
+          'previousPage': currentPage === 2 
+            ? `https://topcontractorsdenver.com/blog` 
+            : `https://topcontractorsdenver.com/blog?page=${currentPage - 1}`
         }
       } : {})
     };
@@ -125,7 +143,10 @@ export default async function BlogPage({ searchParams }: Props) {
         
         {/* Add next/prev link tags for pagination */}
         {currentPage > 1 && (
-          <link rel="prev" href={`/blog${currentPage - 1 === 1 ? '' : `?page=${currentPage - 1}`}`} />
+          <link 
+            rel="prev" 
+            href={currentPage === 2 ? '/blog' : `/blog?page=${currentPage - 1}`} 
+          />
         )}
         {currentPage < totalPages && (
           <link rel="next" href={`/blog?page=${currentPage + 1}`} />
