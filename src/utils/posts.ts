@@ -349,32 +349,36 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
       };
     }
     
-    // Try secondary database
-    const { data: secondaryPost } = await mainSupabase
-      .from('posts')
-      .select('*')
-      .eq('slug', slug)
-      .single();
-      
-    if (secondaryPost) {
-      console.log(`[DEBUG] Found post in secondary database as fallback: ${secondaryPost.title}`);
-      
-      return {
-        id: secondaryPost.id,
-        title: secondaryPost.title,
-        slug: secondaryPost.slug,
-        html: secondaryPost.html,
-        excerpt: secondaryPost.excerpt,
-        feature_image: secondaryPost.feature_image,
-        feature_image_alt: secondaryPost.feature_image_alt,
-        authors: secondaryPost.authors || ['Top Contractors Denver'],
-        tags: secondaryPost.tags,
-        reading_time: secondaryPost.reading_time,
-        trade_category: secondaryPost.trade_category,
-        created_at: secondaryPost.created_at,
-        published_at: secondaryPost.published_at,
-        updated_at: secondaryPost.updated_at
-      };
+    // Try secondary database if available
+    if (mainSupabase) {
+      const { data: secondaryPost } = await mainSupabase
+        .from('posts')
+        .select('*')
+        .eq('slug', slug)
+        .single();
+        
+      if (secondaryPost) {
+        console.log(`[DEBUG] Found post in secondary database as fallback: ${secondaryPost.title}`);
+        
+        return {
+          id: secondaryPost.id,
+          title: secondaryPost.title,
+          slug: secondaryPost.slug,
+          html: secondaryPost.html,
+          excerpt: secondaryPost.excerpt,
+          feature_image: secondaryPost.feature_image,
+          feature_image_alt: secondaryPost.feature_image_alt,
+          authors: secondaryPost.authors || ['Top Contractors Denver'],
+          tags: secondaryPost.tags,
+          reading_time: secondaryPost.reading_time,
+          trade_category: secondaryPost.trade_category,
+          created_at: secondaryPost.created_at,
+          published_at: secondaryPost.published_at,
+          updated_at: secondaryPost.updated_at
+        };
+      }
+    } else {
+      console.log('[WARN] Secondary database client not available, skipping secondary database check');
     }
     
     console.log(`[DEBUG] Post with slug "${slug}" not found in any database`);
