@@ -17,6 +17,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${category} Articles | Top Contractors Denver`,
     description: `Read expert articles about ${category} services and contractors in Denver.`,
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      }
+    }
   };
 }
 

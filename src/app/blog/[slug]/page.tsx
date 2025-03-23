@@ -27,6 +27,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: `/blog/${params.slug}/`,
     },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      }
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt || `Read ${post.title} on Top Contractors Denver`,

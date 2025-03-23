@@ -25,7 +25,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: post.excerpt || `Read about ${post.title} on Top Contractors Denver Blog`,
     robots: {
       index: true,
-      follow: true
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      }
     }
   };
 }

@@ -6,19 +6,19 @@ import { generateBreadcrumbSchema } from '@/utils/schema';
 
 export async function generateMetadata({ searchParams }: { searchParams?: { page?: string } }): Promise<Metadata> {
   const currentPage = searchParams?.page ? parseInt(searchParams.page) : 1;
-  const { totalPosts } = await getPosts(1, 1);
+  const totalPosts = (await getPosts(1, 1)).totalPosts;
   const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
   
   return {
     title: currentPage > 1 ? `Blog - Page ${currentPage} | Top Contractors Denver` : 'Blog | Top Contractors Denver',
     description: 'Read the latest articles about home improvement, remodeling, and construction in Denver.',
     alternates: {
-      canonical: currentPage === 1 ? '/blog/' : `/blog/?page=${currentPage}`,
+      canonical: currentPage === 1 ? '/blog/' : `/blog/?page=${currentPage}/`,
     },
     openGraph: {
       title: currentPage > 1 ? `Blog - Page ${currentPage} | Top Contractors Denver` : 'Blog | Top Contractors Denver',
       description: 'Read the latest articles about home improvement, remodeling, and construction in Denver.',
-      url: currentPage === 1 ? '/blog/' : `/blog/?page=${currentPage}`,
+      url: currentPage === 1 ? '/blog/' : `/blog/?page=${currentPage}/`,
       type: 'website',
     },
     ...(currentPage > 1 ? { 
@@ -54,7 +54,7 @@ export default async function BlogPage({ searchParams }: Props) {
     console.log(`[DEBUG] Fetching posts for page ${currentPage} with timeout protection`);
     const postsPromise = getPosts(currentPage, POSTS_PER_PAGE);
     
-    let posts = [];
+    let posts: any[] = [];
     let totalPosts = 0;
     
     try {

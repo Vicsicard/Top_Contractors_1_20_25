@@ -128,19 +128,44 @@ async function generateStaticSitemap() {
 }
 
 async function generateBlogSitemap() {
-    // Get blog posts from the blog Supabase instance
-    const { data: posts, error } = await blogSupabase
-        .from('blog_posts')
-        .select('slug, created_at, posted_on_site')
-        .eq('posted_on_site', true)
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.error('Error fetching blog posts for sitemap:', error);
-        return generateSitemapXml([], 'blog');
-    }
-
     const urls = [];
+    let allPosts = [];
+    
+    // Get blog posts from the primary blog Supabase instance
+    try {
+        const { data: primaryPosts, error } = await blogSupabase
+            .from('blog_posts')
+            .select('slug, created_at, title')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('Error fetching primary blog posts for sitemap:', error);
+        } else {
+            console.log(`Fetched ${primaryPosts?.length || 0} posts from primary Supabase project for sitemap`);
+            allPosts = [...(primaryPosts || [])];
+        }
+    } catch (error) {
+        console.error('Unexpected error fetching primary blog posts:', error);
+    }
+    
+    // Get blog posts from the secondary Supabase instance (main project)
+    try {
+        if (mainSupabase) {
+            const { data: secondaryPosts, error } = await mainSupabase
+                .from('posts')
+                .select('slug, created_at, title')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching secondary blog posts for sitemap:', error);
+            } else {
+                console.log(`Fetched ${secondaryPosts?.length || 0} posts from secondary Supabase project for sitemap`);
+                allPosts = [...allPosts, ...(secondaryPosts || [])];
+            }
+        }
+    } catch (error) {
+        console.error('Unexpected error fetching secondary blog posts:', error);
+    }
     
     // Add the main blog page
     urls.push({
@@ -152,12 +177,14 @@ async function generateBlogSitemap() {
     
     // Calculate total pages for pagination
     const POSTS_PER_PAGE = 12;
-    const totalPages = Math.ceil((posts || []).length / POSTS_PER_PAGE);
+    const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
+    
+    console.log(`Total blog posts: ${allPosts.length}, Total pagination pages: ${totalPages}`);
     
     // Add paginated blog pages (skip page 1 as it's the same as /blog/)
     for (let page = 2; page <= totalPages; page++) {
         urls.push({
-            loc: `${SITE_URL}/blog/?page=${page}`,
+            loc: `${SITE_URL}/blog/?page=${page}/`,
             lastmod: new Date().toISOString(),
             changefreq: 'daily',
             priority: 0.7
@@ -165,16 +192,19 @@ async function generateBlogSitemap() {
     }
     
     // Add individual blog post pages
-    for (const post of (posts || [])) {
-        const url = `${SITE_URL}/blog/${post.slug}/`;
-        urls.push({
-            loc: url,
-            lastmod: post.created_at,
-            changefreq: 'weekly',
-            priority: 0.7
-        });
+    for (const post of allPosts) {
+        if (post.slug) {
+            const url = `${SITE_URL}/blog/${post.slug}/`;
+            urls.push({
+                loc: url,
+                lastmod: post.created_at || new Date().toISOString(),
+                changefreq: 'weekly',
+                priority: 0.7
+            });
+        }
     }
 
+    console.log(`Generated ${urls.length} URLs for blog sitemap`);
     return generateSitemapXml(urls, 'blog');
 }
 

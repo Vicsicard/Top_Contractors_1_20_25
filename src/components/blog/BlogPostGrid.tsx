@@ -21,7 +21,7 @@ export function BlogPostGrid({ posts, currentPage, totalPosts, postsPerPage }: B
     links.push(
       <Link
         key={1}
-        href={`/blog${1 === 1 ? '/' : `?page=${1}`}`}
+        href={`/blog${1 === 1 ? '/' : `/?page=${1}/`}`}
         className={`px-4 py-2 rounded-lg transition-colors ${
           currentPage === 1
             ? 'bg-blue-600 text-white'
@@ -49,7 +49,7 @@ export function BlogPostGrid({ posts, currentPage, totalPosts, postsPerPage }: B
       links.push(
         <Link
           key={i}
-          href={`/blog${i === 1 ? '/' : `?page=${i}`}`}
+          href={`/blog${i === 1 ? '/' : `/?page=${i}/`}`}
           className={`px-4 py-2 rounded-lg transition-colors ${
             currentPage === i
               ? 'bg-blue-600 text-white'
@@ -75,7 +75,7 @@ export function BlogPostGrid({ posts, currentPage, totalPosts, postsPerPage }: B
       links.push(
         <Link
           key={totalPages}
-          href={`/blog?page=${totalPages}`}
+          href={`/blog/?page=${totalPages}/`}
           className={`px-4 py-2 rounded-lg transition-colors ${
             currentPage === totalPages
               ? 'bg-blue-600 text-white'
@@ -96,7 +96,7 @@ export function BlogPostGrid({ posts, currentPage, totalPosts, postsPerPage }: B
       <>
         {currentPage > 1 && (
           <Link
-            href={`/blog${currentPage - 1 === 1 ? '/' : `?page=${currentPage - 1}`}`}
+            href={`/blog${currentPage - 1 === 1 ? '/' : `/?page=${currentPage - 1}/`}`}
             className="px-4 py-2 rounded-lg bg-white text-gray-700 hover:bg-gray-50 mr-2"
             aria-label="Previous page"
           >
@@ -106,7 +106,7 @@ export function BlogPostGrid({ posts, currentPage, totalPosts, postsPerPage }: B
         
         {currentPage < totalPages && (
           <Link
-            href={`/blog?page=${currentPage + 1}`}
+            href={`/blog/?page=${currentPage + 1}/`}
             className="px-4 py-2 rounded-lg bg-white text-gray-700 hover:bg-gray-50 ml-2"
             aria-label="Next page"
           >
