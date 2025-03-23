@@ -156,53 +156,51 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
     const start = (page - 1) * perPage;
     
     // Set a reasonable limit for database queries to prevent timeouts
-    const DB_QUERY_LIMIT = 1000; // Increased from 100 to handle more posts
+    const DB_QUERY_LIMIT = 100;
     
-    // For all pages, we need to get the total counts to calculate pagination
+    // For the first page, we need to get the total counts to calculate pagination
     let primaryTotalCount = 0;
     let secondaryTotalCount = 0;
     
-    try {
-      // Get count of primary posts with project tags
-      const { count, error } = await blogSupabase
-        .from('blog_posts')
-        .select('*', { count: 'exact', head: true });
-        
-      if (!error) {
-        primaryTotalCount = count || 0;
-        console.log(`[DEBUG] Primary Supabase has ${primaryTotalCount} total posts`);
-      }
-    } catch (error) {
-      console.error('[ERROR] Error getting primary post count:', error);
-    }
-    
-    try {
-      // Get count of secondary posts
-      if (secondaryBlogSupabase) {
-        const { count, error } = await secondaryBlogSupabase
-          .from('posts')
+    if (page === 1) {
+      try {
+        // Get count of primary posts with project tags
+        const { count, error } = await blogSupabase
+          .from('blog_posts')
           .select('*', { count: 'exact', head: true });
           
         if (!error) {
-          secondaryTotalCount = count || 0;
-          console.log(`[DEBUG] Secondary Supabase has ${secondaryTotalCount} total posts`);
+          primaryTotalCount = count || 0;
+          console.log(`[DEBUG] Primary Supabase has ${primaryTotalCount} total posts`);
         }
+      } catch (error) {
+        console.error('[ERROR] Error getting primary post count:', error);
       }
-    } catch (error) {
-      console.error('[ERROR] Error getting secondary post count:', error);
+      
+      try {
+        // Get count of secondary posts
+        if (secondaryBlogSupabase) {
+          const { count, error } = await secondaryBlogSupabase
+            .from('posts')
+            .select('*', { count: 'exact', head: true });
+            
+          if (!error) {
+            secondaryTotalCount = count || 0;
+            console.log(`[DEBUG] Secondary Supabase has ${secondaryTotalCount} total posts`);
+          }
+        }
+      } catch (error) {
+        console.error('[ERROR] Error getting secondary post count:', error);
+      }
     }
     
-    // Calculate the range for fetching posts based on the current page
-    const rangeStart = Math.min(start, DB_QUERY_LIMIT - 1);
-    const rangeEnd = Math.min(start + perPage * 2, DB_QUERY_LIMIT - 1); // Fetch more than needed for the current page
-    
     // Fetch posts from primary Supabase instance (blog project) with pagination
-    console.log(`[DEBUG] Fetching posts from primary Supabase instance (blog project) range: ${rangeStart}-${rangeEnd}`);
+    console.log('[DEBUG] Fetching posts from primary Supabase instance (blog project)');
     const { data: primaryPosts, error: primaryError } = await blogSupabase
       .from('blog_posts')
       .select('*')
       .order('created_at', { ascending: false })
-      .range(rangeStart, rangeEnd); // Use calculated range
+      .range(0, DB_QUERY_LIMIT - 1); // Limit the number of posts fetched
 
     if (primaryError) {
       console.error('[ERROR] Error fetching primary posts:', primaryError);
@@ -222,28 +220,18 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
     
     console.log(`[DEBUG] After filtering: ${filteredPrimaryPosts.length} primary posts match project criteria`);
 
-    // For the secondary project, calculate a separate range if needed for higher pages
-    let secondaryRangeStart = 0;
-    let secondaryRangeEnd = DB_QUERY_LIMIT - 1;
-    
-    // If we're on a higher page and didn't get enough primary posts, adjust the secondary range
-    if (page > 1 && filteredPrimaryPosts.length < perPage) {
-      secondaryRangeStart = Math.max(0, rangeStart - filteredPrimaryPosts.length);
-      secondaryRangeEnd = Math.min(secondaryRangeStart + perPage * 2, DB_QUERY_LIMIT - 1);
-    }
-    
     // Fetch posts from secondary Supabase instance (main project) with pagination
     let secondaryPosts: any[] = [];
     
     if (secondaryBlogSupabase) {
       try {
-        console.log(`[DEBUG] Fetching posts from secondary Supabase instance (main project) range: ${secondaryRangeStart}-${secondaryRangeEnd}`);
+        console.log('[DEBUG] Fetching posts from secondary Supabase instance (main project)');
         // For the secondary project, we need to use the 'posts' table instead of 'blog_posts'
         const { data: secPosts, error: secondaryError } = await secondaryBlogSupabase
           .from('posts')
           .select('*')
           .order('created_at', { ascending: false })
-          .range(secondaryRangeStart, secondaryRangeEnd); // Use calculated range
+          .range(0, DB_QUERY_LIMIT - 1); // Limit the number of posts fetched
         
         if (secondaryError) {
           console.error('[ERROR] Error fetching secondary posts:', secondaryError);
@@ -388,125 +376,51 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
-  console.log(`[DEBUG] getPostBySlug called with slug: ${slug}`);
-  
-  try {
-    // First, try to find the post in the primary database
-    const { data: primaryPost, error: primaryError } = await blogSupabase
-      .from('blog_posts')
-      .select('*')
-      .eq('slug', slug)
-      .single();
+  const { data: post, error } = await blogSupabase
+    .from('blog_posts')
+    .select('*')
+    .eq('slug', slug)
+    .single();
 
-    if (primaryError && primaryError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
-      console.error('[ERROR] Error fetching post from primary database:', primaryError);
-    }
-
-    // If we found a post in the primary database and it belongs to our project, return it
-    if (primaryPost && postBelongsToProject(primaryPost.tags)) {
-      console.log(`[DEBUG] Found post in primary database: ${primaryPost.title}`);
-      
-      // Convert markdown to HTML
-      const htmlContent = convertMarkdownToHtml(primaryPost.content);
-      
-      // Extract image from images array if available
-      const { imageUrl, imageAlt } = extractImageFromArray(primaryPost.images);
-      
-      // Fallback to extracting image from content if no image in array
-      const { featureImage, imageAlt: contentImageAlt, contentWithoutImage } = extractFeatureImage(primaryPost.content);
-
-      // Map the blog_posts fields to the Post type
-      return {
-        id: primaryPost.id,
-        title: primaryPost.title,
-        slug: primaryPost.slug,
-        html: htmlContent,
-        excerpt: primaryPost.excerpt || (primaryPost.content || '').substring(0, 160),
-        feature_image: imageUrl || primaryPost.image || primaryPost.feature_image || featureImage,
-        feature_image_alt: imageAlt || primaryPost.image_alt || primaryPost.feature_image_alt || contentImageAlt || primaryPost.title,
-        authors: primaryPost.authors,
-        tags: primaryPost.tags,
-        reading_time: estimateReadingTime(primaryPost.content),
-        trade_category: primaryPost.trade_category || undefined,
-        created_at: primaryPost.created_at || primaryPost.published_at || primaryPost.date || new Date().toISOString(),
-        published_at: primaryPost.published_at,
-        updated_at: primaryPost.updated_at
-      };
-    }
-
-    // If not found in primary database or doesn't belong to our project, try the secondary database
-    if (secondaryBlogSupabase) {
-      console.log(`[DEBUG] Post not found in primary database or doesn't belong to project, trying secondary database`);
-      
-      const { data: secondaryPost, error: secondaryError } = await secondaryBlogSupabase
-        .from('posts')
-        .select('*')
-        .eq('slug', slug)
-        .single();
-
-      if (secondaryError && secondaryError.code !== 'PGRST116') {
-        console.error('[ERROR] Error fetching post from secondary database:', secondaryError);
-      }
-
-      if (secondaryPost) {
-        console.log(`[DEBUG] Found post in secondary database: ${secondaryPost.title}`);
-        
-        // Convert markdown to HTML
-        const htmlContent = convertMarkdownToHtml(secondaryPost.content || secondaryPost.html || '');
-        
-        // Handle different tag formats
-        let postTags = '';
-        if (secondaryPost.tags) {
-          if (Array.isArray(secondaryPost.tags)) {
-            postTags = secondaryPost.tags.join(',');
-          } else {
-            postTags = secondaryPost.tags;
-          }
-        }
-        
-        // Extract image from images array if available
-        const { imageUrl, imageAlt } = extractImageFromArray(secondaryPost.images);
-        
-        // Fallback to extracting image from content if no image in array
-        const { featureImage, imageAlt: contentImageAlt, contentWithoutImage } = 
-          extractFeatureImage(secondaryPost.content || '');
-        
-        // Handle authors field
-        let authors: string[] = [];
-        if (secondaryPost.authors) {
-          if (typeof secondaryPost.authors === 'string') {
-            authors = [secondaryPost.authors];
-          } else if (Array.isArray(secondaryPost.authors)) {
-            authors = secondaryPost.authors;
-          }
-        }
-
-        // Map the posts fields to the Post type
-        return {
-          id: secondaryPost.id,
-          title: secondaryPost.title,
-          slug: secondaryPost.slug,
-          html: htmlContent,
-          excerpt: secondaryPost.excerpt || (secondaryPost.content || '').substring(0, 160),
-          feature_image: imageUrl || secondaryPost.image || secondaryPost.feature_image || featureImage,
-          feature_image_alt: imageAlt || secondaryPost.image_alt || secondaryPost.feature_image_alt || contentImageAlt || secondaryPost.title,
-          authors: authors,
-          tags: postTags,
-          reading_time: estimateReadingTime(secondaryPost.content || secondaryPost.html || ''),
-          trade_category: secondaryPost.trade_category || undefined,
-          created_at: secondaryPost.created_at || secondaryPost.published_at || secondaryPost.date || new Date().toISOString(),
-          published_at: secondaryPost.published_at,
-          updated_at: secondaryPost.updated_at
-        };
-      }
-    }
-
-    console.log(`[DEBUG] Post with slug "${slug}" not found in either database`);
-    return null;
-  } catch (error) {
-    console.error(`[ERROR] Unexpected error in getPostBySlug:`, error);
+  if (error) {
+    console.error('Error fetching post:', error);
     return null;
   }
+
+  if (!post) return null;
+  
+  // Check if this post belongs to our project
+  if (!postBelongsToProject(post.tags)) {
+    console.warn(`Post with slug "${slug}" does not belong to this project`);
+    return null;
+  }
+
+  // Convert markdown to HTML
+  const htmlContent = convertMarkdownToHtml(post.content);
+  
+  // Extract image from images array if available
+  const { imageUrl, imageAlt } = extractImageFromArray(post.images);
+  
+  // Fallback to extracting image from content if no image in array
+  const { featureImage, imageAlt: contentImageAlt, contentWithoutImage } = extractFeatureImage(post.content);
+
+  // Map the blog_posts fields to the Post type
+  return {
+    id: post.id,
+    title: post.title,
+    slug: post.slug,
+    html: htmlContent,
+    excerpt: post.excerpt || (post.content || '').substring(0, 160),
+    feature_image: imageUrl || post.image || post.feature_image || featureImage,
+    feature_image_alt: imageAlt || post.image_alt || post.feature_image_alt || contentImageAlt || post.title,
+    authors: post.authors,
+    tags: post.tags,
+    reading_time: estimateReadingTime(post.content),
+    trade_category: post.trade_category || undefined,
+    created_at: post.created_at || post.published_at || post.date || new Date().toISOString(),
+    published_at: post.published_at,
+    updated_at: post.updated_at
+  };
 }
 
 export async function getPostsByTag(tag: string, page = 1, perPage = 10): Promise<{
