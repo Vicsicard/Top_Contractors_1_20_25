@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export interface BlogImageProps {
     src: string;
@@ -16,9 +16,18 @@ export function BlogImage({ src, alt, className = '', width = 800, height = 600,
     const [imgSrc, setImgSrc] = useState(src);
     const fallbackImage = '/images/denver-skyline.jpg';
 
-    const handleError = () => {
-        setImgSrc(fallbackImage);
-    };
+    // Check if the image is valid on mount
+    useEffect(() => {
+        const img = new window.Image();
+        img.src = src;
+        img.onload = () => setImgSrc(src);
+        img.onerror = () => setImgSrc(fallbackImage);
+        
+        return () => {
+            img.onload = null;
+            img.onerror = null;
+        };
+    }, [src]);
 
     return (
         <div className="relative">
@@ -28,8 +37,9 @@ export function BlogImage({ src, alt, className = '', width = 800, height = 600,
                 width={width}
                 height={height}
                 className={className}
-                onError={handleError}
                 priority={priority}
+                placeholder="blur"
+                blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAEtAI8V7lMuwAAAABJRU5ErkJggg=="
             />
         </div>
     );

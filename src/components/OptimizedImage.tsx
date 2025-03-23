@@ -25,9 +25,16 @@ export function OptimizedImage({
     const [imgSrc, setImgSrc] = useState(src);
 
     useEffect(() => {
-        // Reset image source if prop changes
-        setImgSrc(src);
-    }, [src]);
+        const img = new window.Image();
+        img.src = src;
+        img.onload = () => setImgSrc(src);
+        img.onerror = () => setImgSrc(fallbackSrc);
+        
+        return () => {
+            img.onload = null;
+            img.onerror = null;
+        };
+    }, [src, fallbackSrc]);
 
     return (
         <Image
@@ -37,15 +44,8 @@ export function OptimizedImage({
             className={className}
             sizes={sizes}
             priority={priority}
-            onLoadingComplete={(result) => {
-                if (result.naturalWidth === 0) {
-                    // Image failed to load
-                    setImgSrc(fallbackSrc);
-                }
-            }}
-            onError={() => {
-                setImgSrc(fallbackSrc);
-            }}
+            placeholder="blur"
+            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAEtAI8V7lMuwAAAABJRU5ErkJggg=="
         />
     );
 }

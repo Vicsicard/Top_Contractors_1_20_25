@@ -9,7 +9,6 @@ interface BlogPostDisplayProps {
 }
 
 export function BlogPostDisplay({ post }: BlogPostDisplayProps) {
-    const [imageError, setImageError] = useState(false);
     const fallbackImage = '/images/denver-skyline.jpg';
 
     useEffect(() => {
@@ -21,25 +20,20 @@ export function BlogPostDisplay({ post }: BlogPostDisplayProps) {
         });
     }, [post]);
 
-    const handleImageError = () => {
-        if (!imageError) {
-            setImageError(true);
-        }
-    };
-
     return (
         <article className="container mx-auto px-4 py-8 max-w-4xl">
             <header className="mb-8">
                 {post.feature_image && (
                     <div className="relative aspect-[16/9] mb-6 rounded-lg overflow-hidden">
                         <Image
-                            src={imageError ? fallbackImage : post.feature_image}
+                            src={post.feature_image}
                             alt={post.feature_image_alt || post.title}
                             fill
                             className="object-cover"
-                            onError={handleImageError}
                             sizes="(max-width: 1024px) 100vw, 1024px"
                             priority
+                            placeholder="blur"
+                            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAEtAI8V7lMuwAAAABJRU5ErkJggg=="
                         />
                     </div>
                 )}

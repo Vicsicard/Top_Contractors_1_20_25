@@ -1,3 +1,5 @@
+'use client';
+
 import { Post } from '@/types/blog';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -45,49 +47,31 @@ export function BlogPostCard({ post, showExcerpt = true, showAuthor = true }: Bl
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              onError={(e) => {
-                console.error(`[ERROR] Failed to load image for post: ${safePost.title}`);
-                // Replace with fallback image or hide the image container
-                (e.target as HTMLImageElement).style.display = 'none';
-              }}
+              placeholder="blur"
+              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAEtAI8V7lMuwAAAABJRU5ErkJggg=="
             />
           </div>
         )}
-
         <div className="p-6">
-          <h2 className="text-xl font-bold mb-2 text-gray-900 hover:text-blue-600 line-clamp-2">
-            {safePost.title}
-          </h2>
-
+          <h2 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">{safePost.title}</h2>
+          
           {showExcerpt && safePost.excerpt && (
             <p className="text-gray-600 mb-4 line-clamp-3">{safePost.excerpt}</p>
           )}
-
-          <div className="flex items-center justify-between">
-            {showAuthor && (
-              <span className="text-sm text-gray-600">
-                {typeof safePost.authors === 'string' ? safePost.authors : (safePost.authors?.[0] || 'Top Contractors Denver')}
-              </span>
-            )}
-            <time className="text-sm text-gray-500" dateTime={safePost.published_at}>
-              {safePost.published_at ? formatDate(safePost.published_at) : ''}
-            </time>
-          </div>
-
-          {safePost.tags && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {typeof safePost.tags === 'string' ? 
-                safePost.tags.split(',').filter(Boolean).map((tag: string, index: number) => (
-                  <span
-                    key={`${tag.trim()}-${index}`}
-                    className="px-2 py-1 bg-gray-100 text-sm text-gray-600 rounded-full"
-                  >
-                    {tag.trim()}
-                  </span>
-                ))
-              : null}
+          
+          <div className="flex items-center justify-between text-sm text-gray-500">
+            <div>
+              {formatDate(safePost.published_at)}
             </div>
-          )}
+            
+            {showAuthor && (
+              <div>
+                By {Array.isArray(safePost.authors) 
+                  ? safePost.authors.join(', ') 
+                  : safePost.authors}
+              </div>
+            )}
+          </div>
         </div>
       </Link>
     </article>

@@ -9,7 +9,6 @@ interface ClientBlogPostProps {
 }
 
 export function ClientBlogPost({ post }: ClientBlogPostProps) {
-    const [imageError, setImageError] = useState(false);
     const fallbackImage = '/images/denver-skyline.jpg';
 
     return (
@@ -18,12 +17,13 @@ export function ClientBlogPost({ post }: ClientBlogPostProps) {
                 {post.feature_image && (
                     <div className="relative w-full h-[400px] mb-6 rounded-lg overflow-hidden">
                         <Image
-                            src={imageError ? fallbackImage : post.feature_image}
+                            src={post.feature_image}
                             alt={post.feature_image_alt || post.title}
                             fill
                             className="object-cover"
-                            onError={() => setImageError(true)}
                             priority
+                            placeholder="blur"
+                            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAEtAI8V7lMuwAAAABJRU5ErkJggg=="
                         />
                     </div>
                 )}
