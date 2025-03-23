@@ -116,7 +116,7 @@ async function generateSitemaps(): Promise<void> {
 
     // Blog posts
     console.log('Fetching blog posts...');
-    const postsResult = await getPosts(1000); // Get up to 1000 posts
+    const postsResult = await getPosts(1, 1000); // Get page 1 with up to 1000 posts per page
     
     if (postsResult?.posts) {
         for (const post of postsResult.posts) {
