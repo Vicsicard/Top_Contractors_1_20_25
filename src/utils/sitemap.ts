@@ -63,21 +63,56 @@ export async function generateSitemapUrls(): Promise<SitemapUrl[]> {
     }
   }
 
-  // Add blog posts
+  // Add blog posts from the merged table
   try {
+    console.log('Fetching blog posts from merged_blog_posts table for sitemap');
     const { data: posts, error } = await supabase
-      .from('blog_posts')
-      .select('slug, trade_category, updated_at')
-      .filter('status', 'eq', 'published');
+      .from('merge_blog_posts')
+      .select('slug, created_at, tags');
 
     if (error) {
       console.error('Error fetching blog posts for sitemap:', error);
     } else if (posts) {
+      console.log(`Found ${posts.length} blog posts for sitemap`);
+      
+      // Add blog pagination pages based on the total number of posts
+      const postsPerPage = 6; // Same as in blog/page.tsx
+      const totalPages = Math.ceil(posts.length / postsPerPage);
+      
+      console.log(`Adding ${totalPages} blog pagination pages to sitemap`);
+      for (let i = 1; i <= totalPages; i++) {
+        urls.push({
+          loc: i === 1 ? `${baseUrl}/blog/` : `${baseUrl}/blog/?page=${i}`,
+          lastmod: currentDate,
+          changefreq: 'daily',
+          priority: i === 1 ? 0.9 : 0.8,
+        });
+      }
+      
+      // Add individual blog post pages
       for (const post of posts) {
-        const category = post.trade_category?.toLowerCase().replace(' ', '-') || 'general';
+        // Skip posts without a valid slug
+        if (!post.slug) {
+          console.log('Skipping post with missing slug');
+          continue;
+        }
+        
+        // Extract trade category from tags if available
+        let category = 'general';
+        if (post.tags) {
+          const tags = post.tags.split(',').map((t: string) => t.trim().toLowerCase());
+          const validTradeNames = trades.map((t: { category_name: string }) => t.category_name.toLowerCase());
+          
+          // Find the first tag that matches a valid trade
+          const matchedTrade = tags.find((tag: string) => validTradeNames.includes(tag));
+          if (matchedTrade) {
+            category = matchedTrade.replace(' ', '-');
+          }
+        }
+        
         urls.push({
           loc: `${baseUrl}/blog/trades/${category}/${post.slug}/`,
-          lastmod: post.updated_at || currentDate,
+          lastmod: post.created_at || currentDate,
           changefreq: 'weekly',
           priority: 0.7,
         });
@@ -100,8 +135,8 @@ export async function generateSitemapUrls(): Promise<SitemapUrl[]> {
         urls.push({
           loc: `${baseUrl}/videos/${video.category}/${video.id}/`,
           lastmod: video.updated_at || currentDate,
-          changefreq: 'monthly',
-          priority: 0.6,
+          changefreq: 'weekly',
+          priority: 0.7,
         });
       }
     }

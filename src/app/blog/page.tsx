@@ -30,7 +30,7 @@ export async function generateMetadata({ searchParams }: { searchParams?: { page
   };
 }
 
-const POSTS_PER_PAGE = 12;
+const POSTS_PER_PAGE = 6;
 
 interface Props {
   searchParams?: {
