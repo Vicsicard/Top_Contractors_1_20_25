@@ -82,7 +82,7 @@ export async function generateSitemapUrls(): Promise<SitemapUrl[]> {
       console.log(`Adding ${totalPages} blog pagination pages to sitemap`);
       for (let i = 1; i <= totalPages; i++) {
         urls.push({
-          loc: i === 1 ? `${baseUrl}/blog/` : `${baseUrl}/blog/?page=${i}`,
+          loc: i === 1 ? `${baseUrl}/blog` : `${baseUrl}/blog?page=${i}`,
           lastmod: currentDate,
           changefreq: 'daily',
           priority: i === 1 ? 0.9 : 0.8,
