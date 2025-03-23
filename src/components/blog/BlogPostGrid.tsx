@@ -11,7 +11,6 @@ interface BlogPostGridProps {
 
 export function BlogPostGrid({ posts, currentPage, totalPosts, postsPerPage }: BlogPostGridProps) {
   const totalPages = Math.ceil(totalPosts / postsPerPage);
-  const offset = (currentPage - 1) * postsPerPage;
 
   // Function to generate pagination links with ellipsis for better UX
   const getPaginationLinks = () => {

@@ -6,17 +6,17 @@ import { generateBreadcrumbSchema } from '@/utils/schema';
 
 export async function generateMetadata({ searchParams }: { searchParams?: { page?: string } }): Promise<Metadata> {
   const currentPage = searchParams?.page ? parseInt(searchParams.page) : 1;
-  const totalPosts = (await getPosts(1, 1)).totalPosts;
+  const { totalPosts } = await getPosts(1, 1);
   const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
   
   return {
-    title: currentPage > 1 ? `Blog - Page ${currentPage} | Top Contractors Denver` : 'Blog | Top Contractors Denver',
+    title: currentPage > 1 ? `Blog - Page ${currentPage} of ${totalPages} | Top Contractors Denver` : 'Blog | Top Contractors Denver',
     description: 'Read the latest articles about home improvement, remodeling, and construction in Denver.',
     alternates: {
       canonical: currentPage === 1 ? '/blog/' : `/blog/?page=${currentPage}/`,
     },
     openGraph: {
-      title: currentPage > 1 ? `Blog - Page ${currentPage} | Top Contractors Denver` : 'Blog | Top Contractors Denver',
+      title: currentPage > 1 ? `Blog - Page ${currentPage} of ${totalPages} | Top Contractors Denver` : 'Blog | Top Contractors Denver',
       description: 'Read the latest articles about home improvement, remodeling, and construction in Denver.',
       url: currentPage === 1 ? '/blog/' : `/blog/?page=${currentPage}/`,
       type: 'website',

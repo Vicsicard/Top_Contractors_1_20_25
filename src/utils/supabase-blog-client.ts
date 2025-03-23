@@ -44,6 +44,7 @@ const createMockBlogClient = (): SupabaseClient => {
 
 let blogSupabase: SupabaseClient;
 let secondaryBlogSupabase: SupabaseClient | null = null;
+let mainSupabase: SupabaseClient | null = null;
 
 // Initialize primary blog Supabase client
 if (!blogSupabaseUrl || !blogSupabaseAnonKey) {
@@ -61,9 +62,10 @@ if (!blogSupabaseUrl || !blogSupabaseAnonKey) {
 // Initialize secondary blog Supabase client using Main Supabase credentials
 if (mainSupabaseUrl && mainSupabaseAnonKey) {
   secondaryBlogSupabase = createClient(mainSupabaseUrl, mainSupabaseAnonKey);
+  mainSupabase = secondaryBlogSupabase; // Alias for clarity in code
   console.log('[INFO] Secondary blog Supabase client initialized using Main Supabase project');
 } else {
   console.log('[WARN] Secondary blog Supabase client not initialized due to missing credentials');
 }
 
-export { blogSupabase, secondaryBlogSupabase };
+export { blogSupabase, secondaryBlogSupabase, mainSupabase };

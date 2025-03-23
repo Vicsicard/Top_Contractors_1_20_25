@@ -1,4 +1,4 @@
-import { blogSupabase, secondaryBlogSupabase } from './supabase-blog-client';
+import { blogSupabase, mainSupabase } from './supabase-blog-client';
 import type { Post } from '@/types/blog';
 import { marked } from 'marked';
 
@@ -210,10 +210,10 @@ export async function getPosts(page = 1, perPage = 6): Promise<{
         const { imageUrl, imageAlt } = extractImageFromArray(post.images);
         
         // Fallback to extracting image from content if no image in array
-        const { featureImage, imageAlt: contentImageAlt, contentWithoutImage } = extractFeatureImage(post.content || '');
+        const { featureImage, imageAlt: contentImageAlt } = extractFeatureImage(post.content || '');
         
         // Handle authors field to match the Post interface (string[])
-        let authors: string[] = ['Top Contractors Denver'];
+        const authors: string[] = ['Top Contractors Denver'];
         
         const transformedPost: Post = {
           id: post.id || `post-${index}`,
@@ -291,7 +291,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
       const { imageUrl, imageAlt } = extractImageFromArray(post.images);
       
       // Fallback to extracting image from content if no image in array
-      const { featureImage, imageAlt: contentImageAlt, contentWithoutImage } = extractFeatureImage(post.content);
+      const { featureImage, imageAlt: contentImageAlt } = extractFeatureImage(post.content);
 
       // Map the fields to the Post type
       return {
@@ -318,7 +318,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
     // This is a safety measure during the transition period
     
     // Try primary database
-    const { data: primaryPost, error: primaryError } = await blogSupabase
+    const { data: primaryPost } = await blogSupabase
       .from('blog_posts')
       .select('*')
       .eq('slug', slug)
@@ -343,57 +343,44 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
         tags: primaryPost.tags,
         reading_time: estimateReadingTime(primaryPost.content),
         trade_category: undefined,
-        created_at: primaryPost.created_at || new Date().toISOString(),
+        created_at: primaryPost.created_at,
         published_at: primaryPost.created_at,
         updated_at: primaryPost.created_at
       };
     }
     
-    // Try secondary database as last resort
-    if (secondaryBlogSupabase) {
-      const { data: secondaryPost, error: secondaryError } = await secondaryBlogSupabase
-        .from('posts')
-        .select('*')
-        .eq('slug', slug)
-        .single();
-        
-      if (secondaryPost) {
-        console.log(`[DEBUG] Found post in secondary database as fallback: ${secondaryPost.title}`);
-        // Convert and return as before...
-        const htmlContent = convertMarkdownToHtml(secondaryPost.html || '');
-        
-        // Handle different tag formats
-        let postTags = '';
-        if (secondaryPost.tags) {
-          if (Array.isArray(secondaryPost.tags)) {
-            postTags = secondaryPost.tags.join(',');
-          } else {
-            postTags = secondaryPost.tags;
-          }
-        }
-        
-        return {
-          id: secondaryPost.id,
-          title: secondaryPost.title,
-          slug: secondaryPost.slug,
-          html: htmlContent,
-          excerpt: secondaryPost.excerpt || '',
-          feature_image: secondaryPost.feature_image,
-          feature_image_alt: secondaryPost.feature_image_alt || secondaryPost.title,
-          authors: Array.isArray(secondaryPost.authors) ? secondaryPost.authors : ['Top Contractors Denver'],
-          tags: postTags,
-          reading_time: estimateReadingTime(secondaryPost.html || ''),
-          trade_category: secondaryPost.trade_category,
-          created_at: secondaryPost.created_at || new Date().toISOString(),
-          published_at: secondaryPost.published_at,
-          updated_at: secondaryPost.updated_at
-        };
-      }
+    // Try secondary database
+    const { data: secondaryPost } = await mainSupabase
+      .from('posts')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+      
+    if (secondaryPost) {
+      console.log(`[DEBUG] Found post in secondary database as fallback: ${secondaryPost.title}`);
+      
+      return {
+        id: secondaryPost.id,
+        title: secondaryPost.title,
+        slug: secondaryPost.slug,
+        html: secondaryPost.html,
+        excerpt: secondaryPost.excerpt,
+        feature_image: secondaryPost.feature_image,
+        feature_image_alt: secondaryPost.feature_image_alt,
+        authors: secondaryPost.authors || ['Top Contractors Denver'],
+        tags: secondaryPost.tags,
+        reading_time: secondaryPost.reading_time,
+        trade_category: secondaryPost.trade_category,
+        created_at: secondaryPost.created_at,
+        published_at: secondaryPost.published_at,
+        updated_at: secondaryPost.updated_at
+      };
     }
     
+    console.log(`[DEBUG] Post with slug "${slug}" not found in any database`);
     return null;
   } catch (error) {
-    console.error(`[ERROR] Unexpected error in getPostBySlug:`, error);
+    console.error('[ERROR] Error in getPostBySlug function:', error);
     return null;
   }
 }
@@ -434,22 +421,22 @@ export async function getPostsByTag(tag: string, page = 1, perPage = 10): Promis
   // Map the posts fields to the Post type
   const mappedPosts = projectPosts.map(post => {
     // Extract feature image from content if available
-    const { featureImage, imageAlt, contentWithoutImage } = extractFeatureImage(post.content);
+    const { featureImage, imageAlt } = extractFeatureImage(post.content);
 
     // Convert markdown to HTML
-    const htmlContent = convertMarkdownToHtml(contentWithoutImage);
+    const htmlContent = convertMarkdownToHtml(post.content);
 
     return {
       id: post.id,
       title: post.title,
       slug: post.slug,
       html: htmlContent,
-      excerpt: contentWithoutImage.substring(0, 160),
+      excerpt: post.content.substring(0, 160),
       feature_image: featureImage,
       feature_image_alt: imageAlt || post.title,
       authors: ['Top Contractors Denver'],
       tags: post.tags,
-      reading_time: estimateReadingTime(contentWithoutImage),
+      reading_time: estimateReadingTime(post.content),
       trade_category: undefined,
       published_at: post.created_at,
       updated_at: post.created_at,
