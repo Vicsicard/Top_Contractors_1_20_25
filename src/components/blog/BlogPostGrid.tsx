@@ -135,7 +135,7 @@ export function BlogPostGrid({ posts, currentPage, totalPosts, postsPerPage }: B
       )}
 
       <div className="mt-8 text-center text-gray-600">
-        Showing {offset + 1}-{Math.min(offset + posts.length, totalPosts)} of {totalPosts} posts
+        Page {currentPage} of {totalPages}
       </div>
     </div>
   );
