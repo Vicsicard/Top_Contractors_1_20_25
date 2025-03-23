@@ -146,7 +146,7 @@ function extractImageFromArray(images: any): { imageUrl: string | undefined; ima
   return { imageUrl: undefined, imageAlt: undefined };
 }
 
-export async function getPosts(page = 1, perPage = 10): Promise<{
+export async function getPosts(page = 1, perPage = 6): Promise<{
   posts: Post[];
   totalPosts: number;
   hasMore: boolean;
@@ -155,9 +155,6 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
     console.log(`[DEBUG] Starting getPosts function for page ${page}, perPage ${perPage}`);
     const start = (page - 1) * perPage;
     const end = start + perPage - 1;
-    
-    // Set a reasonable limit for database queries to prevent timeouts
-    const DB_QUERY_LIMIT = 500;
     
     // For the first page, we need to get the total count to calculate pagination
     let totalCount = 0;
@@ -193,16 +190,10 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
     
     console.log(`[DEBUG] Fetched ${mergedPosts?.length || 0} posts from merged table for page ${page}`);
     
-    // Filter posts by project tags if needed
-    const filteredPosts = (mergedPosts || []).filter(post => {
-      const belongs = postBelongsToProject(post.tags);
-      if (belongs) {
-        console.log(`[DEBUG] Post matched project tags: ${post.title}`);
-      }
-      return belongs;
-    });
+    // Use all posts without filtering
+    const filteredPosts = mergedPosts || [];
     
-    console.log(`[DEBUG] After filtering: ${filteredPosts.length} posts match project criteria`);
+    console.log(`[DEBUG] Total posts to display: ${filteredPosts.length}`);
 
     if (!filteredPosts || filteredPosts.length === 0) {
       console.log('[DEBUG] No posts found from merged table');
