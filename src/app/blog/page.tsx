@@ -30,7 +30,7 @@ export async function generateMetadata({ searchParams }: { searchParams?: { page
   };
 }
 
-const POSTS_PER_PAGE = 12;
+const POSTS_PER_PAGE = 6; // Reduced from 12 to show more pages
 
 interface Props {
   searchParams?: {
@@ -85,7 +85,7 @@ export default async function BlogPage({ searchParams }: Props) {
       '@type': 'CollectionPage',
       headline: 'Latest Articles',
       description: 'Read the latest articles about home improvement, remodeling, and construction in Denver.',
-      url: currentPage === 1 ? 'https://topcontractorsdenver.com/blog/' : `https://topcontractorsdenver.com/blog/?page=${currentPage}`,
+      url: currentPage === 1 ? 'https://topcontractorsdenver.com/blog/' : `https://topcontractorsdenver.com/blog/?page=${currentPage}/`,
       isPartOf: {
         '@type': 'WebSite',
         url: 'https://topcontractorsdenver.com/',
@@ -95,13 +95,13 @@ export default async function BlogPage({ searchParams }: Props) {
       ...(currentPage < totalPages ? {
         'pagination': {
           '@type': 'SiteNavigationElement',
-          'nextPage': `https://topcontractorsdenver.com/blog/?page=${currentPage + 1}`
+          'nextPage': `https://topcontractorsdenver.com/blog/?page=${currentPage + 1}/`
         }
       } : {}),
       ...(currentPage > 1 ? {
         'pagination': {
           '@type': 'SiteNavigationElement',
-          'previousPage': `https://topcontractorsdenver.com/blog/?page=${currentPage - 1}`
+          'previousPage': `https://topcontractorsdenver.com/blog/?page=${currentPage - 1}/`
         }
       } : {})
     };

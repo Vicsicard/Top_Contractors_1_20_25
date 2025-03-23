@@ -156,7 +156,7 @@ export async function getPosts(page = 1, perPage = 10): Promise<{
     const start = (page - 1) * perPage;
     
     // Set a reasonable limit for database queries to prevent timeouts
-    const DB_QUERY_LIMIT = 100;
+    const DB_QUERY_LIMIT = 500; // Increased from 100 to handle more posts
     
     // For the first page, we need to get the total counts to calculate pagination
     let primaryTotalCount = 0;
