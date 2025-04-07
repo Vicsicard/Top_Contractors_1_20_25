@@ -146,28 +146,32 @@ export default async function TradeSubregionPage({ params }: Props) {
     slug: params.subregion
   };
 
-  const schema = {
-    localBusiness: generateLocalBusinessSchema(tradeObject, locationObject),
-    breadcrumb: generateBreadcrumbSchema(tradeObject, locationObject),
-    faq: generateFAQSchema(faqs)
-  };
-
-  const breadcrumbItems = [
-    { label: 'Home', href: '/' },
-    { label: tradeName, href: `/trades/${params.slug}` },
-    { label: subregionName, href: `/trades/${params.slug}/${params.subregion}` }
-  ];
-
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(schema)
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': [
+              generateLocalBusinessSchema(tradeObject, locationObject),
+              generateFAQSchema(faqs)
+            ]
+          })
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(generateBreadcrumbSchema(tradeObject, locationObject))
         }}
       />
       <div className="container mx-auto px-4">
-        <Breadcrumb items={breadcrumbItems} />
+        <Breadcrumb items={[
+          { label: 'Home', href: '/' },
+          { label: tradeName, href: `/trades/${params.slug}` },
+          { label: subregionName, href: `/trades/${params.slug}/${params.subregion}` }
+        ]} />
         
         <div className="py-8">
           <h1 className="text-4xl font-bold mb-4">

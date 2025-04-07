@@ -100,11 +100,16 @@ export default async function TradePage({ params }: Props) {
             '@context': 'https://schema.org',
             '@graph': [
               generateLocalBusinessSchema(tradeObject, denverLocation),
-              generateBreadcrumbSchema(tradeObject, null),
               generateServiceSchema(tradeObject, denverLocation),
               generateFAQSchema(faqs)
             ]
           })
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(generateBreadcrumbSchema(tradeObject, null))
         }}
       />
       <main className="container mx-auto px-4" role="main">
