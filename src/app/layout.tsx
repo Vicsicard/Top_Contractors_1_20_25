@@ -103,8 +103,13 @@ export default async function RootLayout({
           href="/manifest.json" 
         />
         
-        {/* AHP Module 2.0 Integration */}
-        <script src="https://module-cdn-worker.vicsicard.workers.dev/module.js" data-api-base="https://api.aihandshake.org" async></script>
+        {/* AHP Module 2.0 Integration with Customer Code Field */}
+        <script src="https://module-cdn-worker.vicsicard.workers.dev/module.js" 
+          data-api-base="https://api.aihandshake.org" 
+          data-customer-code-field="true"
+          data-modal-title="Subscribe to AI Visibility Reports"
+          data-modal-description="Get weekly insights about AI crawlers visiting your site"
+          async></script>
         
         {/* Defer non-critical scripts */}
         <script src="https://analytics.ahrefs.com/analytics.js" data-key="x9s4rXhtvM7jWVn7bFKrpA" async defer></script>
