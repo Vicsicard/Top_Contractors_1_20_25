@@ -61,12 +61,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  // Temporarily remove manifest reference to fix 401 errors
-  // manifest: '/manifest.json',
+  manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico'
-    // Temporarily remove apple icon reference to fix 404 errors
-    // apple: '/apple-touch-icon.png'
   }
 }
 
@@ -101,13 +98,13 @@ export default async function RootLayout({
         
         {/* No longer preloading this image to avoid warnings */}
         
-        {/* Web app manifest - temporarily disabled to fix 401 errors
         <link 
           rel="manifest" 
           href="/manifest.json" 
-          crossOrigin="use-credentials"
         />
-        */}
+        
+        {/* AHP Module 2.0 Integration */}
+        <script src="https://module-cdn-worker.vicsicard.workers.dev/module.js" data-api-base="https://api.aihandshake.org" async></script>
         
         {/* Defer non-critical scripts */}
         <script src="https://analytics.ahrefs.com/analytics.js" data-key="x9s4rXhtvM7jWVn7bFKrpA" async defer></script>
