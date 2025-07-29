@@ -106,7 +106,7 @@ export default async function RootLayout({
         {/* AHP Module 2.0 Integration with Customer Code Field */}
         <script src="https://module-cdn-worker.vicsicard.workers.dev/module.js" 
           data-api-base="https://api.aihandshake.org" 
-          data-customer-code-field="true"
+          data-show-customer-code="true"
           data-modal-title="Subscribe to AI Visibility Reports"
           data-modal-description="Get weekly insights about AI crawlers visiting your site"
           async></script>
