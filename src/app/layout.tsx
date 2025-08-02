@@ -149,6 +149,12 @@ export default async function RootLayout({
         <PerformanceMonitor />
         <Analytics />
         <SpeedInsights />
+        
+        {/* AHP Module 2.0 - Enhanced AI Detection */}
+        <script 
+          src="https://module-cdn-worker.vicsicard.workers.dev/module.js"
+          async
+        ></script>
       </body>
     </html>
   )
