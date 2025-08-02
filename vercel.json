@@ -1,14 +1,4 @@
 {
-  "version": 2,
-  "framework": "static",
-  "buildCommand": null,
-  "outputDirectory": "public-site",
-  "public": true,
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "github": {
-    "silent": true
-  },
   "redirects": [
     {
       "source": "/admin",
