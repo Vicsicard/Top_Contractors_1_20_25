@@ -1,7 +1,7 @@
 {
   "version": 2,
   "framework": "static",
-  "buildCommand": false,
+  "buildCommand": null,
   "outputDirectory": "public-site",
   "public": true,
   "cleanUrls": true,
