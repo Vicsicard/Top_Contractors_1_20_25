@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "framework": "static",
+  "buildCommand": false,
+  "outputDirectory": "public-site",
+  "public": true,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "github": {
+    "silent": true
+  },
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "/edit.html"
+    }
+  ]
+}

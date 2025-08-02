@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-key="site_title">Dynamic Site</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1 data-key="hero_title">Welcome</h1>
+        <p data-key="hero_subtitle">Your dynamic content here</p>
+    </section>
+
+    <!-- Bio Section -->
+    <section class="bio">
+        <h2 data-key="bio_title">About</h2>
+        <div data-key="bio_content"></div>
+    </section>
+
+    <!-- Blog Grid -->
+    <section class="blog-grid">
+        <h2 data-key="blog_title">Blog Posts</h2>
+        <div class="grid">
+            <div data-key="blog_post_1"></div>
+            <div data-key="blog_post_2"></div>
+            <div data-key="blog_post_3"></div>
+            <div data-key="blog_post_4"></div>
+        </div>
+    </section>
+
+    <!-- Social Media Grid -->
+    <section class="social-grid">
+        <h2 data-key="social_title">Connect With Us</h2>
+        <div class="grid">
+            <div data-key="social_1"></div>
+            <div data-key="social_2"></div>
+            <div data-key="social_3"></div>
+            <div data-key="social_4"></div>
+        </div>
+    </section>
+
+    <!-- Contact & Footer -->
+    <footer>
+        <div data-key="contact_info"></div>
+        <div data-key="footer_content"></div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>

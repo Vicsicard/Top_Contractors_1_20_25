@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Content Editor</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .upload-preview {
+            max-width: 200px;
+            margin: 1rem 0;
+        }
+        .upload-preview img {
+            max-width: 100%;
+            height: auto;
+        }
+        .file-input {
+            margin: 1rem 0;
+        }
+        .upload-status {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #eee;
+            margin-top: 0.5rem;
+        }
+        .progress-bar div {
+            height: 100%;
+            background: var(--brand-primary);
+            width: 0;
+            transition: width 0.3s ease;
+        }
+        textarea {
+            min-height: 100px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .section {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .image-item {
+            position: relative;
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        .image-item img {
+            width: 100%;
+            height: auto;
+        }
+        .image-item button {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            padding: 0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Site Content Editor</h1>
+
+    <form id="contentForm">
+        <!-- Project Selection -->
+        <div class="section">
+            <div class="form-group">
+                <label for="project_id">Project ID:</label>
+                <select name="project_id" id="project_id" required>
+                    <option value="">Select Project</option>
+                    <option value="client-x">Client X</option>
+                    <option value="client-y">Client Y</option>
+                    <!-- Add more options as needed -->
+                </select>
+            </div>
+        </div>
+
+        <!-- File Upload Section -->
+        <div class="section">
+            <h2>File Upload</h2>
+            <div class="form-group">
+                <label for="file-upload">Upload Image:</label>
+                <input type="file" id="file-upload" class="file-input" accept="image/*" multiple>
+                <div class="upload-status"></div>
+                <div class="progress-bar"><div></div></div>
+                <div class="image-grid" id="uploaded-images"></div>
+            </div>
+        </div>
+
+        <!-- Basic Info -->
+        <div class="section">
+            <h2>Basic Information</h2>
+            <div class="form-group">
+                <label for="client_name">Client Name:</label>
+                <input type="text" name="client_name" id="client_name" required>
+            </div>
+            <div class="form-group">
+                <label for="rendered_title">Page Title:</label>
+                <input type="text" name="rendered_title" id="rendered_title" required>
+            </div>
+            <div class="form-group">
+                <label for="rendered_subtitle">Subtitle:</label>
+                <input type="text" name="rendered_subtitle" id="rendered_subtitle">
+            </div>
+        </div>
+
+        <!-- Blog Posts -->
+        <div class="section">
+            <h2>Blog Posts</h2>
+            <div class="form-group">
+                <label for="rendered_blog_post_1">Blog Post 1:</label>
+                <textarea name="rendered_blog_post_1" id="rendered_blog_post_1"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="rendered_blog_post_2">Blog Post 2:</label>
+                <textarea name="rendered_blog_post_2" id="rendered_blog_post_2"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="rendered_blog_post_3">Blog Post 3:</label>
+                <textarea name="rendered_blog_post_3" id="rendered_blog_post_3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="rendered_blog_post_4">Blog Post 4:</label>
+                <textarea name="rendered_blog_post_4" id="rendered_blog_post_4"></textarea>
+            </div>
+        </div>
+
+        <!-- Social Posts -->
+        <div class="section">
+            <h2>Social Media Posts</h2>
+            <div class="form-group">
+                <label for="rendered_social_post_linkedin">LinkedIn Post:</label>
+                <textarea name="rendered_social_post_linkedin" id="rendered_social_post_linkedin"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="rendered_social_post_twitter">Twitter Post:</label>
+                <textarea name="rendered_social_post_twitter" id="rendered_social_post_twitter"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="rendered_social_post_facebook">Facebook Post:</label>
+                <textarea name="rendered_social_post_facebook" id="rendered_social_post_facebook"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="rendered_social_post_instagram">Instagram Post:</label>
+                <textarea name="rendered_social_post_instagram" id="rendered_social_post_instagram"></textarea>
+            </div>
+        </div>
+
+        <!-- Brand Colors -->
+        <div class="section">
+            <h2>Brand Colors</h2>
+            <div class="form-group">
+                <label for="brand-colors">Brand Colors CSS:</label>
+                <textarea name="brand-colors" id="brand-colors">:root {
+    --brand-primary: #007bff;
+    --brand-secondary: #6c757d;
+    --brand-accent: #28a745;
+}</textarea>
+            </div>
+        </div>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <div id="status" style="margin-top: 1rem;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module">
+        import SUPABASE_CONFIG from '../config.js';
+
+        // Initialize Supabase client
+        const supabase = window.supabase.createClient(
+            SUPABASE_CONFIG.url,
+            SUPABASE_CONFIG.publicKey
+        );
+
+        const form = document.getElementById('contentForm');
+        const status = document.getElementById('status');
+        const projectSelect = document.getElementById('project_id');
+        const fileUpload = document.getElementById('file-upload');
+        const uploadStatus = document.querySelector('.upload-status');
+        const progressBar = document.querySelector('.progress-bar div');
+        const uploadedImages = document.getElementById('uploaded-images');
+
+        // Handle file uploads
+        async function handleFileUpload(event) {
+            const files = event.target.files;
+            const projectId = projectSelect.value;
+
+            if (!projectId) {
+                uploadStatus.textContent = 'Please select a project first';
+                uploadStatus.className = 'upload-status error';
+                return;
+            }
+
+            for (const file of files) {
+                try {
+                    // Update status
+                    uploadStatus.textContent = `Uploading ${file.name}...`;
+                    uploadStatus.className = 'upload-status';
+
+                    // Create unique file path
+                    const timestamp = new Date().getTime();
+                    const filePath = `${projectId}/${timestamp}-${file.name}`;
+
+                    // Upload file to Supabase Storage
+                    const { data, error } = await supabase.storage
+                        .from('images')
+                        .upload(filePath, file, {
+                            onUploadProgress: (progress) => {
+                                const percent = (progress.loaded / progress.total) * 100;
+                                progressBar.style.width = percent + '%';
+                            }
+                        });
+
+                    if (error) throw error;
+
+                    // Get public URL
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('images')
+                        .getPublicUrl(filePath);
+
+                    // Add to image grid
+                    const imageItem = document.createElement('div');
+                    imageItem.className = 'image-item';
+                    imageItem.innerHTML = `
+                        <img src="${publicUrl}" alt="${file.name}">
+                        <button onclick="removeImage('${filePath}')" title="Remove image">×</button>
+                        <input type="hidden" name="images[]" value="${publicUrl}">
+                    `;
+                    uploadedImages.appendChild(imageItem);
+
+                    // Update status
+                    uploadStatus.textContent = 'Upload complete!';
+                    uploadStatus.className = 'upload-status success';
+                    
+                    // Reset progress bar
+                    setTimeout(() => {
+                        progressBar.style.width = '0';
+                    }, 1000);
+
+                } catch (error) {
+                    uploadStatus.textContent = `Error uploading ${file.name}: ${error.message}`;
+                    uploadStatus.className = 'upload-status error';
+                }
+            }
+        }
+
+        // Remove image
+        window.removeImage = async function(filePath) {
+            try {
+                const { error } = await supabase.storage
+                    .from('images')
+                    .remove([filePath]);
+
+                if (error) throw error;
+
+                // Remove from UI
+                const imageItem = event.target.closest('.image-item');
+                imageItem.remove();
+
+            } catch (error) {
+                alert('Error removing image: ' + error.message);
+            }
+        };
+
+        // Load existing content
+        async function loadContent() {
+            const projectId = projectSelect.value;
+            if (!projectId) return;
+
+            try {
+                // Load text content
+                const { data, error } = await supabase
+                    .from('dynamic_content')
+                    .select('key, value')
+                    .eq('project_id', projectId);
+
+                if (error) throw error;
+
+                // Populate form fields
+                data.forEach(({ key, value }) => {
+                    const input = document.querySelector(`[name="${key}"]`);
+                    if (input) input.value = value;
+                });
+
+                // Load images
+                const { data: images, error: storageError } = await supabase.storage
+                    .from('images')
+                    .list(projectId);
+
+                if (storageError) throw storageError;
+
+                // Clear existing images
+                uploadedImages.innerHTML = '';
+
+                // Add images to grid
+                for (const image of images) {
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('images')
+                        .getPublicUrl(`${projectId}/${image.name}`);
+
+                    const imageItem = document.createElement('div');
+                    imageItem.className = 'image-item';
+                    imageItem.innerHTML = `
+                        <img src="${publicUrl}" alt="${image.name}">
+                        <button onclick="removeImage('${projectId}/${image.name}')" title="Remove image">×</button>
+                        <input type="hidden" name="images[]" value="${publicUrl}">
+                    `;
+                    uploadedImages.appendChild(imageItem);
+                }
+
+                status.textContent = 'Content loaded successfully';
+                status.className = 'success';
+            } catch (error) {
+                status.textContent = 'Error loading content: ' + error.message;
+                status.className = 'error';
+            }
+        }
+
+        // Save content
+        async function saveContent(event) {
+            event.preventDefault();
+            const projectId = projectSelect.value;
+            
+            if (!projectId) {
+                status.textContent = 'Please select a Project ID';
+                status.className = 'error';
+                return;
+            }
+
+            try {
+                // Collect all form data
+                const formData = new FormData(form);
+                const updates = [];
+
+                // Process each form field
+                for (const [key, value] of formData.entries()) {
+                    if (key === 'project_id' || key === 'images[]') continue;
+                    if (value.trim()) {
+                        updates.push({
+                            project_id: projectId,
+                            key: key,
+                            value: value.trim()
+                        });
+                    }
+                }
+
+                // Save image URLs
+                const imageUrls = Array.from(document.querySelectorAll('input[name="images[]"]'))
+                    .map(input => input.value);
+                
+                if (imageUrls.length) {
+                    updates.push({
+                        project_id: projectId,
+                        key: 'images',
+                        value: JSON.stringify(imageUrls)
+                    });
+                }
+
+                // Batch upsert to Supabase
+                const { error } = await supabase
+                    .from('dynamic_content')
+                    .upsert(updates);
+
+                if (error) throw error;
+
+                status.textContent = 'Content saved successfully';
+                status.className = 'success';
+            } catch (error) {
+                status.textContent = 'Error saving content: ' + error.message;
+                status.className = 'error';
+            }
+        }
+
+        // Event listeners
+        projectSelect.addEventListener('change', loadContent);
+        form.addEventListener('submit', saveContent);
+        fileUpload.addEventListener('change', handleFileUpload);
+    </script>
+</body>
+</html>
