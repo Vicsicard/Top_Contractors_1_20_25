@@ -111,21 +111,6 @@ export default async function RootLayout({
           data-modal-description="Get weekly insights about AI crawlers visiting your site"
           async></script>
         
-        {/* Script to show registration modal after page load */}
-        <script dangerouslySetInnerHTML={{ __html: `
-          window.addEventListener('load', function() {
-            // Clear any existing registration to test modal
-            localStorage.removeItem('ahp_module_registration');
-            
-            // Wait for AHPModule to be available
-            setTimeout(function() {
-              if (window.AHPModule && typeof window.AHPModule.showRegistration === 'function') {
-                window.AHPModule.showRegistration();
-              }
-            }, 1500);
-          });
-        `}} />
-        
         {/* Defer non-critical scripts */}
         <script src="https://analytics.ahrefs.com/analytics.js" data-key="x9s4rXhtvM7jWVn7bFKrpA" async defer></script>
       </head>
@@ -150,11 +135,7 @@ export default async function RootLayout({
         <Analytics />
         <SpeedInsights />
         
-        {/* AHP Module 2.0 - Enhanced AI Detection */}
-        <script 
-          src="https://module-cdn-worker.vicsicard.workers.dev/module.js"
-          async
-        ></script>
+
       </body>
     </html>
   )

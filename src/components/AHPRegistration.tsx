@@ -22,7 +22,7 @@ export default function AHPRegistration({
   useEffect(() => {
     // Check if AHP Module is loaded
     const checkModuleLoaded = () => {
-      if (window.AHPModule && typeof window.AHPModule.showRegistrationModal === 'function') {
+      if (window.AHPModule && typeof window.AHPModule.showRegistration === 'function') {
         setIsModuleLoaded(true);
         return true;
       }
@@ -46,8 +46,8 @@ export default function AHPRegistration({
   }, []);
 
   const handleShowModal = () => {
-    if (window.AHPModule && typeof window.AHPModule.showRegistrationModal === 'function') {
-      window.AHPModule.showRegistrationModal();
+    if (window.AHPModule && typeof window.AHPModule.showRegistration === 'function') {
+      window.AHPModule.showRegistration();
     } else {
       console.warn('AHP Module is not loaded yet. Please try again in a moment.');
       alert('AI Visibility Report registration is not available at the moment. Please try again later.');
@@ -70,7 +70,7 @@ export default function AHPRegistration({
 declare global {
   interface Window {
     AHPModule?: {
-      showRegistrationModal: () => void;
+      showRegistration: () => void;
     };
   }
 }
