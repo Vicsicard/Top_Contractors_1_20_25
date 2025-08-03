@@ -103,12 +103,13 @@ export default async function RootLayout({
           href="/manifest.json" 
         />
         
-        {/* AHP Module 2.0 Enhanced with Server-Side AI Bot Detection - Updated */}
+        {/* AHP Module 2.0 Enhanced with Phase 1 AI Optimization - Paid Customer */}
         <script src="https://module-cdn-worker.vicsicard.workers.dev/module.js" 
           data-api-base="https://ahp-mod-2-0-stanadalone-99-99-backend.onrender.com/api" 
-          data-show-customer-code="true"
-          data-modal-title="Subscribe to AI Visibility Reports"
-          data-modal-description="Get weekly insights about AI crawlers visiting your site"
+          data-customer-code="topcontractorsdenver-paid-2024"
+          data-show-customer-code="false"
+          data-modal-title="AI Optimization Active"
+          data-modal-description="Phase 1 AI optimization features are active for this site"
           async></script>
         
         {/* Defer non-critical scripts */}
