@@ -103,7 +103,7 @@ export default async function RootLayout({
           href="/manifest.json" 
         />
         
-        {/* AHP Module 2.0 Enhanced with Server-Side AI Bot Detection */}
+        {/* AHP Module 2.0 Enhanced with Server-Side AI Bot Detection - Updated */}
         <script src="https://module-cdn-worker.vicsicard.workers.dev/module.js" 
           data-api-base="https://ahp-mod-2-0-stanadalone-99-99-backend.onrender.com/api" 
           data-show-customer-code="true"
