@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AHP Module Modal Debug</title>
+    <script src="https://module-cdn-worker.vicsicard.workers.dev/module.js" 
+            data-api-base="https://ahp-email-scheduler.vicsicard.workers.dev" 
+            data-show-customer-code="true" 
+            data-modal-title="Subscribe to AI Visibility Reports" 
+            data-modal-description="Get weekly insights about AI crawlers visiting your site" 
+            data-show-name-field="true"
+            data-auto-init="true"
+            async></script>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .control-panel {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .debug-info {
+            background-color: #fff8e1;
+            border: 1px solid #ffecb3;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>AHP Module Modal Debug</h1>
+    
+    <div class="control-panel">
+        <h2>Control Panel</h2>
+        <button id="show-modal">Show Registration Modal</button>
+        <button id="clear-registration">Clear Registration Data</button>
+        <button id="check-fields">Check Modal Fields</button>
+        <button id="dump-script-attributes">Show Script Attributes</button>
+    </div>
+    
+    <div class="debug-info">
+        <h2>Debug Information</h2>
+        <div id="debug-output"></div>
+    </div>
+    
+    <script>
+        // Wait for AHP Module to initialize
+        setTimeout(() => {
+            document.getElementById('show-modal').addEventListener('click', function() {
+                if (window.AHPModule) {
+                    window.AHPModule.showRegistrationModal();
+                } else {
+                    outputDebug('AHP Module not initialized yet');
+                }
+            });
+            
+            document.getElementById('clear-registration').addEventListener('click', function() {
+                // Clear localStorage
+                localStorage.removeItem('ahp_module_registration');
+                
+                // Clear cookies
+                document.cookie = 'ahp_registered=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                
+                outputDebug('Registration data cleared. Refresh the page to see the modal again.');
+            });
+            
+            document.getElementById('check-fields').addEventListener('click', function() {
+                const modal = document.getElementById('ahp-registration-modal');
+                if (!modal) {
+                    outputDebug('Modal not found. Please show the modal first.');
+                    return;
+                }
+                
+                const form = modal.querySelector('form');
+                if (!form) {
+                    outputDebug('Form not found in modal.');
+                    return;
+                }
+                
+                const nameField = form.elements.name;
+                const emailField = form.elements.email;
+                const customerCodeField = form.elements.customerCode;
+                
+                let fieldsInfo = 'Fields in modal:\n';
+                fieldsInfo += `- Name field: ${nameField ? 'Present' : 'Missing'}\n`;
+                fieldsInfo += `- Email field: ${emailField ? 'Present' : 'Missing'}\n`;
+                fieldsInfo += `- Customer Code field: ${customerCodeField ? 'Present' : 'Missing'}\n`;
+                
+                outputDebug(fieldsInfo);
+                
+                // Display modal HTML structure
+                outputDebug('Modal HTML structure:', modal.innerHTML);
+            });
+            
+            document.getElementById('dump-script-attributes').addEventListener('click', function() {
+                const scripts = Array.from(document.getElementsByTagName('script'));
+                const ahpScript = scripts.find(s => s.src && s.src.includes('ahp-email-scheduler'));
+                
+                if (!ahpScript) {
+                    outputDebug('AHP Module script tag not found!');
+                    return;
+                }
+                
+                const attributes = {
+                    'src': ahpScript.src,
+                    'data-api-base': ahpScript.getAttribute('data-api-base'),
+                    'data-show-customer-code': ahpScript.getAttribute('data-show-customer-code'),
+                    'data-modal-title': ahpScript.getAttribute('data-modal-title'),
+                    'data-modal-description': ahpScript.getAttribute('data-modal-description'),
+                    'data-show-name-field': ahpScript.getAttribute('data-show-name-field'),
+                    'data-auto-init': ahpScript.getAttribute('data-auto-init'),
+                    'async': ahpScript.async
+                };
+                
+                outputDebug('Script attributes:', JSON.stringify(attributes, null, 2));
+            });
+        }, 1000);
+        
+        function outputDebug(message, html) {
+            const output = document.getElementById('debug-output');
+            const pre = document.createElement('pre');
+            
+            if (html) {
+                pre.textContent = html;
+            } else {
+                pre.textContent = typeof message === 'object' ? JSON.stringify(message, null, 2) : message;
+            }
+            
+            output.appendChild(pre);
+            output.appendChild(document.createElement('hr'));
+        }
+    </script>
+</body>
+</html>

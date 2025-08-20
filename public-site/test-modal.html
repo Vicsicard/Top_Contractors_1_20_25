@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AHP Module Test</title>
+    <!-- AHP Module Script with explicit attributes -->
+    <script src="https://module-cdn-worker.vicsicard.workers.dev/module.js" 
+            data-api-base="https://ahp-email-scheduler.vicsicard.workers.dev" 
+            data-show-customer-code="true" 
+            data-modal-title="Subscribe to AI Visibility Reports" 
+            data-modal-description="Get weekly insights about AI crawlers visiting your site" 
+            async></script>
+</head>
+<body>
+    <h1>AHP Module Registration Test</h1>
+    <p>This page tests the AHP Module registration modal with name and customer code fields.</p>
+    
+    <button onclick="showModalManually()">Show Registration Modal</button>
+    <button onclick="clearRegistration()">Clear Registration Data</button>
+    
+    <div id="status"></div>
+    
+    <script>
+        // Function to manually show the modal
+        function showModalManually() {
+            if (window.AHPModule && typeof window.AHPModule.showRegistrationModal === 'function') {
+                window.AHPModule.showRegistrationModal();
+                document.getElementById('status').textContent = 'Modal should be visible now';
+            } else {
+                document.getElementById('status').textContent = 'Error: AHPModule not initialized';
+            }
+        }
+        
+        // Function to clear registration data for testing
+        function clearRegistration() {
+            try {
+                // Clear localStorage
+                localStorage.removeItem('ahp_module_registration');
+                localStorage.removeItem('ahp_registration');
+                
+                // Clear cookies
+                document.cookie = 'ahp_registered=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                
+                document.getElementById('status').textContent = 'Registration data cleared. Refresh the page to see the modal.';
+            } catch (e) {
+                document.getElementById('status').textContent = 'Error clearing data: ' + e.message;
+            }
+        }
+        
+        // Check if module loaded correctly
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                if (window.AHPModule) {
+                    document.getElementById('status').textContent = 'AHP Module loaded successfully';
+                } else {
+                    document.getElementById('status').textContent = 'Warning: AHP Module failed to initialize';
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -103,9 +103,9 @@ export default async function RootLayout({
           href="/manifest.json" 
         />
         
-        {/* AHP Module 2.0 Enhanced with Phase 1 AI Optimization - Paid Customer */}
-        <script src="https://module-cdn-worker.vicsicard.workers.dev/module.js" 
-          data-api-base="https://ahp-mod-2-0-stanadalone-99-99-backend.onrender.com/api" 
+        {/* AHP Module 2.0 - AI Optimization & Bot Detection - Updated Infrastructure */}
+        <script src="https://ahp-email-scheduler.vicsicard.workers.dev/module.js" 
+          data-api-base="https://ahp-email-scheduler.vicsicard.workers.dev" 
           data-customer-code="topcontractorsdenver-paid-2024"
           data-show-customer-code="false"
           data-modal-title="AI Optimization Active"
@@ -135,6 +135,7 @@ export default async function RootLayout({
         <PerformanceMonitor />
         <Analytics />
         <SpeedInsights />
+        
         
 
       </body>

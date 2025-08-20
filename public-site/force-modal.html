@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Force AHP Module Modal</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .control-panel {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Force AHP Module Modal</h1>
+    
+    <div class="control-panel">
+        <h2>Control Panel</h2>
+        <button id="clear-data">Clear Registration Data</button>
+        <button id="show-modal">Show Modal</button>
+    </div>
+    
+    <div id="status"></div>
+    
+    <script>
+        // Clear registration data
+        document.getElementById('clear-data').addEventListener('click', function() {
+            localStorage.removeItem('ahp_module_registration');
+            document.cookie = 'ahp_registered=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            document.getElementById('status').innerHTML = '<p>Registration data cleared. Ready to show modal.</p>';
+        });
+        
+        // Load AHP Module script dynamically
+        document.getElementById('show-modal').addEventListener('click', function() {
+            // Remove any existing script
+            const existingScript = document.getElementById('ahp-module-script');
+            if (existingScript) {
+                existingScript.remove();
+            }
+            
+            // Create new script with all required attributes
+            const script = document.createElement('script');
+            script.id = 'ahp-module-script';
+            script.src = "https://module-cdn-worker.vicsicard.workers.dev/module.js";
+            script.setAttribute('data-api-base', 'https://ahp-email-scheduler.vicsicard.workers.dev');
+            script.setAttribute('data-show-customer-code', 'true');
+            script.setAttribute('data-show-name-field', 'true');
+            script.setAttribute('data-modal-title', 'Subscribe to AI Visibility Reports');
+            script.setAttribute('data-modal-description', 'Get weekly insights about AI crawlers visiting your site');
+            script.setAttribute('data-auto-init', 'true');
+            script.async = true;
+            
+            document.head.appendChild(script);
+            
+            // Force show modal after script loads
+            script.onload = function() {
+                setTimeout(function() {
+                    if (window.AHPModule) {
+                        window.AHPModule.showRegistrationModal();
+                        document.getElementById('status').innerHTML += '<p>Modal should be visible now.</p>';
+                    } else {
+                        document.getElementById('status').innerHTML += '<p>Error: AHPModule not initialized.</p>';
+                    }
+                }, 1000);
+            };
+            
+            document.getElementById('status').innerHTML = '<p>Loading AHP Module script...</p>';
+        });
+    </script>
+</body>
+</html>
