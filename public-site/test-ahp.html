@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-key="site_title">Dynamic Site</title>
-    <link rel="stylesheet" href="style.css">
+    <title>AHP Module Test</title>
     <!-- AHP Module Script with forced fields -->
     <script>
         // Load the AHP Module script
@@ -17,7 +16,6 @@
             script.setAttribute('data-show-name-field', 'true');
             script.setAttribute('data-modal-title', 'Subscribe to AI Visibility Reports');
             script.setAttribute('data-modal-description', 'Get weekly insights about AI crawlers visiting your site');
-            script.setAttribute('data-auto-init', 'true');
             script.async = true;
             
             // Add the script to the document
@@ -191,58 +189,17 @@
                         
                         return modal;
                     };
-                }
-                
-                // Force show modal after a delay
-                setTimeout(function() {
+                    
+                    // Force show modal immediately
                     window.AHPModule.showRegistrationModal();
-                }, 1000);
+                }
             };
         })();
     </script>
 </head>
 <body>
-    <!-- Hero Section -->
-    <section class="hero">
-        <h1 data-key="hero_title">Welcome</h1>
-        <p data-key="hero_subtitle">Your dynamic content here</p>
-    </section>
-
-    <!-- Bio Section -->
-    <section class="bio">
-        <h2 data-key="bio_title">About</h2>
-        <div data-key="bio_content"></div>
-    </section>
-
-    <!-- Blog Grid -->
-    <section class="blog-grid">
-        <h2 data-key="blog_title">Blog Posts</h2>
-        <div class="grid">
-            <div data-key="blog_post_1"></div>
-            <div data-key="blog_post_2"></div>
-            <div data-key="blog_post_3"></div>
-            <div data-key="blog_post_4"></div>
-        </div>
-    </section>
-
-    <!-- Social Media Grid -->
-    <section class="social-grid">
-        <h2 data-key="social_title">Connect With Us</h2>
-        <div class="grid">
-            <div data-key="social_1"></div>
-            <div data-key="social_2"></div>
-            <div data-key="social_3"></div>
-            <div data-key="social_4"></div>
-        </div>
-    </section>
-
-    <!-- Contact & Footer -->
-    <footer>
-        <div data-key="contact_info"></div>
-        <div data-key="footer_content"></div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="module" src="script.js"></script>
+    <h1>AHP Module Test Page</h1>
+    <p>This page tests the AHP Module registration modal with all fields.</p>
+    <button onclick="window.AHPModule && window.AHPModule.showRegistrationModal()">Show Registration Modal</button>
 </body>
 </html>
