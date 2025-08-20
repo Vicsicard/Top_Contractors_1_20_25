@@ -5,200 +5,187 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-key="site_title">Dynamic Site</title>
     <link rel="stylesheet" href="style.css">
-    <!-- AHP Module Script with forced fields -->
+    <!-- AHP Module Script - Direct Implementation -->
+    <script src="https://ahp-email-scheduler.vicsicard.workers.dev/module.js" data-api-base="https://ahp-email-scheduler.vicsicard.workers.dev" data-show-customer-code="true" data-show-name-field="true" data-modal-title="Subscribe to AI Visibility Reports" data-modal-description="Get weekly insights about AI crawlers visiting your site" async></script>
+    
+    <!-- Force all fields to display -->
     <script>
-        // Load the AHP Module script
-        (function() {
-            // Create a script element
-            var script = document.createElement('script');
-            script.src = 'https://ahp-email-scheduler.vicsicard.workers.dev/module.js';
-            script.setAttribute('data-api-base', 'https://ahp-email-scheduler.vicsicard.workers.dev');
-            script.setAttribute('data-show-customer-code', 'true');
-            script.setAttribute('data-show-name-field', 'true');
-            script.setAttribute('data-modal-title', 'Subscribe to AI Visibility Reports');
-            script.setAttribute('data-modal-description', 'Get weekly insights about AI crawlers visiting your site');
-            script.setAttribute('data-auto-init', 'true');
-            script.async = true;
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create registration modal with all fields
+        function createCustomModal() {
+            // Create modal container
+            var modal = document.createElement('div');
+            modal.id = 'ahp-registration-modal';
+            modal.style.display = 'flex';
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100%';
+            modal.style.height = '100%';
+            modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            modal.style.zIndex = '9999';
+            modal.style.justifyContent = 'center';
+            modal.style.alignItems = 'center';
             
-            // Add the script to the document
-            document.head.appendChild(script);
+            // Create modal content
+            var content = document.createElement('div');
+            content.style.backgroundColor = 'white';
+            content.style.padding = '20px';
+            content.style.borderRadius = '5px';
+            content.style.maxWidth = '500px';
+            content.style.width = '90%';
             
-            // Override the createModal function to force all fields
-            script.onload = function() {
-                if (window.AHPModule) {
-                    var originalCreateModal = window.AHPModule.createModal;
-                    window.AHPModule.createModal = function() {
-                        // Create modal container
-                        var modal = document.createElement('div');
-                        modal.id = 'ahp-registration-modal';
-                        modal.style.display = 'flex';
-                        modal.style.position = 'fixed';
-                        modal.style.top = '0';
-                        modal.style.left = '0';
-                        modal.style.width = '100%';
-                        modal.style.height = '100%';
-                        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-                        modal.style.zIndex = '9999';
-                        modal.style.justifyContent = 'center';
-                        modal.style.alignItems = 'center';
-                        
-                        // Create modal content
-                        var content = document.createElement('div');
-                        content.style.backgroundColor = 'white';
-                        content.style.padding = '20px';
-                        content.style.borderRadius = '5px';
-                        content.style.maxWidth = '500px';
-                        content.style.width = '90%';
-                        
-                        // Create title
-                        var title = document.createElement('h2');
-                        title.textContent = 'Subscribe to AI Visibility Reports';
-                        title.style.marginTop = '0';
-                        
-                        // Create description
-                        var description = document.createElement('p');
-                        description.textContent = 'Get weekly insights about AI crawlers visiting your site';
-                        
-                        // Create form
-                        var form = document.createElement('form');
-                        form.id = 'ahp-registration-form';
-                        
-                        // Create name field
-                        var nameLabel = document.createElement('label');
-                        nameLabel.textContent = 'Name';
-                        nameLabel.style.display = 'block';
-                        nameLabel.style.marginTop = '10px';
-                        
-                        var nameInput = document.createElement('input');
-                        nameInput.type = 'text';
-                        nameInput.name = 'name';
-                        nameInput.required = true;
-                        nameInput.style.width = '100%';
-                        nameInput.style.padding = '8px';
-                        nameInput.style.marginTop = '5px';
-                        nameInput.style.boxSizing = 'border-box';
-                        
-                        // Create email field
-                        var emailLabel = document.createElement('label');
-                        emailLabel.textContent = 'Email';
-                        emailLabel.style.display = 'block';
-                        emailLabel.style.marginTop = '10px';
-                        
-                        var emailInput = document.createElement('input');
-                        emailInput.type = 'email';
-                        emailInput.name = 'email';
-                        emailInput.required = true;
-                        emailInput.style.width = '100%';
-                        emailInput.style.padding = '8px';
-                        emailInput.style.marginTop = '5px';
-                        emailInput.style.boxSizing = 'border-box';
-                        
-                        // Create customer code field
-                        var codeLabel = document.createElement('label');
-                        codeLabel.textContent = 'Customer Code';
-                        codeLabel.style.display = 'block';
-                        codeLabel.style.marginTop = '10px';
-                        
-                        var codeInput = document.createElement('input');
-                        codeInput.type = 'text';
-                        codeInput.name = 'customerCode';
-                        codeInput.style.width = '100%';
-                        codeInput.style.padding = '8px';
-                        codeInput.style.marginTop = '5px';
-                        codeInput.style.boxSizing = 'border-box';
-                        
-                        // Create submit button
-                        var submitBtn = document.createElement('button');
-                        submitBtn.type = 'submit';
-                        submitBtn.textContent = 'Register';
-                        submitBtn.style.backgroundColor = '#4a90e2';
-                        submitBtn.style.color = 'white';
-                        submitBtn.style.border = 'none';
-                        submitBtn.style.padding = '10px 15px';
-                        submitBtn.style.marginTop = '15px';
-                        submitBtn.style.cursor = 'pointer';
-                        submitBtn.style.borderRadius = '4px';
-                        
-                        // Append elements to form
-                        form.appendChild(nameLabel);
-                        form.appendChild(nameInput);
-                        form.appendChild(emailLabel);
-                        form.appendChild(emailInput);
-                        form.appendChild(codeLabel);
-                        form.appendChild(codeInput);
-                        form.appendChild(submitBtn);
-                        
-                        // Append elements to content
-                        content.appendChild(title);
-                        content.appendChild(description);
-                        content.appendChild(form);
-                        
-                        // Append content to modal
-                        modal.appendChild(content);
-                        
-                        // Append modal to body
-                        document.body.appendChild(modal);
-                        
-                        // Add form submit handler
-                        form.addEventListener('submit', function(e) {
-                            e.preventDefault();
-                            
-                            var formData = {
-                                name: nameInput.value,
-                                email: emailInput.value,
-                                customerCode: codeInput.value,
-                                siteUrl: window.location.hostname
-                            };
-                            
-                            var apiBase = script.getAttribute('data-api-base') || 'https://ahp-email-scheduler.vicsicard.workers.dev';
-                            
-                            // Send registration data
-                            fetch(apiBase + '/registration', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(formData)
-                            })
-                            .then(function(response) {
-                                return response.json();
-                            })
-                            .then(function(data) {
-                                if (data.success) {
-                                    // Store registration in localStorage
-                                    localStorage.setItem('ahp_module_registration', JSON.stringify({
-                                        value: {
-                                            registered: true,
-                                            email: formData.email,
-                                            timestamp: new Date().toISOString()
-                                        },
-                                        expiry: new Date().getTime() + (365 * 24 * 60 * 60 * 1000)
-                                    }));
-                                    
-                                    // Close modal
-                                    modal.remove();
-                                    
-                                    // Show success message
-                                    alert('Registration successful!');
-                                } else {
-                                    alert('Registration failed: ' + (data.message || 'Unknown error'));
-                                }
-                            })
-                            .catch(function(error) {
-                                alert('Error: ' + error.message);
-                            });
-                        });
-                        
-                        return modal;
-                    };
-                }
+            // Create title
+            var title = document.createElement('h2');
+            title.textContent = 'Subscribe to AI Visibility Reports';
+            title.style.marginTop = '0';
+            
+            // Create description
+            var description = document.createElement('p');
+            description.textContent = 'Get weekly insights about AI crawlers visiting your site';
+            
+            // Create form
+            var form = document.createElement('form');
+            form.id = 'ahp-registration-form';
+            
+            // Create name field
+            var nameLabel = document.createElement('label');
+            nameLabel.textContent = 'Name';
+            nameLabel.style.display = 'block';
+            nameLabel.style.marginTop = '10px';
+            
+            var nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.name = 'name';
+            nameInput.required = true;
+            nameInput.style.width = '100%';
+            nameInput.style.padding = '8px';
+            nameInput.style.marginTop = '5px';
+            nameInput.style.boxSizing = 'border-box';
+            
+            // Create email field
+            var emailLabel = document.createElement('label');
+            emailLabel.textContent = 'Email';
+            emailLabel.style.display = 'block';
+            emailLabel.style.marginTop = '10px';
+            
+            var emailInput = document.createElement('input');
+            emailInput.type = 'email';
+            emailInput.name = 'email';
+            emailInput.required = true;
+            emailInput.style.width = '100%';
+            emailInput.style.padding = '8px';
+            emailInput.style.marginTop = '5px';
+            emailInput.style.boxSizing = 'border-box';
+            
+            // Create customer code field
+            var codeLabel = document.createElement('label');
+            codeLabel.textContent = 'Customer Code';
+            codeLabel.style.display = 'block';
+            codeLabel.style.marginTop = '10px';
+            
+            var codeInput = document.createElement('input');
+            codeInput.type = 'text';
+            codeInput.name = 'customerCode';
+            codeInput.required = true;
+            codeInput.style.width = '100%';
+            codeInput.style.padding = '8px';
+            codeInput.style.marginTop = '5px';
+            codeInput.style.boxSizing = 'border-box';
+            
+            // Create submit button
+            var submitBtn = document.createElement('button');
+            submitBtn.type = 'submit';
+            submitBtn.textContent = 'Register';
+            submitBtn.style.backgroundColor = '#4a90e2';
+            submitBtn.style.color = 'white';
+            submitBtn.style.border = 'none';
+            submitBtn.style.padding = '10px 15px';
+            submitBtn.style.marginTop = '15px';
+            submitBtn.style.cursor = 'pointer';
+            submitBtn.style.borderRadius = '4px';
+            
+            // Append elements to form
+            form.appendChild(nameLabel);
+            form.appendChild(nameInput);
+            form.appendChild(emailLabel);
+            form.appendChild(emailInput);
+            form.appendChild(codeLabel);
+            form.appendChild(codeInput);
+            form.appendChild(submitBtn);
+            
+            // Append elements to content
+            content.appendChild(title);
+            content.appendChild(description);
+            content.appendChild(form);
+            
+            // Append content to modal
+            modal.appendChild(content);
+            
+            // Append modal to body
+            document.body.appendChild(modal);
+            
+            // Add form submit handler
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
                 
-                // Force show modal after a delay
-                setTimeout(function() {
-                    window.AHPModule.showRegistrationModal();
-                }, 1000);
-            };
-        })();
+                var formData = {
+                    name: nameInput.value,
+                    email: emailInput.value,
+                    customerCode: codeInput.value,
+                    siteUrl: window.location.hostname
+                };
+                
+                // Send registration data
+                fetch('https://ahp-email-scheduler.vicsicard.workers.dev/registration', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (data.success) {
+                        // Store registration in localStorage
+                        localStorage.setItem('ahp_module_registration', JSON.stringify({
+                            value: {
+                                registered: true,
+                                email: formData.email,
+                                timestamp: new Date().toISOString()
+                            },
+                            expiry: new Date().getTime() + (365 * 24 * 60 * 60 * 1000)
+                        }));
+                        
+                        // Close modal
+                        modal.remove();
+                        
+                        // Show success message
+                        alert('Registration successful!');
+                    } else {
+                        alert('Registration failed: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(function(error) {
+                    alert('Error: ' + error.message);
+                });
+            });
+            
+            return modal;
+        }
+
+        // Show the custom modal after a short delay
+        setTimeout(function() {
+            // Check if already registered
+            var registration = localStorage.getItem('ahp_module_registration');
+            if (!registration) {
+                // Create and show the modal
+                createCustomModal();
+            }
+        }, 1000);
+    });
     </script>
 </head>
 <body>
