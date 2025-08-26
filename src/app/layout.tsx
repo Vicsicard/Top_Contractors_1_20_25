@@ -107,9 +107,9 @@ export default async function RootLayout({
         <script src="https://module-cdn-worker.vicsicard.workers.dev/module.js" 
           data-api-base="https://ahp-email-scheduler-production.vicsicard.workers.dev" 
           data-customer-code="topcontractorsdenver-paid-2024"
-          data-show-customer-code="false"
-          data-modal-title="AI Optimization Active"
-          data-modal-description="Phase 1 AI optimization features are active for this site"
+          data-show-customer-code="true"
+          data-modal-title="Subscribe to AI Visibility Reports"
+          data-modal-description="Get weekly insights about AI crawlers visiting your site and enhance your website's visibility to AI systems"
           async></script>
         
         {/* Defer non-critical scripts */}
