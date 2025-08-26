@@ -104,8 +104,8 @@ export default async function RootLayout({
         />
         
         {/* AHP Module 2.0 - AI Optimization & Bot Detection - Updated Infrastructure */}
-        <script src="https://ahp-email-scheduler.vicsicard.workers.dev/module.js" 
-          data-api-base="https://ahp-email-scheduler.vicsicard.workers.dev" 
+        <script src="https://module-cdn-worker.vicsicard.workers.dev/module.js" 
+          data-api-base="https://ahp-email-scheduler-production.vicsicard.workers.dev" 
           data-customer-code="topcontractorsdenver-paid-2024"
           data-show-customer-code="false"
           data-modal-title="AI Optimization Active"
