@@ -61,7 +61,8 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  manifest: '/manifest.json',
+  // Use metadata for manifest instead of file reference to avoid 401 errors
+  // manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico'
   }
@@ -98,9 +99,38 @@ export default async function RootLayout({
         
         {/* No longer preloading this image to avoid warnings */}
         
-        <link 
-          rel="manifest" 
-          href="/manifest.json" 
+        {/* Inline manifest to avoid 401 errors */}
+        <script
+          type="application/manifest+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              name: "Top Contractors Denver",
+              short_name: "Denver Contractors",
+              description: "Find the best local contractors in Denver. Compare verified reviews, ratings, and get free quotes.",
+              start_url: "/",
+              display: "standalone",
+              background_color: "#ffffff",
+              theme_color: "#3366FF",
+              icons: [
+                {
+                  src: "/favicon.ico",
+                  sizes: "64x64 32x32 24x24 16x16",
+                  type: "image/x-icon"
+                },
+                {
+                  src: "/apple-touch-icon.png",
+                  sizes: "180x180",
+                  type: "image/png"
+                },
+                {
+                  src: "/site-icon.svg",
+                  sizes: "192x192",
+                  type: "image/svg+xml",
+                  purpose: "any maskable"
+                }
+              ]
+            })
+          }}
         />
         
         {/* AHP Module 2.0 - AI Optimization & Bot Detection - Updated Infrastructure */}
