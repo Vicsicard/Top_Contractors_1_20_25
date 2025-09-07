@@ -36,7 +36,14 @@ export async function GET() {
 */
 
 // Properly redirect to the static manifest.json file
-export async function GET() {
-  // Use a relative URL to work in any environment (development, staging, production)
-  return NextResponse.redirect('/manifest.json', 308);
+export async function GET(request: Request) {
+  // Get the host from the request
+  const host = request.headers.get('host') || 'topcontractorsdenver.com';
+  const protocol = host.includes('localhost') ? 'http' : 'https';
+  
+  // Create an absolute URL for the redirect
+  const absoluteUrl = `${protocol}://${host}/manifest.json`;
+  
+  // Use an absolute URL as required by Next.js in production
+  return NextResponse.redirect(new URL(absoluteUrl), 308);
 }
