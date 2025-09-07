@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import type { Post } from '@/types/blog';
+import { OptimizedImage } from './OptimizedImage';
 
 interface BlogPostDisplayProps {
     post: Post;
@@ -25,15 +25,14 @@ export function BlogPostDisplay({ post }: BlogPostDisplayProps) {
             <header className="mb-8">
                 {post.feature_image && (
                     <div className="relative aspect-[16/9] mb-6 rounded-lg overflow-hidden">
-                        <Image
+                        <OptimizedImage
                             src={post.feature_image}
                             alt={post.feature_image_alt || post.title}
                             fill
                             className="object-cover"
                             sizes="(max-width: 1024px) 100vw, 1024px"
                             priority
-                            placeholder="blur"
-                            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAEtAI8V7lMuwAAAABJRU5ErkJggg=="
+                            fallbackSrc={fallbackImage}
                         />
                     </div>
                 )}

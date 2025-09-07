@@ -20,12 +20,12 @@ export async function generateMetadata({ searchParams }: { searchParams?: { page
       title: currentPage > 1 ? `Blog - Page ${currentPage} of ${totalPages} | Top Contractors Denver` : 'Blog | Top Contractors Denver',
       description: 'Read the latest articles about home improvement, remodeling, and construction in Denver.',
       alternates: {
-        canonical: currentPage === 1 ? '/blog' : `/blog?page=${currentPage}`,
+        canonical: currentPage === 1 ? '/blog/' : `/blog/?page=${currentPage}`,
       },
       openGraph: {
         title: currentPage > 1 ? `Blog - Page ${currentPage} of ${totalPages} | Top Contractors Denver` : 'Blog | Top Contractors Denver',
         description: 'Read the latest articles about home improvement, remodeling, and construction in Denver.',
-        url: currentPage === 1 ? '/blog' : `/blog?page=${currentPage}`,
+        url: currentPage === 1 ? '/blog/' : `/blog/?page=${currentPage}`,
         type: 'website',
       },
       ...(currentPage > 1 ? { 
@@ -101,7 +101,7 @@ export default async function BlogPage({ searchParams }: Props) {
       '@type': 'CollectionPage',
       headline: 'Latest Articles',
       description: 'Read the latest articles about home improvement, remodeling, and construction in Denver.',
-      url: currentPage === 1 ? 'https://topcontractorsdenver.com/blog' : `https://topcontractorsdenver.com/blog?page=${currentPage}`,
+      url: currentPage === 1 ? 'https://topcontractorsdenver.com/blog/' : `https://topcontractorsdenver.com/blog/?page=${currentPage}`,
       isPartOf: {
         '@type': 'WebSite',
         url: 'https://topcontractorsdenver.com/',
@@ -111,15 +111,15 @@ export default async function BlogPage({ searchParams }: Props) {
       ...(currentPage < totalPages ? {
         'pagination': {
           '@type': 'SiteNavigationElement',
-          'nextPage': `https://topcontractorsdenver.com/blog?page=${currentPage + 1}`
+          'nextPage': `https://topcontractorsdenver.com/blog/?page=${currentPage + 1}`
         }
       } : {}),
       ...(currentPage > 1 ? {
         'pagination': {
           '@type': 'SiteNavigationElement',
           'previousPage': currentPage === 2 
-            ? `https://topcontractorsdenver.com/blog` 
-            : `https://topcontractorsdenver.com/blog?page=${currentPage - 1}`
+            ? `https://topcontractorsdenver.com/blog/` 
+            : `https://topcontractorsdenver.com/blog/?page=${currentPage - 1}`
         }
       } : {})
     };
@@ -145,11 +145,11 @@ export default async function BlogPage({ searchParams }: Props) {
         {currentPage > 1 && (
           <link 
             rel="prev" 
-            href={currentPage === 2 ? '/blog' : `/blog?page=${currentPage - 1}`} 
+            href={currentPage === 2 ? '/blog/' : `/blog/?page=${currentPage - 1}`} 
           />
         )}
         {currentPage < totalPages && (
-          <link rel="next" href={`/blog?page=${currentPage + 1}`} />
+          <link rel="next" href={`/blog/?page=${currentPage + 1}`} />
         )}
         
         <BreadcrumbNav items={breadcrumbs} />

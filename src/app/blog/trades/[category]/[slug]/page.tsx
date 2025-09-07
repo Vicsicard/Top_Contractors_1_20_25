@@ -23,6 +23,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${post.title} | Top Contractors Denver Blog`,
     description: post.excerpt || `Read about ${post.title} on Top Contractors Denver Blog`,
+    alternates: {
+      canonical: `/blog/${params.slug}/`,
+    },
     robots: {
       index: true,
       follow: true,
@@ -32,6 +35,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         'max-image-preview': 'large',
         'max-snippet': -1,
       }
+    },
+    openGraph: {
+      title: post.title,
+      description: post.excerpt || `Read about ${post.title} on Top Contractors Denver Blog`,
+      url: `/blog/${params.slug}/`,
+      type: 'article',
+      publishedTime: post.published_at,
+      modifiedTime: post.updated_at || post.published_at,
+      images: post.feature_image ? [{ url: post.feature_image }] : []
     }
   };
 }

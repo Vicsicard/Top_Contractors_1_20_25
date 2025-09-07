@@ -62,8 +62,8 @@ export default async function BlogPostPage({ params }: Props) {
 
   const breadcrumbs = [
     { label: 'Home', href: '/' },
-    { label: 'Blog', href: '/blog' },
-    { label: post.title, href: `/blog/${post.slug}`, current: true }
+    { label: 'Blog', href: '/blog/' },
+    { label: post.title, href: `/blog/${post.slug}/`, current: true }
   ];
 
   // Generate structured data for this blog post

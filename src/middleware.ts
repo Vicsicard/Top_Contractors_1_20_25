@@ -45,8 +45,10 @@ function getUserType(request: NextRequest): string {
 }
 
 export async function middleware(request: NextRequest) {
-  // Get the pathname
-  const pathname = request.nextUrl.pathname;
+  // Get the pathname and search params
+  const url = request.nextUrl;
+  const pathname = url.pathname;
+  const search = url.search;
 
   // Skip API routes and static files
   if (
@@ -55,6 +57,32 @@ export async function middleware(request: NextRequest) {
     pathname.match(/\.(ico|png|jpg|jpeg|svg|css|js)$/)
   ) {
     return NextResponse.next();
+  }
+  
+  // Handle URL standardization for SEO
+  
+  // 1. Add trailing slash to URLs that don't have one and don't have extensions
+  if (!pathname.endsWith('/') && !pathname.includes('.') && pathname !== '') {
+    const newUrl = new URL(`${pathname}/`, request.url);
+    newUrl.search = search;
+    return NextResponse.redirect(newUrl, 301);
+  }
+  
+  // 2. Handle blog pagination URL format
+  if (pathname === '/blog' && search.includes('page=')) {
+    const newUrl = new URL('/blog/', request.url);
+    newUrl.search = search;
+    return NextResponse.redirect(newUrl, 301);
+  }
+  
+  // 3. Handle old blog post URL formats
+  // Redirect /blog/trades/category/slug to /blog/slug/
+  const blogTradeRegex = /^\/blog\/trades\/([^/]+)\/([^/]+)$/;
+  const blogTradeMatch = pathname.match(blogTradeRegex);
+  if (blogTradeMatch) {
+    const slug = blogTradeMatch[2];
+    const newUrl = new URL(`/blog/${slug}/`, request.url);
+    return NextResponse.redirect(newUrl, 301);
   }
 
   // Create response
