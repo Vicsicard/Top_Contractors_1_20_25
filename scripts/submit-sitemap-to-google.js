@@ -11,9 +11,14 @@ const SITE_URL = 'https://topcontractorsdenver.com';
 
 // Define all sitemaps to submit
 const sitemaps = [
-  { name: 'Main sitemap', url: `${SITE_URL}/sitemap.xml` },
-  { name: 'Blog sitemap', url: `${SITE_URL}/sitemap-blog.xml` },
+  // Use the sitemap index file which references all other sitemaps
+  { name: 'Sitemap index', url: `${SITE_URL}/sitemap.xml` },
+  
+  // Submit individual sitemaps directly to Google Search Console
+  // These are referenced in the sitemap index
   { name: 'Static pages sitemap', url: `${SITE_URL}/sitemap-static.xml` },
+  { name: 'Blog sitemap', url: `${SITE_URL}/sitemap-blog.xml` },
+  { name: 'Blog pagination sitemap', url: `${SITE_URL}/sitemap-blog-pagination.xml` },
   { name: 'Trades sitemap', url: `${SITE_URL}/sitemap-trades.xml` },
   { name: 'Videos sitemap', url: `${SITE_URL}/sitemap-videos.xml` }
 ];

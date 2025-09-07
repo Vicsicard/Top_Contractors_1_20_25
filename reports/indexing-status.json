@@ -1,0 +1,64 @@
+{
+  "timestamp": "2025-09-07T14:45:00.000Z",
+  "site": "topcontractorsdenver.com",
+  "checks": [
+    {
+      "type": "Homepage",
+      "url": "topcontractorsdenver.com/",
+      "checked": "2025-09-07T00:57:24.272Z",
+      "indexed": true
+    },
+    {
+      "type": "Blog main page",
+      "url": "topcontractorsdenver.com/blog/",
+      "checked": "2025-09-07T00:57:27.726Z",
+      "indexed": true
+    },
+    {
+      "type": "Blog pagination",
+      "url": "topcontractorsdenver.com/blog?page=2",
+      "checked": "2025-09-07T14:45:00.000Z",
+      "indexed": false,
+      "notes": "Sitemap submitted on 2025-09-07, awaiting indexing"
+    },
+    {
+      "type": "Blog pagination",
+      "url": "topcontractorsdenver.com/blog?page=3",
+      "checked": "2025-09-07T14:45:00.000Z",
+      "indexed": false,
+      "notes": "Sitemap submitted on 2025-09-07, awaiting indexing"
+    },
+    {
+      "type": "Blog pagination",
+      "url": "topcontractorsdenver.com/blog?page=4",
+      "checked": "2025-09-07T14:45:00.000Z",
+      "indexed": false,
+      "notes": "Sitemap submitted on 2025-09-07, awaiting indexing"
+    },
+    {
+      "type": "Trades page",
+      "url": "topcontractorsdenver.com/trades/",
+      "checked": "2025-09-07T00:57:34.619Z",
+      "indexed": true
+    },
+    {
+      "type": "Videos page",
+      "url": "topcontractorsdenver.com/videos/",
+      "checked": "2025-09-07T00:57:38.076Z",
+      "indexed": true
+    },
+    {
+      "type": "Blog pagination sitemap",
+      "url": "topcontractorsdenver.com/sitemap-blog-pagination.xml",
+      "checked": "2025-09-07T14:45:00.000Z",
+      "indexed": false,
+      "notes": "New sitemap created and submitted on 2025-09-07"
+    }
+  ],
+  "sitemapSubmission": {
+    "date": "2025-09-07T14:43:15.000Z",
+    "sitemapsSubmitted": 6,
+    "paginationPages": 266,
+    "totalBlogPosts": 1596
+  }
+}

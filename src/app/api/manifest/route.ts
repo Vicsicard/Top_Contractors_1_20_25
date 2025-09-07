@@ -37,5 +37,6 @@ export async function GET() {
 
 // Properly redirect to the static manifest.json file
 export async function GET() {
-  return NextResponse.redirect(new URL('/manifest.json', 'https://topcontractorsdenver.com'), 308);
+  // Use a relative URL to work in any environment (development, staging, production)
+  return NextResponse.redirect('/manifest.json', 308);
 }

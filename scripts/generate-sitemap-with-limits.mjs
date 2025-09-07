@@ -2,9 +2,22 @@ import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-// Load environment variables
-dotenv.config();
+// Get the directory name of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load environment variables from .env.local
+dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
+
+// Debug environment variables
+console.log('Environment variables loaded:');
+console.log('NEXT_PUBLIC_MAIN_SUPABASE_URL:', process.env.NEXT_PUBLIC_MAIN_SUPABASE_URL ? '✓ Set' : '✗ Missing');
+console.log('NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY ? '✓ Set' : '✗ Missing');
+console.log('NEXT_PUBLIC_BLOG_SUPABASE_URL:', process.env.NEXT_PUBLIC_BLOG_SUPABASE_URL ? '✓ Set' : '✗ Missing');
+console.log('NEXT_PUBLIC_BLOG_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_BLOG_SUPABASE_ANON_KEY ? '✓ Set' : '✗ Missing');
 
 const SITE_URL = 'https://topcontractorsdenver.com';
 const RATE_LIMIT_DELAY = 100; // 100ms delay between operations
@@ -12,15 +25,18 @@ const RATE_LIMIT_DELAY = 100; // 100ms delay between operations
 // Helper function to add delay between operations
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Initialize Supabase clients for both projects
+const mainSupabaseUrl = process.env.NEXT_PUBLIC_MAIN_SUPABASE_URL;
+const mainSupabaseKey = process.env.NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY;
+const blogSupabaseUrl = process.env.NEXT_PUBLIC_BLOG_SUPABASE_URL;
+const blogSupabaseKey = process.env.NEXT_PUBLIC_BLOG_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing Supabase environment variables');
+if (!mainSupabaseUrl || !mainSupabaseKey || !blogSupabaseUrl || !blogSupabaseKey) {
+    throw new Error('Missing Supabase environment variables. Please ensure NEXT_PUBLIC_MAIN_SUPABASE_URL, NEXT_PUBLIC_MAIN_SUPABASE_ANON_KEY, NEXT_PUBLIC_BLOG_SUPABASE_URL, and NEXT_PUBLIC_BLOG_SUPABASE_ANON_KEY are set in .env.local');
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const mainSupabase = createClient(mainSupabaseUrl, mainSupabaseKey);
+const blogSupabase = createClient(blogSupabaseUrl, blogSupabaseKey);
 
 async function generateSitemap() {
     const urls = [];
@@ -106,22 +122,40 @@ async function generateSitemap() {
     }
 
     try {
-        // Fetch all blog posts with pagination
-        console.log('Fetching blog posts...');
-        const { data: posts, error: postsError } = await supabase
-            .from('posts')
+        // Fetch all blog posts from the merged table
+        console.log('Fetching blog posts from merged_blog_posts table...');
+        const { data: posts, error: postsError } = await blogSupabase
+            .from('merge_blog_posts')
             .select('*')
-            .order('published_at', { ascending: false });
+            .order('created_at', { ascending: false });
 
-        if (postsError) throw postsError;
+        if (postsError) {
+            console.error('Error fetching from merge_blog_posts:', postsError);
+            throw postsError;
+        }
 
-        console.log(`Found ${posts.length} blog posts`);
+        console.log(`Found ${posts?.length || 0} blog posts in merged table`);
+        
+        // Calculate and add blog pagination pages
+        const POSTS_PER_PAGE = 6; // Same as in blog/page.tsx
+        const totalPages = Math.ceil((posts?.length || 0) / POSTS_PER_PAGE);
+        console.log(`Adding ${totalPages} blog pagination pages to sitemap`);
+        
+        for (let i = 1; i <= totalPages; i++) {
+            urls.push({
+                loc: i === 1 ? `${SITE_URL}/blog` : `${SITE_URL}/blog?page=${i}`,
+                lastmod: new Date().toISOString(),
+                changefreq: 'daily',
+                priority: i === 1 ? 0.9 : 0.8
+            });
+            await delay(RATE_LIMIT_DELAY);
+        }
         
         // Add blog posts to sitemap
         for (const post of posts) {
             urls.push({
                 loc: `${SITE_URL}/blog/${post.slug}`,
-                lastmod: post.updated_at || post.published_at,
+                lastmod: post.created_at || new Date().toISOString(),
                 changefreq: 'weekly',
                 priority: 0.7
             });
@@ -140,14 +174,17 @@ async function generateSitemap() {
             await delay(RATE_LIMIT_DELAY);
         }
 
-        // Fetch all videos
-        console.log('Fetching videos...');
-        const { data: videos, error: videosError } = await supabase
+        // Fetch all videos from main Supabase project
+        console.log('Fetching videos from main Supabase project...');
+        const { data: videos, error: videosError } = await mainSupabase
             .from('videos')
             .select('*')
             .order('created_at', { ascending: false });
 
-        if (videosError) throw videosError;
+        if (videosError) {
+            console.error('Error fetching videos:', videosError);
+            throw videosError;
+        }
 
         console.log(`Found ${videos.length} videos`);
 
