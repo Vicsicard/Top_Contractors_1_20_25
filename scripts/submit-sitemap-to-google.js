@@ -28,22 +28,46 @@ function submitSitemapToGoogle(sitemap) {
   return new Promise((resolve, reject) => {
     console.log(`Submitting ${sitemap.name} to Google: ${sitemap.url}`);
     
+    // Google's ping service requires the full URL to the sitemap
+    // Format: https://www.google.com/ping?sitemap=https://example.com/sitemap.xml
     const googleUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemap.url)}`;
     
-    https.get(googleUrl, (res) => {
-      console.log(`Google response status for ${sitemap.name}: ${res.statusCode}`);
+    console.log(`Ping URL: ${googleUrl}`);
+    
+    // Add timeout to prevent hanging requests
+    const req = https.get(googleUrl, { timeout: 10000 }, (res) => {
+      let responseData = '';
       
-      if (res.statusCode === 200) {
-        console.log(`Successfully submitted ${sitemap.name} to Google!`);
-        resolve(true);
-      } else {
-        console.error(`Failed to submit ${sitemap.name} to Google. Status code: ${res.statusCode}`);
-        resolve(false);
-      }
-    }).on('error', (err) => {
+      res.on('data', (chunk) => {
+        responseData += chunk;
+      });
+      
+      res.on('end', () => {
+        console.log(`Google response status for ${sitemap.name}: ${res.statusCode}`);
+        
+        if (res.statusCode === 200) {
+          console.log(`Successfully submitted ${sitemap.name} to Google!`);
+          resolve(true);
+        } else {
+          console.error(`Failed to submit ${sitemap.name} to Google. Status code: ${res.statusCode}`);
+          console.error(`Response: ${responseData.substring(0, 200)}${responseData.length > 200 ? '...' : ''}`);
+          resolve(false);
+        }
+      });
+    });
+    
+    req.on('error', (err) => {
       console.error(`Error submitting ${sitemap.name} to Google: ${err.message}`);
       reject(err);
     });
+    
+    req.on('timeout', () => {
+      console.error(`Timeout submitting ${sitemap.name} to Google`);
+      req.destroy();
+      resolve(false);
+    });
+    
+    req.end();
   });
 }
 
