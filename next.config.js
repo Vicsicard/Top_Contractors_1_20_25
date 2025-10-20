@@ -6,20 +6,7 @@ const config = {
   output: 'standalone',
   // Configure error handling for Vercel deployment
   async redirects() {
-    return [
-      // Remove www subdomain - redirect www to non-www
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'www.topcontractorsdenver.com',
-          },
-        ],
-        destination: 'https://topcontractorsdenver.com/:path*',
-        permanent: true,
-      },
-    ];
+    return [];
   },
   async rewrites() {
     return {
