@@ -61,13 +61,7 @@ export async function middleware(request: NextRequest) {
   }
   
   // Handle URL standardization for SEO
-  
-  // 0. Redirect www to non-www (highest priority)
-  if (hostname.startsWith('www.')) {
-    const newUrl = new URL(request.url);
-    newUrl.hostname = hostname.replace('www.', '');
-    return NextResponse.redirect(newUrl, 301);
-  }
+  // Note: www to non-www redirect is handled by vercel.json
   
   // 1. Add trailing slash to URLs that don't have one and don't have extensions
   if (!pathname.endsWith('/') && !pathname.includes('.') && pathname !== '') {
