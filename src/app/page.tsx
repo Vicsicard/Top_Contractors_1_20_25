@@ -7,12 +7,12 @@ export const metadata: Metadata = {
   title: 'Top Contractors Denver | Find Local Contractors for Home Services',
   description: 'Find the best local contractors in Denver for your home improvement, remodeling, and repair projects. Read reviews, compare pros, and get free quotes.',
   alternates: {
-    canonical: '/',
+    canonical: 'https://topcontractorsdenver.com/',
   },
   openGraph: {
     title: 'Top Contractors Denver | Find Local Contractors for Home Services',
     description: 'Find the best local contractors in Denver for your home improvement, remodeling, and repair projects. Read reviews, compare pros, and get free quotes.',
-    url: '/',
+    url: 'https://topcontractorsdenver.com/',
     type: 'website',
   }
 };
@@ -51,6 +51,19 @@ export default async function HomePage() {
       ]
     };
     
+    const breadcrumbSchema = {
+      '@type': 'BreadcrumbList',
+      '@id': 'https://topcontractorsdenver.com/#breadcrumb',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://topcontractorsdenver.com/'
+        }
+      ]
+    };
+    
     const webpageSchema = {
       '@type': 'WebPage',
       '@id': 'https://topcontractorsdenver.com/#webpage',
@@ -83,7 +96,8 @@ export default async function HomePage() {
               '@graph': [
                 organizationSchema,
                 websiteSchema,
-                webpageSchema
+                webpageSchema,
+                breadcrumbSchema
               ]
             })
           }}
