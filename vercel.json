@@ -1,6 +1,17 @@
 {
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.topcontractorsdenver.com"
+        }
+      ],
+      "destination": "https://topcontractorsdenver.com/:path*",
+      "permanent": true
+    },
+    {
       "source": "/admin",
       "destination": "/edit.html"
     }
