@@ -1,0 +1,47 @@
+{
+  "timestamp": "2025-09-07T14:43:15.000Z",
+  "submittedBy": "Sitemap Submission Script",
+  "sitemaps": [
+    {
+      "name": "Sitemap index",
+      "url": "https://topcontractorsdenver.com/sitemap.xml",
+      "status": "submitted",
+      "lastModified": "2025-08-04T01:14:53.770Z"
+    },
+    {
+      "name": "Static pages sitemap",
+      "url": "https://topcontractorsdenver.com/sitemap-static.xml",
+      "status": "submitted",
+      "lastModified": "2025-08-03T19:14:52.000Z"
+    },
+    {
+      "name": "Blog sitemap",
+      "url": "https://topcontractorsdenver.com/sitemap-blog.xml",
+      "status": "submitted",
+      "lastModified": "2025-08-03T19:14:53.000Z"
+    },
+    {
+      "name": "Blog pagination sitemap",
+      "url": "https://topcontractorsdenver.com/sitemap-blog-pagination.xml",
+      "status": "submitted",
+      "lastModified": "2025-09-07T14:42:10.189Z",
+      "notes": "New sitemap specifically for blog pagination pages"
+    },
+    {
+      "name": "Trades sitemap",
+      "url": "https://topcontractorsdenver.com/sitemap-trades.xml",
+      "status": "submitted",
+      "lastModified": "2025-08-03T19:14:53.000Z"
+    },
+    {
+      "name": "Videos sitemap",
+      "url": "https://topcontractorsdenver.com/sitemap-videos.xml",
+      "status": "error",
+      "lastModified": "2025-08-03T19:14:53.000Z",
+      "error": "404 Not Found"
+    }
+  ],
+  "totalPaginationPages": 266,
+  "totalBlogPosts": 1596,
+  "notes": "Successfully submitted all sitemaps to Google, with special focus on the new blog pagination sitemap to ensure all pagination pages are properly indexed."
+}

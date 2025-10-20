@@ -28,7 +28,6 @@ Allow: /*.svg
 # Prevent crawling of irrelevant paths
 Disallow: /api/
 Disallow: /_next/
-Disallow: /*?*
 
 # Set a reasonable crawl rate
 Crawl-delay: 1

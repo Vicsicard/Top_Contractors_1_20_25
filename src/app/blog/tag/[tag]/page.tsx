@@ -17,6 +17,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${tag} - Blog | Top Contractors Denver`,
     description: `Read articles about ${tag} from Top Contractors Denver.`,
+    alternates: {
+      canonical: `/blog/tag/${params.tag}/`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+      },
+    },
   };
 }
 

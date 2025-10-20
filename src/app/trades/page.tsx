@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'All Trade Services | Top Contractors Denver',
   description: 'Explore our comprehensive list of trade services in Denver. From home remodeling to specialized repairs, find the right contractor for your project.',
   alternates: {
-    canonical: '/trades',
+    canonical: '/trades/',
   }
 };
 

@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       images: ['https://topcontractorsdenver.com/images/denver-skyline.jpg'],
     },
     alternates: {
-      canonical: `https://topcontractorsdenver.com/trades/${params.slug}`,
+      canonical: `https://topcontractorsdenver.com/trades/${params.slug}/`,
     },
   };
 }

@@ -115,7 +115,7 @@ async function generateStaticSitemap() {
     const currentDate = new Date().toISOString();
 
     for (const page of staticPages) {
-        const url = `${SITE_URL}${page.path ? `/${page.path}` : ''}`;
+        const url = `${SITE_URL}${page.path ? `/${page.path}/` : '/'}`;
         urls.push({
             loc: url,
             lastmod: currentDate,
@@ -184,7 +184,7 @@ async function generateBlogSitemap() {
     // Add paginated blog pages (skip page 1 as it's the same as /blog/)
     for (let page = 2; page <= totalPages; page++) {
         urls.push({
-            loc: `${SITE_URL}/blog/?page=${page}/`,
+            loc: `${SITE_URL}/blog/?page=${page}`,
             lastmod: new Date().toISOString(),
             changefreq: 'daily',
             priority: 0.7
@@ -254,7 +254,7 @@ async function generateTradesSitemap() {
 
     for (const trade of tradesList) {
         // Main trade page
-        const tradeUrl = `${SITE_URL}/trades/${trade}`;
+        const tradeUrl = `${SITE_URL}/trades/${trade}/`;
         urls.push({
             loc: tradeUrl,
             lastmod: currentDate,
@@ -263,7 +263,7 @@ async function generateTradesSitemap() {
         });
 
         // Trade blog page
-        const tradeBlogUrl = `${SITE_URL}/blog/trades/${trade}`;
+        const tradeBlogUrl = `${SITE_URL}/blog/trades/${trade}/`;
         urls.push({
             loc: tradeBlogUrl,
             lastmod: currentDate,
@@ -272,7 +272,7 @@ async function generateTradesSitemap() {
         });
 
         // Service page
-        const serviceUrl = `${SITE_URL}/services/${trade}`;
+        const serviceUrl = `${SITE_URL}/services/${trade}/`;
         urls.push({
             loc: serviceUrl,
             lastmod: currentDate,
@@ -282,7 +282,7 @@ async function generateTradesSitemap() {
 
         // Subregion pages
         for (const subregion of subregionsList) {
-            const subregionUrl = `${SITE_URL}/trades/${trade}/${subregion}`;
+            const subregionUrl = `${SITE_URL}/trades/${trade}/${subregion}/`;
             urls.push({
                 loc: subregionUrl,
                 lastmod: currentDate,
@@ -291,7 +291,7 @@ async function generateTradesSitemap() {
             });
 
             // Service location pages
-            const serviceLocationUrl = `${SITE_URL}/services/${trade}/${subregion}`;
+            const serviceLocationUrl = `${SITE_URL}/services/${trade}/${subregion}/`;
             urls.push({
                 loc: serviceLocationUrl,
                 lastmod: currentDate,
@@ -318,7 +318,7 @@ async function generateVideosSitemap() {
 
     const urls = [];
     for (const video of (videos || [])) {
-        const url = `${SITE_URL}/videos/${video.category}/${video.id}`;
+        const url = `${SITE_URL}/videos/${video.category}/${video.id}/`;
         urls.push({
             loc: url,
             lastmod: video.created_at,

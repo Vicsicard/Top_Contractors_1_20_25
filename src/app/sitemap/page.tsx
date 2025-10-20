@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: 'Site Map | Top Contractors Denver',
   description: 'Complete index of all pages on Top Contractors Denver. Find contractors, blog posts, videos, and service areas easily.',
   alternates: {
-    canonical: '/sitemap',
+    canonical: '/sitemap/',
   }
 };
 

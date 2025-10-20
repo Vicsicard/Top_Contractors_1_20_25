@@ -49,6 +49,7 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   const pathname = url.pathname;
   const search = url.search;
+  const hostname = request.headers.get('host') || '';
 
   // Skip API routes and static files
   if (
@@ -60,6 +61,13 @@ export async function middleware(request: NextRequest) {
   }
   
   // Handle URL standardization for SEO
+  
+  // 0. Redirect www to non-www (highest priority)
+  if (hostname.startsWith('www.')) {
+    const newUrl = new URL(request.url);
+    newUrl.hostname = hostname.replace('www.', '');
+    return NextResponse.redirect(newUrl, 301);
+  }
   
   // 1. Add trailing slash to URLs that don't have one and don't have extensions
   if (!pathname.endsWith('/') && !pathname.includes('.') && pathname !== '') {
