@@ -133,8 +133,8 @@ export default async function RootLayout({
           }}
         />
         
-        {/* AHP Module 2.0 - AI Optimization & Bot Detection - Updated Oct 20, 2025 - FIXED */}
-        <script src="https://dashboard.ahpmod.com/module.js?v=2025-10-20" 
+        {/* AHP Module 2.0 - AI Optimization & Bot Detection - Updated Oct 20, 2025 - WORKING */}
+        <script src="https://dashboard.ahpmod.com/api/module" 
           data-api-base="https://ahp-email-scheduler-production.vicsicard.workers.dev" 
           data-customer-code="topcontractorsdenver-paid-2024"
           data-show-customer-code="true"
