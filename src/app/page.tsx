@@ -103,15 +103,21 @@ export default async function HomePage() {
           }}
         />
         
-        <header className="relative w-full">
-          <img
-            src="/top banner image 1.png"
-            alt="Find Trusted Denver Contractors for Your Next Project"
-            className="w-full object-cover"
-            style={{ maxHeight: '600px', objectPosition: 'center center' }}
-          />
-          <div className="absolute bottom-8 left-0 right-0 flex justify-center md:justify-start md:pl-16">
-            <a 
+        <header
+          className="relative w-full flex items-center"
+          style={{
+            minHeight: '70vh',
+            backgroundImage: `url('/top banner image 1.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        >
+          {/* Dark overlay for readability */}
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 60%, rgba(0,0,0,0.05) 100%)' }} />
+          {/* CTA button centered vertically, left-aligned on desktop */}
+          <div className="relative z-10 w-full flex items-center justify-center md:justify-start md:pl-16 py-12">
+            <a
               href="/get-a-quote"
               className="px-8 py-4 bg-primary hover:bg-blue-700 text-white font-bold text-lg rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
             >

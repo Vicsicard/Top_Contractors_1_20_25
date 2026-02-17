@@ -183,6 +183,13 @@ header > div {
   );
 }
 
+/* Hero banner responsive height */
+@media (max-width: 768px) {
+  header[style*="top banner image"] {
+    min-height: 60vh !important;
+  }
+}
+
 /* Custom button styles */
 .btn-primary {
   background-color: var(--accent-warm);
