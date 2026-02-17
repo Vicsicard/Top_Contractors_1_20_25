@@ -104,23 +104,23 @@ export default async function HomePage() {
         />
         
         <header
-          className="relative w-full flex items-end"
+          className="relative w-full"
           style={{
-            minHeight: '70vh',
+            minHeight: 'clamp(320px, 60vh, 600px)',
             backgroundImage: `url('/top banner image 1.png')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat',
           }}
         >
-          {/* Dark overlay for readability */}
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.0) 100%)' }} />
-          {/* CTA anchored bottom-left, aligned with image text block */}
-          <div className="relative z-10 w-full px-8 md:px-16 pb-12 flex flex-col items-start">
+          {/* Subtle dark overlay */}
+          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.15)' }} />
+          {/* CTA centered horizontally, sitting in lower third */}
+          <div className="absolute inset-0 flex items-end justify-center pb-10 sm:pb-12">
             <a
               href="/get-a-quote"
-              className="inline-block px-7 py-3.5 bg-primary hover:bg-blue-700 text-white font-semibold text-lg rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-              style={{ minHeight: '50px', lineHeight: '1.4' }}
+              className="px-8 py-3.5 bg-primary hover:bg-blue-700 text-white font-semibold text-base sm:text-lg rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 w-auto max-w-xs sm:max-w-none"
+              style={{ minHeight: '50px', lineHeight: '1.6' }}
             >
               Get Free Project Quotes
             </a>

@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 
 export default function RequestReceivedPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 pt-24 pb-12">
+    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 pt-20 sm:pt-24 pb-12">
       <div className="container mx-auto px-4 max-w-2xl">
-        <div className="bg-white rounded-lg shadow-xl p-8 md:p-12 text-center">
+        <div className="bg-white rounded-lg shadow-xl p-5 sm:p-8 md:p-12 text-center">
           {/* Success Icon */}
           <div className="mb-6">
             <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
@@ -35,12 +35,12 @@ export default function RequestReceivedPage() {
           </div>
 
           {/* Headline */}
-          <h1 className="text-4xl font-bold text-primary-dark mb-4">
+          <h1 className="text-2xl sm:text-4xl font-bold text-primary-dark mb-4">
             Request Received!
           </h1>
 
           {/* Confirmation Message */}
-          <div className="space-y-4 text-lg text-gray-700 mb-8">
+          <div className="space-y-4 text-base sm:text-lg text-gray-700 mb-8">
             <p className="flex items-center justify-center gap-2">
               <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -82,7 +82,7 @@ export default function RequestReceivedPage() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-center">
             <Link
               href="/"
               className="inline-block bg-primary hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"

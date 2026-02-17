@@ -150,13 +150,13 @@ export default function GetQuotePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 pt-24 pb-12">
+    <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 pt-20 sm:pt-24 pb-12">
       <div className="container mx-auto px-4 max-w-3xl">
-        <div className="bg-white rounded-lg shadow-xl p-8">
-          <h1 className="text-4xl font-bold text-primary-dark mb-4">
+        <div className="bg-white rounded-lg shadow-xl p-5 sm:p-8">
+          <h1 className="text-2xl sm:text-4xl font-bold text-primary-dark mb-4">
             Get Free Project Quotes
           </h1>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8">
             Tell us about your project and we&apos;ll connect you with qualified contractors in your area.
           </p>
 
@@ -349,7 +349,7 @@ export default function GetQuotePage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-primary hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full bg-primary hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-base sm:text-lg"
             >
               {isSubmitting ? 'Submitting...' : 'Get Free Quotes'}
             </button>
