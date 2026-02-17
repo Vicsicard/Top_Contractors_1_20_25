@@ -119,6 +119,14 @@ export default async function HomePage() {
               <h2 className="text-lg md:text-xl lg:text-2xl text-white opacity-90 drop-shadow-md text-center max-w-3xl leading-relaxed">
                 Discover trusted Denver contractors for home improvement, remodeling, and repairs. Verified local pros to bring your projects to life.
               </h2>
+              
+              {/* CTA Button - Get Free Project Quotes */}
+              <a 
+                href="/get-a-quote"
+                className="mt-8 px-8 py-4 bg-primary hover:bg-blue-700 text-white font-bold text-lg rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+              >
+                Get Free Project Quotes
+              </a>
             </div>
           </div>
         </header>
