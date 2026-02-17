@@ -104,30 +104,20 @@ export default async function HomePage() {
         />
         
         <header 
-          className="relative h-[600px] w-full bg-cover bg-center bg-no-repeat"
+          className="relative h-[500px] md:h-[600px] w-full bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: `url('/top banner image 1.png')`,
-            backgroundPosition: 'center center'
+            backgroundPosition: 'center center',
+            backgroundSize: 'cover'
           }}
         >
-          <div className="absolute inset-0 hero-overlay">
-            <div className="container mx-auto px-4 h-full flex flex-col justify-center items-center">
-              <h1 className="text-3xl md:text-4xl lg:text-6xl font-bold mb-4 md:mb-6 text-white drop-shadow-lg text-center max-w-4xl leading-tight">
-                Top Denver Contractors
-                <span className="block mt-2 text-2xl md:text-3xl lg:text-4xl">Local Pros for Home Improvement, Remodeling, and Repairs</span>
-              </h1>
-              <h2 className="text-lg md:text-xl lg:text-2xl text-white opacity-90 drop-shadow-md text-center max-w-3xl leading-relaxed">
-                Discover trusted Denver contractors for home improvement, remodeling, and repairs. Verified local pros to bring your projects to life.
-              </h2>
-              
-              {/* CTA Button - Get Free Project Quotes */}
-              <a 
-                href="/get-a-quote"
-                className="mt-8 px-8 py-4 bg-primary hover:bg-blue-700 text-white font-bold text-lg rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-              >
-                Get Free Project Quotes
-              </a>
-            </div>
+          <div className="absolute inset-0 flex items-end justify-center pb-12">
+            <a 
+              href="/get-a-quote"
+              className="px-8 py-4 bg-primary hover:bg-blue-700 text-white font-bold text-lg rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+            >
+              Get Free Project Quotes
+            </a>
           </div>
         </header>
         
