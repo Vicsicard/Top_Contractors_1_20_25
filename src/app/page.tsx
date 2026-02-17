@@ -106,8 +106,8 @@ export default async function HomePage() {
         <header 
           className="relative h-[600px] w-full bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url('/images/denver sky 4.jpg')`,
-            backgroundPosition: 'center 30%'
+            backgroundImage: `url('/top banner image 1.png')`,
+            backgroundPosition: 'center center'
           }}
         >
           <div className="absolute inset-0 hero-overlay">
