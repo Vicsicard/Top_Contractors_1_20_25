@@ -52,7 +52,7 @@ export default function RequestReceivedPage() {
               <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
-              <strong>We'll contact you within 24-48 hours</strong>
+              <strong>We&apos;ll contact you within 24-48 hours</strong>
             </p>
           </div>
 
@@ -64,11 +64,11 @@ export default function RequestReceivedPage() {
             <ul className="space-y-3 text-gray-700">
               <li className="flex items-start gap-3">
                 <span className="text-primary font-bold">1.</span>
-                <span>We're reviewing your project details right now</span>
+                <span>We&apos;re reviewing your project details right now</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-primary font-bold">2.</span>
-                <span>We'll match you with qualified contractors in your area</span>
+                <span>We&apos;ll match you with qualified contractors in your area</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-primary font-bold">3.</span>
@@ -76,7 +76,7 @@ export default function RequestReceivedPage() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="text-primary font-bold">4.</span>
-                <span>You'll receive free quotes and can choose the best fit for your project</span>
+                <span>You&apos;ll receive free quotes and can choose the best fit for your project</span>
               </li>
             </ul>
           </div>

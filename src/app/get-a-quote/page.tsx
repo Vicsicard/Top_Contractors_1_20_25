@@ -120,7 +120,7 @@ export default function GetQuotePage() {
 
     try {
       // Prepare submission data without honeypot field
-      const { company_name, ...cleanData } = formData;
+      const { company_name: _company_name, ...cleanData } = formData;
       const submissionData = {
         ...cleanData,
         source_page: window.location.href
@@ -157,7 +157,7 @@ export default function GetQuotePage() {
             Get Free Project Quotes
           </h1>
           <p className="text-lg text-gray-600 mb-8">
-            Tell us about your project and we'll connect you with qualified contractors in your area.
+            Tell us about your project and we&apos;ll connect you with qualified contractors in your area.
           </p>
 
           {error && (
