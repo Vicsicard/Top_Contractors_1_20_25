@@ -106,7 +106,7 @@ export default async function HomePage() {
         <header
           className="relative w-full"
           style={{
-            minHeight: 'clamp(320px, 60vh, 600px)',
+            minHeight: 'clamp(400px, 70vh, 680px)',
             backgroundImage: `url('/top banner image 1.png')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center center',
