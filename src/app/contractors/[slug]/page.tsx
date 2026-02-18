@@ -6,12 +6,20 @@ import {
   getAllContractors,
   getContractorsByTradeAndSubregion,
 } from '@/utils/database';
-import { generateContractorSchema, generateContractorBreadcrumbSchema } from '@/utils/schema';
+import { generateContractorSchema, generateContractorBreadcrumbSchema, generateFAQPageSchema } from '@/utils/schema';
 import {
   MapPin, Phone, Globe, Star, BadgeCheck, ArrowRight,
-  Clock, ShieldCheck, ChevronRight, BookOpen
+  Clock, ShieldCheck, ChevronRight, BookOpen, Award, Wrench, HelpCircle
 } from 'lucide-react';
 import { getGuidesByTrade } from '@/data/guides';
+import {
+  generateUniqueDescription,
+  generateServiceAreaText,
+  generateCustomerSummary,
+  getTradeTemplate,
+  generateFAQs,
+  getVariedAnchor
+} from '@/utils/contractor-content';
 
 interface Props {
   params: { slug: string };
@@ -76,14 +84,34 @@ export default async function ContractorProfilePage({ params }: Props) {
       nearbyContractors = all.filter((nc) => nc.slug !== contractor.slug).slice(0, 3);
     }
 
+    // Generate enhanced content
+    const contentParams = {
+      contractorName: contractor.contractor_name,
+      tradeName,
+      tradeSlug,
+      locationName,
+      locationSlug,
+      rating,
+      reviewCount,
+    }
+    
+    const uniqueDescription = generateUniqueDescription(contentParams)
+    const serviceAreaText = generateServiceAreaText(contentParams)
+    const customerSummary = generateCustomerSummary(contentParams)
+    const tradeTemplate = getTradeTemplate(tradeSlug)
+    const faqs = generateFAQs(contentParams)
+    
     const contractorSchema = generateContractorSchema(contractor, c.category, c.subregion);
     const breadcrumbSchema = generateContractorBreadcrumbSchema(contractor, c.category, c.subregion);
+    const faqSchema = faqs.length > 0 ? generateFAQPageSchema(faqs) : null;
+    
+    const lastUpdated = new Date().toISOString().split('T')[0]
 
     return (
       <div className="min-h-screen bg-gray-50">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify([contractorSchema, breadcrumbSchema]) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema ? [contractorSchema, breadcrumbSchema, faqSchema] : [contractorSchema, breadcrumbSchema]) }}
         />
 
         {/* ── Breadcrumb ─────────────────────────────────────────────── */}
@@ -210,22 +238,110 @@ export default async function ContractorProfilePage({ params }: Props) {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
 
-            {/* About */}
+            {/* Unique Description */}
             <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-7">
               <h2 className="text-xl font-bold text-gray-900 mb-4">
                 About {contractor.contractor_name}
               </h2>
-              <p className="text-gray-600 text-sm leading-relaxed mb-3">
-                {contractor.contractor_name} is a professional {tradeName.toLowerCase()} based in {locationName}, Colorado.
-                They serve homeowners and businesses throughout the {locationName} area and surrounding Denver metro communities,
-                delivering quality workmanship and reliable service on every project.
-              </p>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Whether you need a new installation, repair, or full renovation, {contractor.contractor_name} brings
-                the expertise and local knowledge to get the job done right. As a verified member of the Top Contractors Denver
-                network, they meet our standards for licensing, insurance, and customer satisfaction.
-              </p>
+              <div className="prose prose-sm max-w-none text-gray-600">
+                {uniqueDescription.split('\n\n').map((paragraph, i) => (
+                  <p key={i} className="mb-3 last:mb-0 leading-relaxed">{paragraph}</p>
+                ))}
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <p className="text-xs text-gray-400">Last updated: {lastUpdated}</p>
+              </div>
             </section>
+
+            {/* Verification & Credentials */}
+            <section className="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl border border-green-100 p-6">
+              <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <ShieldCheck size={18} className="text-green-600" />
+                Verification & Credentials
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center flex-shrink-0">
+                    <BadgeCheck size={16} className="text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Licensed & Insured</p>
+                    <p className="text-xs text-gray-600 mt-0.5">Meets Colorado requirements</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center flex-shrink-0">
+                    <ShieldCheck size={16} className="text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Background Verified</p>
+                    <p className="text-xs text-gray-600 mt-0.5">Screened by our team</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center flex-shrink-0">
+                    <Star size={16} className="text-yellow-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Customer Reviewed</p>
+                    <p className="text-xs text-gray-600 mt-0.5">{reviewCount > 0 ? `${reviewCount} Google reviews` : 'Verified ratings'}</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Specializations */}
+            {tradeTemplate?.specializations && (
+              <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-7">
+                <h2 className="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                  <Award size={20} className="text-primary" />
+                  Specializations
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {tradeTemplate.specializations.map((spec) => (
+                    <div key={spec} className="flex items-center gap-2.5 text-sm text-gray-700">
+                      <div className="w-5 h-5 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                        <BadgeCheck size={12} className="text-indigo-600" />
+                      </div>
+                      {spec}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Project Types */}
+            {tradeTemplate?.projectTypes && (
+              <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-7">
+                <h2 className="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                  <Wrench size={20} className="text-primary" />
+                  Project Types
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {tradeTemplate.projectTypes.map((project) => (
+                    <div key={project} className="flex items-center gap-2.5 text-sm text-gray-700">
+                      <div className="w-5 h-5 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
+                        <BadgeCheck size={12} className="text-primary" />
+                      </div>
+                      {project}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Typical Project Timeline */}
+            {tradeTemplate?.typicalTimeline && (
+              <section className="bg-blue-50 rounded-2xl border border-blue-100 p-6">
+                <div className="flex items-start gap-3">
+                  <Clock size={20} className="text-primary flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h3 className="text-base font-bold text-gray-900 mb-2">Typical Project Timeline</h3>
+                    <p className="text-sm text-gray-700 leading-relaxed">{tradeTemplate.typicalTimeline}</p>
+                  </div>
+                </div>
+              </section>
+            )}
 
             {/* Services */}
             <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-7">
@@ -251,24 +367,82 @@ export default async function ContractorProfilePage({ params }: Props) {
 
             {/* Service Area */}
             <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-7">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Service Area</h2>
-              <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                {contractor.contractor_name} primarily serves {locationName} and the surrounding Denver metro area,
-                including nearby communities throughout the region.
-              </p>
-              <div className="flex items-start gap-2 text-sm text-gray-600">
-                <MapPin size={15} className="text-primary flex-shrink-0 mt-0.5" />
-                <span>{contractor.address}</span>
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <MapPin size={20} className="text-primary" />
+                Service Area
+              </h2>
+              <div className="prose prose-sm max-w-none text-gray-600">
+                {serviceAreaText.split('\n\n').map((paragraph, i) => (
+                  <p key={i} className="mb-3 last:mb-0 leading-relaxed">{paragraph}</p>
+                ))}
               </div>
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contractor.address)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 mt-3 text-xs text-primary hover:underline font-medium"
-              >
-                View on Google Maps <ArrowRight size={12} />
-              </a>
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="flex items-start gap-2 text-sm text-gray-600 mb-3">
+                  <MapPin size={15} className="text-primary flex-shrink-0 mt-0.5" />
+                  <span>{contractor.address}</span>
+                </div>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contractor.address)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline font-medium"
+                >
+                  View on Google Maps <ArrowRight size={12} />
+                </a>
+              </div>
             </section>
+
+            {/* Customer Experience Summary */}
+            <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-7">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Star size={20} className="text-yellow-500" />
+                Customer Experience
+              </h2>
+              <p className="text-gray-600 text-sm leading-relaxed">{customerSummary}</p>
+              {rating > 0 && (
+                <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          size={16}
+                          className={
+                            i < fullStars
+                              ? 'text-yellow-400 fill-yellow-400'
+                              : i === fullStars && hasHalf
+                              ? 'text-yellow-300 fill-yellow-200'
+                              : 'text-gray-300 fill-gray-200'
+                          }
+                        />
+                      ))}
+                    </div>
+                    <span className="font-bold text-gray-800 text-sm">{rating.toFixed(1)}</span>
+                  </div>
+                  {reviewCount > 0 && (
+                    <span className="text-gray-500 text-xs">Based on {reviewCount} Google reviews</span>
+                  )}
+                </div>
+              )}
+            </section>
+
+            {/* FAQs */}
+            {faqs.length > 0 && (
+              <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-7">
+                <h2 className="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                  <HelpCircle size={20} className="text-primary" />
+                  Frequently Asked Questions
+                </h2>
+                <div className="space-y-5">
+                  {faqs.map((faq, index) => (
+                    <div key={index} className="pb-5 border-b border-gray-100 last:border-0 last:pb-0">
+                      <h3 className="text-sm font-semibold text-gray-900 mb-2">{faq.q}</h3>
+                      <p className="text-sm text-gray-600 leading-relaxed">{faq.a}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Why Choose */}
             <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-7">
@@ -368,11 +542,12 @@ export default async function ContractorProfilePage({ params }: Props) {
                     <BookOpen size={15} className="text-primary" /> {tradeName} Guides
                   </h3>
                   <div className="space-y-1">
-                    {guides.map((g) => (
+                    {guides.map((g, index) => (
                       <Link
                         key={g.slug}
                         href={`/guides/${g.slug}/`}
                         className="flex items-start gap-2 text-sm text-gray-700 hover:text-primary py-2 border-b border-gray-50 last:border-0 transition-colors"
+                        title={getVariedAnchor(g.title, index)}
                       >
                         <ChevronRight size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
                         <span className="leading-snug">{g.title}</span>
