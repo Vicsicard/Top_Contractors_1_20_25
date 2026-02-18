@@ -1,35 +1,49 @@
+import React from 'react'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { ServiceHero } from '@/components/services/ServiceHero'
 import { getAllTrades } from '@/utils/database'
+import {
+  Wrench, Zap, Wind, Home, HardHat, Paintbrush, Leaf,
+  Building2, Layers, SeparatorHorizontal, LayoutGrid,
+  DoorOpen, Hammer, PanelTop, TreePine, AppWindow
+} from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Contractor Services | Top Contractors Denver',
   description: 'Find local contractors in Denver for plumbing, electrical, HVAC, and more. Browse our directory of professional contractors serving the Denver metro area.',
 }
 
+const TRADE_ICONS: Record<string, React.ElementType> = {
+  'Plumbers': Wrench,
+  'Electricians': Zap,
+  'HVAC Contractors': Wind,
+  'Roofers': Home,
+  'General Contractors': HardHat,
+  'Painters': Paintbrush,
+  'Landscapers': Leaf,
+  'Concrete Contractors': Building2,
+  'Drywall Contractors': Layers,
+  'Fencing Contractors': SeparatorHorizontal,
+  'Flooring Contractors': LayoutGrid,
+  'Garage Door Contractors': DoorOpen,
+  'Handyman Services': Hammer,
+  'Siding Contractors': PanelTop,
+  'Tree Service Contractors': TreePine,
+  'Window Contractors': AppWindow,
+}
+
+function TradeIcon({ name }: { name: string }) {
+  const Icon = TRADE_ICONS[name] || Hammer
+  return (
+    <div className="p-2.5 bg-blue-50 rounded-lg text-primary mr-4 flex-shrink-0">
+      <Icon size={24} strokeWidth={1.75} />
+    </div>
+  )
+}
+
 export default async function ServicesPage() {
   const trades = await getAllTrades()
-
-  // Icons for each trade
-  const tradeIcons: Record<string, string> = {
-    'Plumbers': '🔧',
-    'Electricians': '⚡',
-    'HVAC Contractors': '❄️',
-    'Roofers': '🏠',
-    'General Contractors': '🏗️',
-    'Painters': '🎨',
-    'Landscapers': '🌳',
-    'Concrete Contractors': '🏗️',
-    'Drywall Contractors': '🏢',
-    'Fencing Contractors': '🚧',
-    'Flooring Contractors': '🏠',
-    'Garage Door Contractors': '🚪',
-    'Handyman Services': '🔨',
-    'Siding Contractors': '🏘️',
-    'Tree Service Contractors': '🌲',
-    'Window Contractors': '🪟',
-  }
 
   return (
     <main>
@@ -53,14 +67,11 @@ export default async function ServicesPage() {
               >
                 <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                   <div className="flex items-center mb-4">
-                    <span className="text-3xl mr-3" aria-hidden="true">
-                      {tradeIcons[trade.category_name] || '🔨'}
-                    </span>
+                    <TradeIcon name={trade.category_name} />
                     <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                       {trade.category_name}
                     </h3>
                   </div>
-                  
                   <p className="text-gray-600">
                     Find {trade.category_name.toLowerCase()} in the Denver metro area
                   </p>

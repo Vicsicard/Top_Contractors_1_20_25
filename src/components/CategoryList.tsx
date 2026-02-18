@@ -3,28 +3,33 @@
 import React from 'react';
 import Link from 'next/link';
 import type { Category } from '@/types/category';
+import {
+  Droplets, Zap, Wind, Home, Leaf, Paintbrush, Hammer, LayoutGrid,
+  HardHat, Wrench, Sparkles, Bug, AppWindow, Building2, SeparatorHorizontal,
+  Layers, Boxes, Sun, TreePine, DoorOpen, ChevronRight
+} from 'lucide-react';
 
-const CATEGORY_EMOJIS: { [key: string]: string } = {
-  'Plumbing': '🚰',
-  'Electrical': '⚡',
-  'HVAC': '❄️',
-  'Roofing': '🏠',
-  'Landscaping': '🌳',
-  'Painting': '🎨',
-  'Carpentry': '🔨',
-  'Flooring': '🪑',
-  'General Contractor': '👷',
-  'Handyman': '🛠️',
-  'Cleaning': '🧹',
-  'Pest Control': '🐜',
-  'Windows': '🪟',
-  'Concrete': '🏗️',
-  'Fencing': '🏡',
-  'Drywall': '🏢',
-  'Masonry': '🧱',
-  'Solar': '☀️',
-  'Tree Service': '🌲',
-  'Garage Door': '🚪'
+const CATEGORY_ICONS: { [key: string]: React.ElementType } = {
+  'Plumbing': Droplets,
+  'Electrical': Zap,
+  'HVAC': Wind,
+  'Roofing': Home,
+  'Landscaping': Leaf,
+  'Painting': Paintbrush,
+  'Carpentry': Hammer,
+  'Flooring': LayoutGrid,
+  'General Contractor': HardHat,
+  'Handyman': Wrench,
+  'Cleaning': Sparkles,
+  'Pest Control': Bug,
+  'Windows': AppWindow,
+  'Concrete': Building2,
+  'Fencing': SeparatorHorizontal,
+  'Drywall': Layers,
+  'Masonry': Boxes,
+  'Solar': Sun,
+  'Tree Service': TreePine,
+  'Garage Door': DoorOpen,
 };
 
 interface CategoryListProps {
@@ -58,16 +63,12 @@ export function CategoryList({ categories }: CategoryListProps) {
     );
   }
 
-  const getEmoji = (categoryName: string): string => {
-    // Try to find an exact match first
-    if (CATEGORY_EMOJIS[categoryName]) {
-      return CATEGORY_EMOJIS[categoryName];
-    }
-    // If no exact match, try to find a partial match
-    const key = Object.keys(CATEGORY_EMOJIS).find(k => 
+  const getIcon = (categoryName: string): React.ElementType => {
+    if (CATEGORY_ICONS[categoryName]) return CATEGORY_ICONS[categoryName];
+    const key = Object.keys(CATEGORY_ICONS).find(k =>
       categoryName.toLowerCase().includes(k.toLowerCase())
     );
-    return key ? CATEGORY_EMOJIS[key] : '🏠'; // Default emoji if no match found
+    return key ? CATEGORY_ICONS[key] : Home;
   };
 
   try {
@@ -84,10 +85,10 @@ export function CategoryList({ categories }: CategoryListProps) {
               className="category-card bg-white p-6 rounded-xl shadow-md hover:shadow-xl border border-gray-100"
             >
               <div className="flex flex-col items-start space-y-2">
-                <div className="flex items-center gap-2 w-full">
-                  <span className="text-2xl" role="img" aria-label={category.category_name}>
-                    {getEmoji(category.category_name)}
-                  </span>
+                <div className="flex items-center gap-3 w-full">
+                  <div className="p-2 bg-blue-50 rounded-lg text-primary">
+                    {React.createElement(getIcon(category.category_name), { size: 22, strokeWidth: 1.75 })}
+                  </div>
                   <h3 className="text-xl font-semibold text-primary-dark">
                     {category.category_name}
                   </h3>
@@ -95,20 +96,9 @@ export function CategoryList({ categories }: CategoryListProps) {
                 <p className="text-gray-600 text-sm">
                   Find trusted {category.category_name.toLowerCase()} in Denver
                 </p>
-                <span className="text-accent-warm font-medium text-sm mt-2 flex items-center">
+                <span className="text-accent-warm font-medium text-sm mt-2 flex items-center gap-1">
                   View Contractors
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 ml-1"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  <ChevronRight size={15} />
                 </span>
               </div>
             </Link>
