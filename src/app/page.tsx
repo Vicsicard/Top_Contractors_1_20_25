@@ -109,9 +109,9 @@ export default async function HomePage() {
           style={{
             backgroundImage: `url('/top banner image 1.png')`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center center',
+            backgroundPosition: 'center 20%',
             backgroundRepeat: 'no-repeat',
-            minHeight: 'clamp(480px, 75vh, 720px)',
+            minHeight: 'clamp(480px, 70vh, 680px)',
           }}
         >
           {/* Dark overlay for text readability */}
@@ -119,13 +119,13 @@ export default async function HomePage() {
           {/* Hero content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-8">
             <div className="max-w-4xl mx-auto">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4 drop-shadow-lg">
+              <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-white leading-tight mb-3 drop-shadow-lg">
                 Find Trusted Contractors in Denver, CO for Your Next Project
               </h1>
-              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-blue-200 mb-5 drop-shadow">
+              <h2 className="text-sm sm:text-lg md:text-2xl font-semibold text-blue-200 mb-4 drop-shadow">
                 Compare Verified Local Contractors and Get Free Project Quotes
               </h2>
-              <p className="text-sm sm:text-base text-gray-200 max-w-2xl mx-auto mb-8 leading-relaxed">
+              <p className="hidden sm:block text-sm sm:text-base text-gray-200 max-w-2xl mx-auto mb-8 leading-relaxed">
                 Browse vetted local pros, compare services, and confidently hire the right contractor for your home improvement or construction project. Our Denver contractor directory helps you find reliable professionals across all trades.
               </p>
               <a
