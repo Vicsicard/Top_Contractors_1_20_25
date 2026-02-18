@@ -1,4 +1,4 @@
-export type GuideCategory = 'cost' | 'hiring' | 'timeline' | 'permit' | 'seasonal'
+export type GuideCategory = 'cost' | 'hiring' | 'timeline' | 'permit' | 'seasonal' | 'comparison'
 
 export type Guide = {
   slug: string
@@ -18,11 +18,12 @@ export type Guide = {
 }
 
 export const GUIDE_CATEGORIES: Record<GuideCategory, { label: string; description: string }> = {
-  cost:     { label: 'Cost Guides',     description: 'Understand what home improvement projects cost in Denver before you hire.' },
-  hiring:   { label: 'Hiring Guides',   description: 'How to find, vet, and hire the right contractor for your project.' },
-  timeline: { label: 'Timeline Guides', description: 'How long projects take in Denver — from start to finish.' },
-  permit:   { label: 'Permit Guides',   description: 'What permits you need for home improvement projects in Denver.' },
-  seasonal: { label: 'Seasonal Guides', description: 'The best time of year to schedule home improvement work in Denver.' },
+  cost:       { label: 'Cost Guides',       description: 'Understand what home improvement projects cost in Denver before you hire.' },
+  hiring:     { label: 'Hiring Guides',     description: 'How to find, vet, and hire the right contractor for your project.' },
+  timeline:   { label: 'Timeline Guides',   description: 'How long projects take in Denver — from start to finish.' },
+  permit:     { label: 'Permit Guides',     description: 'What permits you need for home improvement projects in Denver.' },
+  seasonal:   { label: 'Seasonal Guides',   description: 'The best time of year to schedule home improvement work in Denver.' },
+  comparison: { label: 'Best Of Guides',    description: 'Top-rated contractors and companies in Denver for your project.' },
 }
 
 export const GUIDES: Guide[] = [
@@ -1154,6 +1155,342 @@ export const GUIDES: Guide[] = [
       { q: 'What is the most important part of window installation?', a: 'Proper flashing and air sealing around the window frame. Poor installation negates the performance of even premium windows and leads to water infiltration and energy loss.' },
     ],
     relatedGuides: ['cost-to-replace-windows-denver', 'cost-siding-gutters-denver', 'best-home-improvements-roi-denver'],
+  },
+  {
+    slug: 'best-roofing-companies-denver',
+    title: 'Best Roofing Companies in Denver (2025 Guide)',
+    metaTitle: 'Best Roofing Companies in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best roofing companies in Denver. Compare top-rated roofers, what to look for, red flags to avoid, and how to choose the right contractor for your roof replacement or repair.',
+    category: 'comparison',
+    trade: 'Roofing Contractors',
+    tradeSlug: 'roofers',
+    relatedTradeSlug: 'siding-gutters',
+    relatedTrade: 'Siding & Gutters',
+    intro: "Choosing the right roofing company in Denver can mean the difference between a roof that lasts 25+ years and one that fails in 5. With Colorado's hail storms, UV exposure, and temperature swings, you need a contractor who understands local conditions and has a proven track record.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver Roofing Company',
+        body: "Top Denver roofers have: 10+ years in business with verifiable local references. Class 4 impact-resistant shingle expertise (critical for hail). Manufacturer certifications (GAF Master Elite, CertainTeed SELECT ShingleMaster, Owens Corning Platinum). Proper insurance: $2M+ general liability, workers' comp for all crews. A+ BBB rating with minimal unresolved complaints.\n\nThey also provide detailed written estimates, pull permits, handle insurance claims professionally, and offer workmanship warranties beyond manufacturer coverage.",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "Storm chasers with out-of-state plates who pressure you to sign immediately. Cash-only deals or requests for full payment upfront. No physical office address or local references. Unlicensed or uninsured crews. Quotes that are 30%+ below competitors without explanation.\n\nLegitimate Denver roofers will never ask for more than 10–20% deposit and will provide a payment schedule tied to project milestones.",
+      },
+      {
+        heading: 'How to Compare Roofing Companies',
+        body: "Get 3–5 written quotes. Compare: Material specs (shingle brand, class rating, warranty). Labor warranty (10+ years is standard for quality work). Project timeline and crew size. Permit and disposal costs (should be itemized). Insurance claim assistance if applicable.\n\nAsk each contractor: How long have you been in business in Denver? Can you provide 5 local references from the past year? What manufacturer certifications do you hold? How do you handle unexpected decking damage? What is your payment schedule?",
+      },
+      {
+        heading: 'Verifying Credentials',
+        body: "Check Denver business license at denvergov.org/pocketgov. Verify insurance with the carrier directly (don't just accept a certificate). Look up BBB rating and read recent complaints. Search contractor name + 'reviews' and read Google, Yelp, and Angi feedback. Ask for manufacturer certification proof (most have online verification).",
+      },
+      {
+        heading: 'Typical Project Timeline',
+        body: "Quality Denver roofers are booked 2–6 weeks out during peak season (May–October). Storm damage can push this to 8–12 weeks. Be wary of contractors available immediately — it often means they're struggling for work. Most residential roof replacements take 1–3 days once started.",
+      },
+    ],
+    keyTakeaways: [
+      'Get 3–5 written quotes from licensed, insured Denver roofers',
+      'Verify manufacturer certifications (GAF Master Elite, CertainTeed SELECT, etc.)',
+      'Avoid storm chasers and cash-only deals',
+      'Check BBB rating, Google reviews, and local references',
+      'Never pay more than 10–20% upfront',
+    ],
+    faqs: [
+      { q: 'How much does a roof replacement cost in Denver?', a: 'Most Denver homeowners pay $8,000–$20,000 for asphalt shingle replacement. Class 4 impact-resistant shingles run $12,000–$18,000 for a typical 2,000 sq ft home.' },
+      { q: 'Do I need a permit for roof replacement in Denver?', a: 'Yes. Denver requires a permit for all roof replacements. Your contractor should pull it — if they say you don\'t need one, that\'s a red flag.' },
+      { q: 'What is the best roofing material for Denver?', a: 'Class 4 impact-resistant asphalt shingles are the most popular. They qualify for 20–30% insurance discounts and handle hail better than standard shingles. Metal roofing is the best long-term investment.' },
+      { q: 'How long does a roof last in Denver?', a: 'Asphalt shingles: 15–25 years. Class 4 impact-resistant: 20–30 years. Metal: 40–70 years. Tile: 50+ years. Hail damage can shorten any roof\'s lifespan significantly.' },
+    ],
+    relatedGuides: ['cost-to-replace-roof-denver', 'how-to-choose-roofing-contractor-denver', 'permit-guide-roofing-denver'],
+  },
+  {
+    slug: 'best-hvac-companies-denver',
+    title: 'Best HVAC Companies in Denver (2025 Guide)',
+    metaTitle: 'Best HVAC Companies in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best HVAC companies in Denver. Compare top-rated heating and cooling contractors, what to look for, and how to choose the right HVAC company for installation, repair, or replacement.',
+    category: 'comparison',
+    trade: 'HVAC',
+    tradeSlug: 'hvac',
+    relatedTradeSlug: 'electricians',
+    relatedTrade: 'Electricians',
+    intro: "Denver's extreme temperature swings — from 100°F summers to -10°F winters — put serious demands on HVAC systems. Choosing the right HVAC company means reliable comfort year-round and lower energy bills. A bad installation can cost you thousands in wasted energy and premature equipment failure.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver HVAC Company',
+        body: "Top HVAC contractors have: EPA Section 608 certification (required for refrigerant handling). NATE certification (North American Technician Excellence). 10+ years in business with local references. Proper licensing (Denver requires a city contractor license). Insurance: $1M+ general liability, workers' comp.\n\nThey perform Manual J load calculations (not just 'rule of thumb' sizing), offer multiple equipment options, explain SEER/HSPF ratings clearly, and provide written warranties on both equipment and labor.",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "Contractors who size equipment without a load calculation. Quotes over the phone without seeing your home. Pressure to buy 'today only' deals. No written warranty. Unlicensed or uninsured technicians. Quotes that are 40%+ below competitors.\n\nLegitimate HVAC companies will inspect your ductwork, insulation, and existing system before quoting. They'll explain why they're recommending specific equipment sizes and efficiency levels.",
+      },
+      {
+        heading: 'How to Compare HVAC Companies',
+        body: "Get 3–4 written quotes. Compare: Equipment brand and model (Carrier, Trane, Lennox, etc.). SEER rating (16+ for AC, 9+ HSPF for heat pumps). Labor warranty (2–10 years). Installation details (ductwork modifications, thermostat, startup service). Total project cost including permits.\n\nAsk: Do you perform Manual J load calculations? What brands do you install and why? What is your labor warranty? Do you handle permits? Can you provide 3 local references from the past 6 months?",
+      },
+      {
+        heading: 'Understanding Equipment Options',
+        body: "Standard efficiency (14–16 SEER): Lowest upfront cost, higher operating costs. High efficiency (17–20 SEER): 20–30% more upfront, 15–25% lower energy bills. Variable-speed systems: Best comfort and efficiency, 30–40% more upfront.\n\nFor Denver's climate, a 16 SEER AC with a 95% AFUE furnace is the sweet spot for most homes. Heat pumps are gaining popularity but need backup heat for sub-zero days.",
+      },
+      {
+        heading: 'Installation Quality Matters',
+        body: "A perfect system installed poorly will underperform and fail early. Quality installation includes: Proper refrigerant charge (not just 'topping off'). Sealed and insulated ductwork. Correctly sized return air. Programmable or smart thermostat. Startup and calibration. Written documentation of all work.",
+      },
+    ],
+    keyTakeaways: [
+      'Get 3–4 written quotes from licensed, EPA-certified HVAC contractors',
+      'Insist on Manual J load calculation — never size by square footage alone',
+      'Compare equipment efficiency (SEER/HSPF) and labor warranties',
+      'Verify EPA 608 and NATE certifications',
+      'Quality installation is as important as equipment choice',
+    ],
+    faqs: [
+      { q: 'How much does HVAC replacement cost in Denver?', a: 'Most Denver homeowners pay $5,000–$12,000 for a complete furnace and AC replacement. High-efficiency systems run $8,000–$15,000. Heat pump systems cost $6,000–$14,000.' },
+      { q: 'What SEER rating should I get in Denver?', a: '16 SEER is the minimum for new AC units. 16–18 SEER offers the best value for Denver\'s climate. 20+ SEER is overkill unless you have very high cooling loads.' },
+      { q: 'How long does HVAC installation take?', a: 'Most residential HVAC replacements take 1–2 days. Complex installations with ductwork modifications can take 2–3 days.' },
+      { q: 'Do I need a permit for HVAC replacement in Denver?', a: 'Yes. Denver requires permits for HVAC replacements. Your contractor should pull them — if they say you don\'t need one, find another contractor.' },
+    ],
+    relatedGuides: ['cost-hvac-replacement-denver', 'how-to-choose-hvac-contractor-denver', 'repair-vs-replace-home-systems-denver'],
+  },
+  {
+    slug: 'best-electricians-denver',
+    title: 'Best Electricians in Denver (2025 Guide)',
+    metaTitle: 'Best Electricians in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best electricians in Denver. Compare top-rated electrical contractors, what to look for, red flags to avoid, and how to choose the right electrician for your project.',
+    category: 'comparison',
+    trade: 'Electricians',
+    tradeSlug: 'electricians',
+    relatedTradeSlug: 'hvac',
+    relatedTrade: 'HVAC',
+    intro: "Electrical work is not a place to cut corners. A bad electrician can create fire hazards, code violations, and expensive repairs. Denver's older homes often need panel upgrades, rewiring, or code updates — work that requires expertise and proper licensing.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver Electrician',
+        body: "Top electricians have: Colorado Master or Journeyman Electrician license (verify at dora.colorado.gov). 10+ years experience with local code. $1M+ general liability and workers' comp insurance. Denver business license. A+ BBB rating.\n\nThey pull permits for all work requiring them, provide detailed written estimates, explain code requirements clearly, and offer warranties on labor (typically 1–3 years).",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "Unlicensed 'handymen' doing electrical work. No permit when required. Quotes without seeing the job. Pressure to skip inspections. Cash-only deals. Quotes 50%+ below competitors.\n\nIn Colorado, only licensed electricians can perform electrical work. Hiring an unlicensed contractor voids your insurance and creates liability if something goes wrong.",
+      },
+      {
+        heading: 'How to Compare Electricians',
+        body: "Get 3 written quotes. Compare: Scope of work (be specific about what's included). Materials and brands. Permit costs (if applicable). Timeline. Labor warranty. Total cost.\n\nAsk: What is your license number? (Verify it.) Do you pull permits? What is your warranty on labor? Can you provide 3 recent local references? Are you insured?",
+      },
+      {
+        heading: 'Common Denver Electrical Projects',
+        body: "Panel upgrades (100A to 200A): $2,000–$4,000. Required for older homes adding EV chargers, hot tubs, or major appliances. Rewiring: $4,000–$10,000+ depending on home size. EV charger installation: $800–$2,500. Outlet/switch additions: $150–$300 per location. Ceiling fan installation: $200–$500.",
+      },
+      {
+        heading: 'When to Hire an Electrician',
+        body: "Hire a licensed electrician for: Any work inside the electrical panel. New circuits or outlets. Rewiring. Code violations. Flickering lights or frequent breaker trips. Burning smells or warm outlets. EV charger installation. Generator hookups.\n\nDon't DIY electrical work unless you're licensed — it's illegal in Colorado and voids your insurance.",
+      },
+    ],
+    keyTakeaways: [
+      'Only hire licensed Colorado electricians (verify at dora.colorado.gov)',
+      'Get 3 written quotes and verify insurance',
+      'Insist on permits for all work requiring them',
+      'Check BBB rating and recent reviews',
+      'Never hire unlicensed contractors for electrical work',
+    ],
+    faqs: [
+      { q: 'How much do electricians charge in Denver?', a: 'Most Denver electricians charge $100–$150/hour. Service calls typically have a $75–$150 minimum. Complex projects are usually bid as flat rates.' },
+      { q: 'Do I need a permit for electrical work in Denver?', a: 'Yes, for most electrical work including panel upgrades, new circuits, rewiring, and EV charger installation. Your electrician should pull permits.' },
+      { q: 'How do I verify an electrician\'s license?', a: 'Check the Colorado Department of Regulatory Agencies (DORA) website. Search by name or license number. Verify the license is active and in good standing.' },
+      { q: 'What is the difference between a Master and Journeyman electrician?', a: 'Master electricians have more experience and can supervise other electricians. Both can perform electrical work, but Masters can pull permits and run businesses.' },
+    ],
+    relatedGuides: ['cost-electrical-work-denver', 'how-to-choose-electrician-denver', 'best-home-improvements-roi-denver'],
+  },
+  {
+    slug: 'best-plumbers-denver',
+    title: 'Best Plumbers in Denver (2025 Guide)',
+    metaTitle: 'Best Plumbers in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best plumbers in Denver. Compare top-rated plumbing contractors, what to look for, red flags to avoid, and how to choose the right plumber for repairs, installations, or emergencies.',
+    category: 'comparison',
+    trade: 'Plumbers',
+    tradeSlug: 'plumbers',
+    relatedTradeSlug: 'hvac',
+    relatedTrade: 'HVAC',
+    intro: "A good plumber saves you from water damage, mold, and expensive repairs. A bad one creates leaks, code violations, and insurance headaches. Denver's older homes and hard water make plumbing expertise critical.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver Plumber',
+        body: "Top plumbers have: Colorado Master or Journeyman Plumber license (verify at dora.colorado.gov). 10+ years experience with Denver's older homes. $1M+ general liability and workers' comp insurance. Denver business license. A+ BBB rating with minimal complaints.\n\nThey provide upfront pricing, explain options clearly, pull permits when required, and offer warranties on labor (typically 1–2 years).",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "Unlicensed 'handymen' doing plumbing work. No written estimate. Pressure to replace when repair is possible. Cash-only deals. Quotes 40%+ below competitors. No permit when required.\n\nIn Colorado, only licensed plumbers can perform plumbing work beyond basic repairs. Hiring unlicensed contractors voids insurance and creates liability.",
+      },
+      {
+        heading: 'How to Compare Plumbers',
+        body: "For non-emergency work, get 2–3 quotes. Compare: Diagnosis and recommended solution. Materials and brands. Permit costs (if applicable). Timeline. Labor warranty. Total cost.\n\nAsk: What is your license number? (Verify it.) Do you offer a warranty on labor? Can you provide recent references? Are you insured? Do you charge a service call fee?",
+      },
+      {
+        heading: 'Common Denver Plumbing Projects',
+        body: "Water heater replacement: $1,200–$3,500 (tank), $2,500–$5,000 (tankless). Sewer line repair: $3,000–$10,000+ depending on access and length. Repiping: $4,000–$15,000 depending on home size. Drain cleaning: $150–$400. Fixture replacement: $200–$800 per fixture. Sump pump installation: $800–$2,000.",
+      },
+      {
+        heading: 'Emergency vs. Non-Emergency Plumbing',
+        body: "Emergency (call immediately): Burst pipes, sewage backup, no hot water in winter, gas leaks, major leaks causing water damage. Non-emergency (schedule within days): Slow drains, dripping faucets, running toilets, low water pressure.\n\nEmergency plumbers charge 1.5–2x normal rates after hours. If it can wait until morning, you'll save 30–50%.",
+      },
+    ],
+    keyTakeaways: [
+      'Only hire licensed Colorado plumbers (verify at dora.colorado.gov)',
+      'Get 2–3 written quotes for non-emergency work',
+      'Verify insurance and check BBB rating',
+      'Ask about labor warranties (1–2 years is standard)',
+      'Emergency rates are 1.5–2x normal — wait if possible',
+    ],
+    faqs: [
+      { q: 'How much do plumbers charge in Denver?', a: 'Most Denver plumbers charge $100–$175/hour. Service calls typically have a $75–$150 minimum. Emergency rates (nights/weekends) run $150–$250/hour.' },
+      { q: 'Do I need a permit for plumbing work in Denver?', a: 'Yes, for most plumbing work including water heater replacement, repiping, sewer line work, and gas line work. Your plumber should pull permits.' },
+      { q: 'How do I verify a plumber\'s license?', a: 'Check the Colorado Department of Regulatory Agencies (DORA) website. Search by name or license number. Verify the license is active and in good standing.' },
+      { q: 'Should I replace or repair my water heater?', a: 'If your water heater is 10+ years old, replacement is usually more cost-effective than repair. If it\'s under 7 years and the repair is minor, repair is often the better choice.' },
+    ],
+    relatedGuides: ['how-to-choose-plumber-denver', 'repair-vs-replace-home-systems-denver', 'denver-building-codes-homeowners'],
+  },
+  {
+    slug: 'best-kitchen-remodelers-denver',
+    title: 'Best Kitchen Remodelers in Denver (2025 Guide)',
+    metaTitle: 'Best Kitchen Remodelers in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best kitchen remodelers in Denver. Compare top-rated kitchen contractors, what to look for, red flags to avoid, and how to choose the right remodeler for your kitchen renovation.',
+    category: 'comparison',
+    trade: 'Kitchen Remodeling',
+    tradeSlug: 'kitchen-remodelers',
+    relatedTradeSlug: 'bathroom-remodelers',
+    relatedTrade: 'Bathroom Remodelers',
+    intro: "A kitchen remodel is one of the biggest investments you'll make in your home — and one of the highest-ROI projects before selling. Choosing the right contractor means a kitchen you'll love for decades. Choosing wrong means budget overruns, delays, and poor craftsmanship.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver Kitchen Remodeler',
+        body: "Top kitchen remodelers have: 10+ years experience with full kitchen renovations. Licensed general contractor or remodeling contractor. $2M+ general liability insurance. Portfolio of completed Denver kitchens. NKBA (National Kitchen & Bath Association) membership or certification.\n\nThey provide detailed contracts, 3D renderings or CAD drawings, itemized budgets, realistic timelines (8–12 weeks for full remodels), and clear communication throughout the project.",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "No written contract or vague scope of work. Requests for 50%+ payment upfront. No portfolio or references. Unlicensed or uninsured. Quotes 30%+ below competitors without explanation. Pressure to make quick decisions on materials.\n\nLegitimate remodelers will walk you through the entire process, explain trade-offs, and never rush you into decisions. They'll also have relationships with local suppliers and subcontractors.",
+      },
+      {
+        heading: 'How to Compare Kitchen Remodelers',
+        body: "Get 3–4 detailed quotes. Compare: Scope of work (be very specific). Cabinet brand and construction (plywood vs. particle board). Countertop material and thickness. Appliance allowances. Flooring. Lighting and electrical. Plumbing fixtures. Timeline. Payment schedule. Warranty.\n\nAsk: How many kitchen remodels have you completed in Denver? Can I see 3 recent projects? What is your payment schedule? Who will be on-site daily? How do you handle change orders? What is your warranty on labor?",
+      },
+      {
+        heading: 'Understanding Kitchen Remodel Costs',
+        body: "Minor refresh ($10,000–$25,000): New cabinet fronts, countertops, fixtures. No layout changes. Mid-range ($25,000–$60,000): Semi-custom cabinets, quartz countertops, new flooring, updated lighting. Full gut renovation ($60,000–$120,000+): Custom cabinetry, premium materials, structural changes, high-end appliances.\n\nCabinets are 30–35% of budget. Labor is 20–25%. Appliances are 15–20%. Countertops are 10–15%.",
+      },
+      {
+        heading: 'Timeline and Disruption',
+        body: "Full kitchen remodels take 8–12 weeks from demolition to completion. You'll be without a kitchen for most of this time. Plan for: Eating out or using a temporary kitchen setup. Dust and noise during demo and construction. Multiple subcontractors (electricians, plumbers, cabinet installers, countertop fabricators). Final inspections and punch list.\n\nQuality remodelers will protect the rest of your home with plastic barriers and clean up daily.",
+      },
+    ],
+    keyTakeaways: [
+      'Get 3–4 detailed written quotes from licensed remodelers',
+      'Review portfolios and check 3+ recent references',
+      'Verify insurance and check BBB rating',
+      'Expect 8–12 weeks for full kitchen remodels',
+      'Never pay more than 10–20% upfront',
+    ],
+    faqs: [
+      { q: 'How much does a kitchen remodel cost in Denver?', a: 'Most Denver kitchen remodels cost $25,000–$60,000 for a mid-range renovation. Minor refreshes run $10,000–$25,000. Full gut renovations cost $60,000–$120,000+.' },
+      { q: 'How long does a kitchen remodel take?', a: 'Most full kitchen remodels take 8–12 weeks from demolition to completion. Minor updates can be done in 2–4 weeks.' },
+      { q: 'Do I need a permit for a kitchen remodel in Denver?', a: 'Yes, if you\'re doing electrical, plumbing, or structural work. Your contractor should pull all required permits.' },
+      { q: 'What is the best countertop material for Denver kitchens?', a: 'Quartz is the most popular — durable, low-maintenance, and available in many styles. Granite is also popular. Avoid marble in high-use kitchens (it stains and etches easily).' },
+    ],
+    relatedGuides: ['cost-kitchen-remodel-denver', 'how-to-choose-kitchen-remodeler-denver', 'permit-guide-kitchen-remodel-denver'],
+  },
+  {
+    slug: 'best-bathroom-remodelers-denver',
+    title: 'Best Bathroom Remodelers in Denver (2025 Guide)',
+    metaTitle: 'Best Bathroom Remodelers in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best bathroom remodelers in Denver. Compare top-rated bathroom contractors, what to look for, red flags to avoid, and how to choose the right remodeler for your bathroom renovation.',
+    category: 'comparison',
+    trade: 'Bathroom Remodeling',
+    tradeSlug: 'bathroom-remodelers',
+    relatedTradeSlug: 'kitchen-remodelers',
+    relatedTrade: 'Kitchen Remodelers',
+    intro: "Bathroom remodels are complex projects involving plumbing, electrical, tile, and waterproofing. A great contractor delivers a beautiful, functional space that lasts decades. A bad one creates leaks, mold, and expensive repairs.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver Bathroom Remodeler',
+        body: "Top bathroom remodelers have: 10+ years experience with full bathroom renovations. Licensed general contractor or remodeling contractor. $1M+ general liability insurance. Portfolio of completed Denver bathrooms. NKBA certification (preferred).\n\nThey understand proper waterproofing (critical in bathrooms), provide detailed contracts, realistic timelines (3–6 weeks for full remodels), and clear communication throughout.",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "No written contract or vague scope. Requests for 50%+ payment upfront. No portfolio or references. Unlicensed or uninsured. Quotes 30%+ below competitors. Skipping waterproofing or using improper materials.\n\nBathroom waterproofing is not optional — it prevents mold and structural damage. Any contractor who skips this step or uses drywall instead of cement board is unqualified.",
+      },
+      {
+        heading: 'How to Compare Bathroom Remodelers',
+        body: "Get 3 detailed quotes. Compare: Scope of work. Waterproofing method (RedGard, Schluter, etc.). Tile material and installation. Fixtures and finishes. Plumbing and electrical work. Flooring. Ventilation. Timeline. Payment schedule. Warranty.\n\nAsk: How many bathroom remodels have you completed? Can I see 3 recent projects? What waterproofing system do you use? Who will be on-site daily? How do you handle change orders? What is your warranty?",
+      },
+      {
+        heading: 'Understanding Bathroom Remodel Costs',
+        body: "Small bathroom refresh ($8,000–$15,000): New fixtures, tile, vanity. No layout changes. Mid-range remodel ($15,000–$30,000): Full gut, new tile, custom vanity, upgraded fixtures. Luxury remodel ($30,000–$60,000+): Premium materials, custom tile work, high-end fixtures, heated floors.\n\nTile and labor are the biggest costs (40–50% combined). Fixtures are 15–20%. Vanity is 10–15%.",
+      },
+      {
+        heading: 'Timeline and Disruption',
+        body: "Full bathroom remodels take 3–6 weeks. You'll be without that bathroom for most of this time. Plan for: Using another bathroom. Dust and noise during demo. Multiple subcontractors (plumbers, electricians, tile setters). Final inspections.\n\nQuality remodelers will protect the rest of your home and clean up daily.",
+      },
+    ],
+    keyTakeaways: [
+      'Get 3 detailed written quotes from licensed remodelers',
+      'Review portfolios and check 3+ recent references',
+      'Verify proper waterproofing methods (cement board + membrane)',
+      'Expect 3–6 weeks for full bathroom remodels',
+      'Never pay more than 10–20% upfront',
+    ],
+    faqs: [
+      { q: 'How much does a bathroom remodel cost in Denver?', a: 'Most Denver bathroom remodels cost $15,000–$30,000 for a mid-range renovation. Small refreshes run $8,000–$15,000. Luxury remodels cost $30,000–$60,000+.' },
+      { q: 'How long does a bathroom remodel take?', a: 'Most full bathroom remodels take 3–6 weeks from demolition to completion. Minor updates can be done in 1–2 weeks.' },
+      { q: 'Do I need a permit for a bathroom remodel in Denver?', a: 'Yes, if you\'re doing plumbing, electrical, or structural work. Your contractor should pull all required permits.' },
+      { q: 'What is the most important part of a bathroom remodel?', a: 'Proper waterproofing. This prevents mold, rot, and structural damage. Always use cement board (not drywall) and a waterproofing membrane behind tile.' },
+    ],
+    relatedGuides: ['cost-bathroom-remodel-denver', 'how-to-choose-bathroom-remodeler-denver', 'best-home-improvements-roi-denver'],
+  },
+  {
+    slug: 'best-home-remodelers-denver',
+    title: 'Best Home Remodelers in Denver (2025 Guide)',
+    metaTitle: 'Best Home Remodelers in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best home remodelers in Denver. Compare top-rated general contractors and remodeling companies, what to look for, red flags to avoid, and how to choose the right remodeler for your project.',
+    category: 'comparison',
+    trade: 'Home Remodeling',
+    tradeSlug: 'home-remodelers',
+    relatedTradeSlug: 'kitchen-remodelers',
+    relatedTrade: 'Kitchen Remodelers',
+    intro: "Whole-home remodels, additions, and major renovations are complex projects requiring coordination of multiple trades, permits, and timelines. The right general contractor makes the process smooth. The wrong one creates budget overruns, delays, and legal headaches.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver Home Remodeler',
+        body: "Top home remodelers have: 15+ years experience with major renovations. Licensed general contractor. $2M+ general liability insurance. Portfolio of completed Denver projects. Strong relationships with subcontractors. NARI (National Association of the Remodeling Industry) membership.\n\nThey provide detailed contracts, realistic budgets with contingencies, clear timelines, regular communication, and handle all permits and inspections.",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "No written contract or vague scope. Requests for 50%+ payment upfront. No portfolio or references. Unlicensed or uninsured. Quotes 30%+ below competitors. Pressure to skip permits. No change order process.\n\nMajor remodels always have surprises. Quality contractors build 10–15% contingency into budgets and have clear change order processes.",
+      },
+      {
+        heading: 'How to Compare Home Remodelers',
+        body: "Get 3 detailed quotes. Compare: Scope of work (very detailed). Materials and finishes. Subcontractor qualifications. Timeline (realistic). Payment schedule (tied to milestones). Warranty. Contingency budget. Permit and inspection handling.\n\nAsk: How many similar projects have you completed? Can I visit a current job site? What is your payment schedule? How do you handle change orders? Who will be on-site daily? What is your warranty? How do you handle disputes?",
+      },
+      {
+        heading: 'Understanding Home Remodel Costs',
+        body: "Whole-home remodel: $100–$300+ per sq ft depending on finishes. Kitchen + bathroom remodel: $40,000–$100,000+. Basement finish: $50,000–$100,000 for 1,000 sq ft. Home addition: $200–$400+ per sq ft.\n\nCosts vary widely based on structural changes, finishes, and scope. Always budget 10–15% contingency for surprises.",
+      },
+      {
+        heading: 'Timeline and Living Arrangements',
+        body: "Major remodels take 3–9 months depending on scope. Kitchen/bathroom remodels: 2–4 months. Whole-home remodels: 6–12 months. Additions: 4–8 months.\n\nMany homeowners move out during major remodels. If staying, expect: Dust, noise, and disruption. Limited access to parts of your home. Multiple subcontractors daily. Inspections and delays.",
+      },
+    ],
+    keyTakeaways: [
+      'Get 3 detailed written quotes from licensed general contractors',
+      'Review portfolios and visit current job sites if possible',
+      'Verify insurance and check BBB rating',
+      'Budget 10–15% contingency for surprises',
+      'Never pay more than 10–20% upfront',
+    ],
+    faqs: [
+      { q: 'How much does a whole-home remodel cost in Denver?', a: 'Most whole-home remodels cost $100–$300+ per sq ft. A 2,000 sq ft home remodel typically costs $200,000–$600,000+ depending on finishes and structural changes.' },
+      { q: 'How long does a major remodel take?', a: 'Kitchen/bathroom remodels take 2–4 months. Whole-home remodels take 6–12 months. Additions take 4–8 months. Timelines vary based on scope and permit delays.' },
+      { q: 'Do I need to move out during a remodel?', a: 'For whole-home remodels, most homeowners move out. For kitchen/bathroom remodels, you can usually stay but expect significant disruption.' },
+      { q: 'What permits do I need for a home remodel in Denver?', a: 'Most major remodels require building permits. Your contractor should handle all permits and inspections. Permit costs typically run $500–$2,000+ depending on scope.' },
+    ],
+    relatedGuides: ['how-to-choose-home-remodeler-denver', 'denver-building-codes-homeowners', 'best-home-improvements-roi-denver'],
   },
 ]
 
