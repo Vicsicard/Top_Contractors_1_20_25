@@ -24,7 +24,7 @@ type TradeContent = {
 }
 
 const TRADE_CONTENT: Record<string, TradeContent> = {
-  'roofing-contractors': {
+  'roofer': {
     intro: 'Denver roofing contractors handle everything from minor repairs to full roof replacements. With Colorado\'s hail seasons, intense UV exposure, and heavy snow loads, choosing a qualified local roofer is critical.',
     body: 'A quality roof replacement in Denver involves removing old material, inspecting the decking, installing new underlayment, and applying the new shingles. Denver\'s climate demands materials rated for impact resistance and thermal cycling. Many homeowners opt for Class 4 impact-resistant shingles to qualify for insurance discounts. After major hail events, a licensed roofer can document damage for your insurance claim and manage the entire replacement process.',
     costRange: '$8,000 – $20,000+ depending on roof size, pitch, and materials',
@@ -38,7 +38,7 @@ const TRADE_CONTENT: Record<string, TradeContent> = {
       { q: 'What roofing materials work best in Colorado?', a: 'Class 4 impact-resistant shingles are popular in Denver due to hail risk. Metal roofing is also a durable long-term option for Colorado homes.' },
     ]
   },
-  'plumbing-contractors': {
+  'plumbing': {
     intro: 'Licensed plumbers in Denver handle everything from leaky faucets and drain clogs to full pipe replacements and water heater installations. Denver\'s hard water and freeze-thaw cycles create unique plumbing challenges.',
     body: 'Denver\'s water is notoriously hard, leading to mineral buildup in pipes, water heaters, and fixtures. Local plumbers are experienced with water softener installations, tankless water heater upgrades, and winterization services. Whether you\'re dealing with a burst pipe, slow drain, or planning a bathroom remodel, a licensed Denver plumber ensures code-compliant work that passes inspection.',
     costRange: '$150 – $500 for repairs; $1,000 – $5,000+ for major installations',
@@ -52,7 +52,7 @@ const TRADE_CONTENT: Record<string, TradeContent> = {
       { q: 'How do I prevent frozen pipes in Denver?', a: 'Insulate pipes in unheated spaces, keep cabinet doors open during cold snaps, and let faucets drip slightly. A plumber can also install pipe insulation.' },
     ]
   },
-  'electricians': {
+  'electrician': {
     intro: 'Licensed electricians in Denver handle residential and commercial electrical work including panel upgrades, EV charger installations, lighting, and safety inspections. All electrical work in Colorado requires permits.',
     body: 'Denver\'s older housing stock often requires panel upgrades to support modern electrical loads. With the rise of electric vehicles, EV charger installations have become one of the most requested services. Denver electricians are also experienced with smart home wiring, whole-home generators, and solar integration. All permitted work includes a city inspection for your protection.',
     costRange: '$200 – $800 for standard repairs; $2,000 – $8,000 for panel upgrades',
@@ -66,7 +66,7 @@ const TRADE_CONTENT: Record<string, TradeContent> = {
       { q: 'How do I know if my electrical panel needs upgrading?', a: 'Signs include frequently tripping breakers, flickering lights, or a panel under 200 amps. A licensed electrician can assess your panel\'s capacity.' },
     ]
   },
-  'hvac-contractors': {
+  'hvac': {
     intro: 'Denver HVAC contractors install, repair, and maintain heating and cooling systems. With temperature swings from -20°F winters to 100°F summers, a reliable HVAC system is essential for Denver homeowners.',
     body: 'Denver\'s climate demands HVAC systems that handle extreme cold and summer heat efficiently. Local contractors are experienced with high-altitude furnace calibration, whole-home humidifiers to combat dry Colorado air, and energy-efficient heat pump installations. Regular maintenance extends system life and keeps energy bills manageable year-round.',
     costRange: '$150 – $500 for repairs; $5,000 – $15,000 for new system installation',

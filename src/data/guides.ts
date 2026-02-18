@@ -31,7 +31,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'How much does roof replacement cost in Denver? Average prices, material options, what affects cost, and how to get the best value. Updated for 2025.',
     category: 'cost',
     trade: 'Roofing Contractors',
-    tradeSlug: 'roofing-contractors',
+    tradeSlug: 'roofer',
     intro: "Denver roofing costs vary widely. With Colorado's hail seasons, UV exposure, and snow loads, knowing what to expect before calling a contractor puts you in a much stronger position.",
     sections: [
       {
@@ -165,7 +165,7 @@ export const GUIDES: Guide[] = [
     metaDescription: "What to look for when hiring a roofer in Denver. License checks, red flags, questions to ask, and how to compare quotes.",
     category: 'hiring',
     trade: 'Roofing Contractors',
-    tradeSlug: 'roofing-contractors',
+    tradeSlug: 'roofer',
     intro: "Denver's roofing market is flooded with contractors — especially after hail events. Knowing how to separate qualified local professionals from storm chasers can save you thousands.",
     sections: [
       {
@@ -211,7 +211,7 @@ export const GUIDES: Guide[] = [
     metaDescription: "Do you need a permit to replace a roof in Denver? Yes. Here's what's required, how much it costs, and what happens if you skip it.",
     category: 'permit',
     trade: 'Roofing Contractors',
-    tradeSlug: 'roofing-contractors',
+    tradeSlug: 'roofer',
     intro: "Yes — Denver requires a permit for roof replacements. It's a consumer protection measure ensuring work is inspected and meets building code.",
     sections: [
       {
@@ -251,7 +251,7 @@ export const GUIDES: Guide[] = [
     metaDescription: "When is the best time to replace a roof in Denver? Learn how Denver's seasons affect roofing projects, pricing, and contractor availability.",
     category: 'seasonal',
     trade: 'Roofing Contractors',
-    tradeSlug: 'roofing-contractors',
+    tradeSlug: 'roofer',
     intro: "Denver's climate creates distinct roofing seasons. Knowing when to schedule your replacement can affect pricing, availability, and installation quality.",
     sections: [
       {
@@ -292,7 +292,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'What to look for when hiring an HVAC contractor in Denver. Certifications, questions to ask, red flags, and how to compare quotes.',
     category: 'hiring',
     trade: 'HVAC Contractors',
-    tradeSlug: 'hvac-contractors',
+    tradeSlug: 'hvac',
     intro: "Denver's extreme temperature swings — from -20°F winters to 100°F summers — make your HVAC system one of the most critical systems in your home. Choosing the right contractor ensures your system is properly sized, installed, and maintained.",
     sections: [
       {
@@ -375,7 +375,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'How much does it cost to replace an HVAC system in Denver? Average prices for furnaces, AC units, and full system replacements. Updated for 2025.',
     category: 'cost',
     trade: 'HVAC Contractors',
-    tradeSlug: 'hvac-contractors',
+    tradeSlug: 'hvac',
     intro: "Denver's extreme climate — cold winters, hot summers, and high altitude — puts more demand on HVAC systems than most US cities. Knowing what replacement actually costs helps you avoid overpaying and make the right equipment choice.",
     sections: [
       { heading: 'Average HVAC Replacement Cost in Denver', body: "Furnace only: $3,500–$8,000 installed. High-efficiency (96% AFUE) units run $5,000–$8,000 but qualify for Xcel Energy rebates.\n\nCentral AC only: $3,500–$7,500 installed. A 3-ton unit (typical for 1,500–2,000 sq ft) averages $4,500–$6,000.\n\nFull system (furnace + AC): $7,000–$15,000 installed. Replacing both at once saves on labor and ensures matched equipment performance.\n\nHeat pump system: $8,000–$18,000 installed. Gaining popularity with Colorado's climate incentives." },
@@ -406,7 +406,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'How much does it cost to paint a house in Denver? Average prices for interior and exterior painting, what affects cost, and how to get the best value.',
     category: 'cost',
     trade: 'Painting Contractors',
-    tradeSlug: 'painting-contractors',
+    tradeSlug: 'painting',
     intro: "Painting is one of the highest-ROI home improvements in Denver. Denver's intense UV and weather extremes make paint quality especially important. Here's what Denver homeowners actually pay.",
     sections: [
       { heading: 'Average House Painting Cost in Denver', body: "Exterior painting (1,500–2,500 sq ft home): $3,500–$8,000. Larger homes or complex trim can reach $10,000–$15,000.\n\nInterior whole house: $4,000–$12,000 depending on square footage and ceiling height.\n\nSingle room interior: $400–$900 for a standard bedroom; $800–$1,500 for rooms with high ceilings or extensive trim.\n\nExterior trim only: $800–$2,500." },
@@ -436,7 +436,7 @@ export const GUIDES: Guide[] = [
     metaDescription: "How much does window replacement cost in Denver? Average prices per window, full-house costs, energy savings, and what to look for in Denver's climate.",
     category: 'cost',
     trade: 'Window Contractors',
-    tradeSlug: 'window-contractors',
+    tradeSlug: 'windows',
     intro: "Window replacement is one of the most impactful upgrades Denver homeowners can make for comfort and energy efficiency. Denver's altitude, UV intensity, and temperature extremes make window quality especially important.",
     sections: [
       { heading: 'Average Window Replacement Cost in Denver', body: "Per window installed: $400–$1,200 for standard double-hung windows. Premium windows (triple-pane, fiberglass frames): $800–$2,500 per window.\n\nFull house replacement (10–15 windows): $6,000–$18,000 for standard vinyl double-pane. Premium fiberglass or wood-clad: $15,000–$35,000+.\n\nMost Denver homeowners replacing all windows spend $8,000–$15,000 for quality vinyl double-pane units." },
@@ -466,7 +466,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'How much does new flooring cost in Denver? Average prices for hardwood, LVP, tile, and carpet. What affects cost and how to choose the right material.',
     category: 'cost',
     trade: 'Flooring Contractors',
-    tradeSlug: 'flooring-contractors',
+    tradeSlug: 'flooring',
     intro: "Flooring is one of the most visible upgrades in any Denver home. Understanding what each option costs — and how Denver's dry climate affects material performance — helps you make the right choice for your budget and lifestyle.",
     sections: [
       { heading: 'Average Flooring Installation Cost in Denver', body: "Hardwood flooring: $8–$15/sq ft installed (solid); $6–$12/sq ft (engineered). A 500 sq ft living room runs $3,000–$7,500.\n\nLuxury Vinyl Plank (LVP): $4–$8/sq ft installed. The most popular choice in Denver — waterproof, durable, looks like hardwood at half the price.\n\nTile: $8–$20/sq ft installed depending on tile size and complexity.\n\nCarpet: $3–$8/sq ft installed. Whole-house replacement for a 2,000 sq ft home: $6,000–$16,000." },
@@ -496,7 +496,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'What to look for when hiring a plumber in Denver. License verification, questions to ask, red flags, and how to compare quotes.',
     category: 'hiring',
     trade: 'Plumbing Contractors',
-    tradeSlug: 'plumbing-contractors',
+    tradeSlug: 'plumbing',
     intro: "Denver's aging housing stock, hard water, and extreme winter temperatures create unique plumbing challenges. Choosing the right plumber can mean the difference between a lasting fix and a recurring problem.",
     sections: [
       { heading: 'Colorado Plumbing License Requirements', body: "Colorado requires plumbers to be licensed at the state level. Master Plumber: can pull permits, design systems, and supervise work. Journeyman Plumber: works under master supervision.\n\nVerify licenses through the Colorado DORA website. A legitimate Denver plumber provides their license number without hesitation." },
@@ -587,7 +587,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'Should you repair or replace your roof in Denver? How to decide based on age, damage extent, insurance, and cost. Expert guidance for Colorado homeowners.',
     category: 'hiring',
     trade: 'Roofing Contractors',
-    tradeSlug: 'roofing-contractors',
+    tradeSlug: 'roofer',
     intro: "After a hail storm or when your roof starts leaking, Denver homeowners face a critical decision: repair or replace? The wrong choice costs thousands. Here's how to make the right call.",
     sections: [
       { heading: 'The 50% Rule', body: "The industry standard: if repair cost exceeds 50% of full replacement cost, replace the roof. For a Denver home where replacement costs $12,000–$15,000, repairs over $6,000–$7,500 typically justify replacement. But age and damage type matter just as much." },

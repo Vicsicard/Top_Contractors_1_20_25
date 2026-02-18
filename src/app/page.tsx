@@ -26,22 +26,22 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 const SERVICES = [
-  { name: 'Bathroom Remodelers',    desc: 'Trusted bathroom remodeling contractors in Denver', slug: 'bathroom-remodeling',    icon: Bath },
-  { name: 'Deck Builders',          desc: 'Trusted deck contractors in Denver',                slug: 'deck-builders',          icon: Layers },
-  { name: 'Electricians',           desc: 'Licensed electricians in Denver',                   slug: 'electricians',           icon: Zap },
-  { name: 'Epoxy Garage Flooring',  desc: 'Epoxy flooring specialists in Denver',              slug: 'epoxy-garage-flooring',  icon: LayoutGrid },
-  { name: 'Fencing Contractors',    desc: 'Trusted fence contractors in Denver',               slug: 'fencing-contractors',    icon: SeparatorHorizontal },
-  { name: 'Flooring Contractors',   desc: 'Professional flooring contractors in Denver',       slug: 'flooring-contractors',   icon: LayoutGrid },
+  { name: 'Bathroom Remodeling',    desc: 'Trusted bathroom remodeling contractors in Denver', slug: 'bathroom-remodeling',    icon: Bath },
+  { name: 'Decks',                  desc: 'Trusted deck contractors in Denver',                slug: 'decks',                  icon: Layers },
+  { name: 'Electrician',            desc: 'Licensed electricians in Denver',                   slug: 'electrician',            icon: Zap },
+  { name: 'Epoxy Garage',           desc: 'Epoxy flooring specialists in Denver',              slug: 'epoxy-garage',           icon: LayoutGrid },
+  { name: 'Fencing',                desc: 'Trusted fence contractors in Denver',               slug: 'fencing',                icon: SeparatorHorizontal },
+  { name: 'Flooring',               desc: 'Professional flooring contractors in Denver',       slug: 'flooring',               icon: LayoutGrid },
   { name: 'Home Remodeling',        desc: 'Full-service home remodeling contractors',          slug: 'home-remodeling',        icon: Home },
-  { name: 'HVAC Contractors',       desc: 'Heating and air conditioning experts',              slug: 'hvac-contractors',       icon: Wind },
-  { name: 'Kitchen Remodelers',     desc: 'Kitchen remodeling specialists',                    slug: 'kitchen-remodeling',     icon: Hammer },
-  { name: 'Landscaping Contractors',desc: 'Professional landscapers in Denver',                slug: 'landscaping-contractors',icon: Leaf },
-  { name: 'Masonry Contractors',    desc: 'Stone and masonry specialists',                     slug: 'masonry-contractors',    icon: Blocks },
-  { name: 'Painting Contractors',   desc: 'Interior and exterior painters',                    slug: 'painting-contractors',   icon: Paintbrush },
-  { name: 'Plumbing Contractors',   desc: 'Licensed plumbers in Denver',                       slug: 'plumbing-contractors',   icon: Wrench },
-  { name: 'Roofing Contractors',    desc: 'Professional roofers in Denver',                    slug: 'roofing-contractors',    icon: HardHat },
-  { name: 'Siding and Gutters',     desc: 'Siding and gutter specialists',                     slug: 'siding-contractors',     icon: AppWindow },
-  { name: 'Window Contractors',     desc: 'Window installation experts',                       slug: 'window-contractors',     icon: DoorOpen },
+  { name: 'HVAC',                   desc: 'Heating and air conditioning experts',              slug: 'hvac',                   icon: Wind },
+  { name: 'Kitchen Remodeling',     desc: 'Kitchen remodeling specialists',                    slug: 'kitchen-remodeling',     icon: Hammer },
+  { name: 'Landscaper',             desc: 'Professional landscapers in Denver',                slug: 'landscaper',             icon: Leaf },
+  { name: 'Masonry',                desc: 'Stone and masonry specialists',                     slug: 'masonry',                icon: Blocks },
+  { name: 'Painting',               desc: 'Interior and exterior painters',                    slug: 'painting',               icon: Paintbrush },
+  { name: 'Plumbing',               desc: 'Licensed plumbers in Denver',                       slug: 'plumbing',               icon: Wrench },
+  { name: 'Roofer',                 desc: 'Professional roofers in Denver',                    slug: 'roofer',                 icon: HardHat },
+  { name: 'Siding & Gutters',       desc: 'Siding and gutter specialists',                     slug: 'siding-gutters',         icon: AppWindow },
+  { name: 'Windows',                desc: 'Window installation experts',                       slug: 'windows',                icon: DoorOpen },
 ] as const;
 
 export default async function HomePage() {
