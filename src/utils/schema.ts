@@ -189,6 +189,61 @@ export function generateServiceSchema(trade: any, location: any) {
   };
 }
 
+export function generateContractorSchema(contractor: any, trade: any, subregion: any) {
+  const schema: any = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    '@id': `https://topcontractorsdenver.com/contractors/${contractor.slug}`,
+    name: contractor.contractor_name,
+    url: contractor.website || `https://topcontractorsdenver.com/contractors/${contractor.slug}`,
+    description: `${contractor.contractor_name} is a verified ${trade?.category_name || 'contractor'} serving ${subregion?.subregion_name || 'Denver'}, CO and surrounding areas.`,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: contractor.address,
+      addressLocality: subregion?.subregion_name || 'Denver',
+      addressRegion: 'CO',
+      addressCountry: 'US'
+    },
+    areaServed: {
+      '@type': 'City',
+      name: subregion?.subregion_name || 'Denver',
+      containedInPlace: { '@type': 'State', name: 'Colorado' }
+    },
+    hasMap: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contractor.address)}`,
+    priceRange: '$$',
+  };
+
+  if (contractor.phone) schema.telephone = contractor.phone;
+  if (contractor.google_rating) {
+    schema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: contractor.google_rating.toFixed(1),
+      reviewCount: contractor.reviews_count || contractor.google_review_count || 1,
+      bestRating: '5',
+      worstRating: '1'
+    };
+  }
+  if (trade) {
+    schema.knowsAbout = trade.category_name;
+    schema.serviceType = trade.category_name;
+  }
+
+  return schema;
+}
+
+export function generateContractorBreadcrumbSchema(contractor: any, trade: any, subregion: any) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://topcontractorsdenver.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Contractors', item: 'https://topcontractorsdenver.com/contractors/' },
+      ...(trade ? [{ '@type': 'ListItem', position: 3, name: trade.category_name, item: `https://topcontractorsdenver.com/services/${trade.slug}/` }] : []),
+      { '@type': 'ListItem', position: trade ? 4 : 3, name: contractor.contractor_name, item: `https://topcontractorsdenver.com/contractors/${contractor.slug}` },
+    ]
+  };
+}
+
 export function generateBlogPostSchema(post: any) {
   return {
     '@context': 'https://schema.org',

@@ -278,6 +278,30 @@ export async function getContractorsByTradeAndSubregion(
   }
 }
 
+export async function getAllContractors(): Promise<ContractorRecord[]> {
+  try {
+    const result = await retryOperation<ContractorRecord[]>(async () => {
+      const response = await supabase
+        .from('contractors')
+        .select('*')
+        .order('contractor_name', { ascending: true });
+      return {
+        data: Array.isArray(response.data) ? response.data : [],
+        error: response.error
+      };
+    });
+    const { data, error } = result;
+    if (error) {
+      console.error('[SERVER] Error fetching all contractors:', error);
+      return [];
+    }
+    return data || [];
+  } catch (error) {
+    console.error('[SERVER] Error in getAllContractors:', error);
+    return [];
+  }
+}
+
 export async function getContractorBySlug(slug: string): Promise<ContractorRecord | null> {
   try {
     const result = await retryOperation<ContractorRecord>(async () => {

@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 interface ContractorCardProps {
   contractor: {
     id: string
@@ -7,6 +9,7 @@ interface ContractorCardProps {
     phone: string | null
     website: string | null
     google_rating: number
+    slug: string
   }
   trade?: string
   location?: string
@@ -123,6 +126,23 @@ export function ContractorCard({ contractor, trade, location }: ContractorCardPr
             </svg>
             <span>{contractor.google_rating.toFixed(1)} Rating</span>
           </div>
+        )}
+      </div>
+
+      <div className="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
+        <Link
+          href={`/contractors/${contractor.slug}`}
+          className="flex-1 text-center py-2 px-3 bg-primary hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors duration-200"
+        >
+          View Profile
+        </Link>
+        {contractor.phone && (
+          <a
+            href={`tel:${contractor.phone}`}
+            className="flex-1 text-center py-2 px-3 border border-gray-200 hover:border-primary text-gray-700 hover:text-primary text-sm font-semibold rounded-lg transition-colors duration-200"
+          >
+            Call Now
+          </a>
         )}
       </div>
     </div>
