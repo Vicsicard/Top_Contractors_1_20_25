@@ -2,26 +2,28 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { GUIDES, GUIDE_CATEGORIES, getGuideBySlug, getGuidesByCategory, type GuideCategory } from '@/data/guides'
-import { ArrowRight, ChevronRight, BadgeCheck, DollarSign, BookOpen, Clock, FileText, Sun } from 'lucide-react'
+import { ArrowRight, ChevronRight, BadgeCheck, DollarSign, BookOpen, Clock, FileText, Sun, Award } from 'lucide-react'
 
 interface Props {
   params: { slug: string }
 }
 
 const CATEGORY_ICONS: Record<GuideCategory, React.ElementType> = {
-  cost:     DollarSign,
-  hiring:   BookOpen,
-  timeline: Clock,
-  permit:   FileText,
-  seasonal: Sun,
+  cost:       DollarSign,
+  hiring:     BookOpen,
+  timeline:   Clock,
+  permit:     FileText,
+  seasonal:   Sun,
+  comparison: Award,
 }
 
 const CATEGORY_COLORS: Record<GuideCategory, string> = {
-  cost:     'bg-blue-50 text-blue-700 border-blue-100',
-  hiring:   'bg-green-50 text-green-700 border-green-100',
-  timeline: 'bg-purple-50 text-purple-700 border-purple-100',
-  permit:   'bg-orange-50 text-orange-700 border-orange-100',
-  seasonal: 'bg-yellow-50 text-yellow-700 border-yellow-100',
+  cost:       'bg-blue-50 text-blue-700 border-blue-100',
+  hiring:     'bg-green-50 text-green-700 border-green-100',
+  timeline:   'bg-purple-50 text-purple-700 border-purple-100',
+  permit:     'bg-orange-50 text-orange-700 border-orange-100',
+  seasonal:   'bg-yellow-50 text-yellow-700 border-yellow-100',
+  comparison: 'bg-indigo-50 text-indigo-700 border-indigo-100',
 }
 
 export async function generateStaticParams() {
