@@ -178,11 +178,19 @@ export default function GuidePage({ params }: Props) {
             <p className="font-bold text-gray-900 text-sm mb-1">Ready to hire?</p>
             <p className="text-gray-500 text-xs mb-4">Get free quotes from verified {guide.trade.toLowerCase()} in Denver.</p>
             <Link
-              href={`/services/${guide.tradeSlug}`}
+              href={`/services/${guide.tradeSlug}/`}
               className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-primary hover:bg-blue-700 text-white font-bold rounded-xl shadow transition-all duration-200 text-sm"
             >
               Find {guide.trade} <ArrowRight size={15} />
             </Link>
+            {guide.relatedTradeSlug && guide.relatedTrade && (
+              <Link
+                href={`/services/${guide.relatedTradeSlug}/`}
+                className="flex items-center justify-center gap-2 w-full py-2.5 px-4 mt-2 border border-gray-200 hover:border-primary text-gray-700 hover:text-primary font-semibold rounded-xl transition-all duration-200 text-sm"
+              >
+                Also: {guide.relatedTrade} <ArrowRight size={13} />
+              </Link>
+            )}
             <a
               href={`/get-a-quote?trade=${encodeURIComponent(guide.trade)}`}
               className="flex items-center justify-center gap-2 w-full py-2.5 px-4 mt-2 border border-gray-200 hover:border-primary text-gray-700 hover:text-primary font-semibold rounded-xl transition-all duration-200 text-sm"
