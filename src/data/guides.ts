@@ -2116,6 +2116,154 @@ export const GUIDES: Guide[] = [
     ],
     relatedGuides: ['cost-to-replace-windows-denver', 'best-window-companies-denver', 'best-home-improvements-roi-denver'],
   },
+  {
+    slug: 'top-home-improvements-roi-denver',
+    title: 'Top Home Improvements for ROI in Denver (2025 Guide)',
+    metaTitle: 'Best Home Improvements ROI Denver | Highest Return Projects 2025',
+    metaDescription: 'Which home improvements deliver the best ROI in Denver? Complete ranking of projects by return on investment, costs, and which to prioritize before selling.',
+    category: 'comparison',
+    trade: 'Home Remodeling',
+    tradeSlug: 'home-remodelers',
+    relatedTradeSlug: 'kitchen-remodelers',
+    relatedTrade: 'Kitchen Remodelers',
+    intro: "Not all home improvements deliver equal returns. Some projects recoup 80%+ of their cost at resale. Others barely break 50%. This guide ranks the highest-ROI projects for Denver homes based on 2025 data, helping you invest wisely.",
+    sections: [
+      {
+        heading: 'Top 10 Home Improvements by ROI',
+        body: "1. Minor kitchen remodel: 70-80% ROI. $10,000-$25,000 cost. New cabinet fronts, countertops, fixtures. No layout changes.\n\n2. Garage door replacement: 75-85% ROI. $2,000-$4,000 cost. Huge curb appeal impact for minimal investment.\n\n3. Manufactured stone veneer: 70-80% ROI. $8,000-$15,000 cost. Adds luxury appearance to exterior.\n\n4. Minor bathroom remodel: 65-75% ROI. $8,000-$15,000 cost. New fixtures, tile, vanity. No layout changes.\n\n5. Window replacement: 65-75% ROI. $8,000-$20,000 cost. Energy savings + curb appeal.\n\n6. Siding replacement: 65-75% ROI. $12,000-$30,000 cost. Transforms home appearance and protects structure.\n\n7. Deck addition: 60-70% ROI. $10,000-$20,000 cost. Outdoor living space highly valued in Denver.\n\n8. Mid-range kitchen remodel: 60-70% ROI. $25,000-$60,000 cost. Semi-custom cabinets, quality materials.\n\n9. Entry door replacement: 60-70% ROI. $1,500-$3,500 cost. First impression matters.\n\n10. Roof replacement: 60-70% ROI. $8,000-$20,000 cost. Essential for Denver's hail-prone climate.",
+      },
+      {
+        heading: 'Projects That Don\'t Pay Off',
+        body: "Low-ROI projects (under 50%): Swimming pools (30-40% ROI). Expensive to maintain, limits buyer pool in Denver's climate. High-end luxury upgrades (40-50% ROI). Over-improving for neighborhood. Home office additions (40-50% ROI). Not valued by all buyers. Sunrooms (45-55% ROI). Limited use in Denver winters.\n\nThese aren't bad investments if you'll enjoy them for years. But don't expect to recoup costs at resale.",
+      },
+      {
+        heading: 'Denver-Specific Considerations',
+        body: "Impact-resistant roofing: Higher ROI in Denver due to hail. Class 4 shingles qualify for 20-30% insurance discounts, making them attractive to buyers.\n\nEnergy efficiency: Denver's 300+ sunny days make solar attractive. Window upgrades and insulation deliver strong ROI due to temperature extremes.\n\nOutdoor living: Decks and patios deliver higher ROI in Denver than national average. Buyers value outdoor space for Colorado lifestyle.\n\nBasement finishing: Common in Denver. Delivers 60-70% ROI if done well. Adds functional square footage.",
+      },
+      {
+        heading: 'Timing Your Projects',
+        body: "Before selling (within 1 year): Focus on cosmetic updates with highest ROI. Paint, landscaping, minor kitchen/bath updates. Garage door. Entry door.\n\nBefore selling (1-3 years): Mid-range kitchen/bath remodels. Window replacement. Siding. Roof (if needed). Deck addition.\n\nLong-term ownership (5+ years): Major renovations. Basement finishing. High-end upgrades you'll enjoy. Projects with lower ROI but high personal value.",
+      },
+      {
+        heading: 'Maximizing ROI',
+        body: "Don't over-improve for your neighborhood. A $100,000 kitchen in a $300,000 neighborhood won't pay off. Match quality to neighborhood standards.\n\nFocus on condition over luxury. Buyers prefer move-in ready over high-end but dated. Fresh paint and new fixtures beat luxury finishes from 2005.\n\nCurb appeal matters most. First impressions drive offers. Landscaping, garage door, entry door, and exterior paint deliver outsized returns.\n\nFix problems first. Water damage, roof issues, HVAC failures must be addressed. Buyers will discount heavily for deferred maintenance.",
+      },
+    ],
+    keyTakeaways: [
+      'Minor kitchen remodel delivers 70-80% ROI (best bang for buck)',
+      'Garage door replacement: 75-85% ROI for $2,000-$4,000',
+      'Don\'t over-improve for your neighborhood',
+      'Curb appeal projects deliver outsized returns',
+      'Fix problems before cosmetic upgrades',
+    ],
+    faqs: [
+      { q: 'What home improvement has the best ROI?', a: 'Minor kitchen remodel (70-80% ROI) and garage door replacement (75-85% ROI) deliver the best returns. Both are relatively affordable and make huge visual impact.' },
+      { q: 'Should I remodel before selling?', a: 'Focus on high-ROI cosmetic updates: paint, landscaping, minor kitchen/bath updates, garage door. Avoid major renovations unless addressing critical issues (roof, HVAC, water damage).' },
+      { q: 'Do swimming pools add value in Denver?', a: 'No. Pools deliver only 30-40% ROI in Denver. Short swimming season, high maintenance, and limited buyer appeal make them poor investments for resale.' },
+      { q: 'What is the minimum ROI I should accept?', a: 'For resale-focused projects, target 60%+ ROI. For long-term ownership, lower ROI is acceptable if you\'ll enjoy the improvement for years.' },
+    ],
+    relatedGuides: ['kitchen-vs-bathroom-remodel-cost-denver', 'cost-to-replace-roof-denver', 'cost-kitchen-remodel-denver'],
+  },
+  {
+    slug: 'most-common-home-repairs-denver',
+    title: 'Most Common Home Repairs in Denver (2025 Guide)',
+    metaTitle: 'Common Home Repairs Denver | What to Expect & Costs',
+    metaDescription: 'The most common home repairs Denver homeowners face: costs, prevention, and when to call a professional. Complete guide to maintaining your Denver home.',
+    category: 'comparison',
+    trade: 'Home Remodeling',
+    tradeSlug: 'home-remodelers',
+    relatedTradeSlug: 'roofers',
+    relatedTrade: 'Roofing Contractors',
+    intro: "Denver's unique climate — hail storms, UV exposure, temperature swings, and dry air — creates specific maintenance challenges. This guide covers the most common repairs Denver homeowners face, typical costs, and how to prevent them.",
+    sections: [
+      {
+        heading: 'Roof Repairs (Most Common)',
+        body: "Why common: Denver is one of the most hail-active metros in the US. UV exposure at high altitude degrades shingles faster.\n\nCommon issues: Hail damage to shingles. Wind-blown shingles. Damaged flashing. Granule loss from UV. Leaks around chimneys and vents.\n\nCosts: Minor repairs: $300-$1,500. Moderate repairs: $1,500-$5,000. Full replacement: $8,000-$20,000.\n\nPrevention: Install Class 4 impact-resistant shingles (qualify for insurance discounts). Annual inspections after hail season. Address small issues before they become leaks.",
+      },
+      {
+        heading: 'HVAC Repairs',
+        body: "Why common: Denver's extreme temperature swings (-10°F to 100°F) stress HVAC systems. High altitude affects performance.\n\nCommon issues: Furnace igniter failure. AC refrigerant leaks. Blower motor failure. Thermostat issues. Ductwork leaks.\n\nCosts: Service call: $100-$200. Minor repairs: $200-$600. Major repairs: $600-$2,000. Replacement: $5,000-$12,000.\n\nPrevention: Annual maintenance (spring for AC, fall for furnace). Change filters monthly. Address strange noises immediately.",
+      },
+      {
+        heading: 'Plumbing Repairs',
+        body: "Why common: Denver's hard water causes mineral buildup. Dry climate affects pipe seals. Older homes have aging pipes.\n\nCommon issues: Water heater failure. Leaking fixtures. Clogged drains. Sewer line issues. Frozen pipes (rare but costly).\n\nCosts: Drain cleaning: $150-$400. Fixture repair: $150-$400. Water heater replacement: $1,200-$3,500. Sewer line: $3,000-$10,000+.\n\nPrevention: Flush water heater annually. Install water softener. Insulate exposed pipes. Address leaks immediately.",
+      },
+      {
+        heading: 'Foundation and Concrete',
+        body: "Why common: Denver's clay soil expands/contracts with moisture. Freeze-thaw cycles crack concrete.\n\nCommon issues: Foundation cracks. Settling. Concrete driveway/patio cracks. Basement water infiltration. Stucco cracks.\n\nCosts: Minor crack repair: $300-$800. Major foundation repair: $3,000-$10,000+. Concrete replacement: $8-$15/sq ft.\n\nPrevention: Maintain consistent soil moisture. Proper drainage away from foundation. Seal cracks early. Control downspouts.",
+      },
+      {
+        heading: 'Electrical Issues',
+        body: "Why common: Older Denver homes need panel upgrades for modern loads. DIY work creates code violations.\n\nCommon issues: Panel upgrades (100A to 200A). Outlet/switch failures. GFCI trips. Flickering lights. Code violations.\n\nCosts: Panel upgrade: $2,000-$4,000. Outlet repair: $150-$300. Rewiring: $4,000-$10,000+.\n\nPrevention: Hire licensed electricians only. Don't overload circuits. Address flickering lights immediately. Upgrade panel before adding major loads.",
+      },
+      {
+        heading: 'Exterior Paint and Siding',
+        body: "Why common: Denver's intense UV and temperature swings degrade paint faster. Hail damages siding.\n\nCommon issues: Peeling paint. Faded siding. Hail damage. Wood rot. Stucco cracks.\n\nCosts: Exterior paint: $4,000-$12,000. Siding repair: $500-$3,000. Siding replacement: $12,000-$30,000.\n\nPrevention: Use premium exterior paint. Inspect after hail storms. Address water infiltration immediately. Maintain caulking.",
+      },
+    ],
+    keyTakeaways: [
+      'Roof repairs are #1 in Denver due to hail (install Class 4 shingles)',
+      'HVAC maintenance prevents 80% of failures (annual service critical)',
+      'Hard water causes plumbing issues (install water softener)',
+      'Clay soil causes foundation issues (maintain consistent moisture)',
+      'UV exposure degrades paint/siding faster (use premium materials)',
+    ],
+    faqs: [
+      { q: 'What is the most expensive home repair?', a: 'Foundation repairs ($3,000-$10,000+) and sewer line replacement ($3,000-$10,000+) are most expensive. Roof replacement ($8,000-$20,000) is common but often covered by insurance.' },
+      { q: 'How often should I inspect my roof in Denver?', a: 'Inspect annually after hail season (typically September). Also inspect after any major hail storm. Catching damage early prevents leaks and structural issues.' },
+      { q: 'Are home warranties worth it in Denver?', a: 'Depends. They cover HVAC and appliance failures but exclude roof damage (most common issue). Read exclusions carefully. Often better to self-insure with emergency fund.' },
+      { q: 'What repairs should I prioritize?', a: 'Prioritize: 1) Roof leaks (prevent water damage). 2) HVAC failures (comfort + prevent freeze damage). 3) Plumbing leaks (prevent water damage). 4) Electrical hazards (safety). 5) Foundation issues (prevent structural damage).' },
+    ],
+    relatedGuides: ['repair-vs-replace-home-systems-denver', 'cost-to-replace-roof-denver', 'cost-hvac-replacement-denver'],
+  },
+  {
+    slug: 'best-energy-efficient-upgrades-denver',
+    title: 'Best Energy-Efficient Upgrades for Denver Homes (2025)',
+    metaTitle: 'Best Energy Upgrades Denver | Lower Bills & Increase Comfort',
+    metaDescription: 'The most cost-effective energy upgrades for Denver homes: costs, savings, payback periods, and which deliver the best ROI. Expert guidance for Colorado climate.',
+    category: 'comparison',
+    trade: 'Home Remodeling',
+    tradeSlug: 'home-remodelers',
+    relatedTradeSlug: 'hvac',
+    relatedTrade: 'HVAC',
+    intro: "Denver's extreme temperature swings (-10°F to 100°F), 300+ sunny days, and high altitude create unique energy challenges. The right upgrades can cut energy bills 30-50% while improving comfort. This guide ranks upgrades by ROI and effectiveness for Denver's climate.",
+    sections: [
+      {
+        heading: 'Top 10 Energy Upgrades by ROI',
+        body: "1. Air sealing: $300-$1,000. Saves $200-$400/year. Payback: 2-3 years. Seal gaps around windows, doors, penetrations.\n\n2. Attic insulation: $1,500-$3,000. Saves $300-$600/year. Payback: 3-5 years. R-49 recommended for Denver.\n\n3. Programmable thermostat: $150-$300. Saves $150-$250/year. Payback: 1-2 years. Smart thermostats learn your schedule.\n\n4. LED lighting: $200-$500. Saves $100-$200/year. Payback: 2-3 years. Use 75% less energy than incandescent.\n\n5. Window replacement: $8,000-$20,000. Saves $300-$600/year. Payback: 15-30 years. U-factor 0.30 or lower.\n\n6. High-efficiency HVAC: $5,000-$12,000. Saves $400-$800/year. Payback: 8-15 years. 16+ SEER AC, 95%+ AFUE furnace.\n\n7. Water heater upgrade: $1,200-$3,500. Saves $100-$300/year. Payback: 5-12 years. Tankless or heat pump water heater.\n\n8. Solar panels: $15,000-$30,000 (after tax credits). Saves $1,000-$2,000/year. Payback: 10-15 years. Excellent for Denver's sun.\n\n9. Duct sealing: $500-$1,500. Saves $200-$400/year. Payback: 2-4 years. Fixes 20-30% energy loss.\n\n10. Low-flow fixtures: $200-$600. Saves $100-$200/year. Payback: 2-3 years. Reduces water heating costs.",
+      },
+      {
+        heading: 'Denver-Specific Priorities',
+        body: "Insulation is critical: Denver's temperature extremes make insulation the #1 priority. Attic: R-49. Walls: R-21. Basement: R-15.\n\nSolar is excellent: 300+ sunny days make Denver ideal for solar. Federal tax credit: 30%. Xcel Energy rebates available. Payback: 10-15 years.\n\nWindow upgrades matter: Temperature swings stress windows. Low-E coating critical for UV protection. U-factor 0.30 or lower. Argon gas fill.\n\nHVAC sizing: High altitude affects HVAC performance. Proper Manual J load calculation essential. Oversized systems waste energy.",
+      },
+      {
+        heading: 'Quick Wins (Under $500)',
+        body: "Air sealing: $300-$1,000. Biggest bang for buck. Seal gaps, add weatherstripping, caulk penetrations.\n\nProgrammable thermostat: $150-$300. Set back temps when away/sleeping. Smart thermostats learn patterns.\n\nLED bulbs: $200-$500. Replace all bulbs. Use 75% less energy. Last 15-25 years.\n\nLow-flow fixtures: $200-$600. Showerheads, faucet aerators. Reduce water heating costs.\n\nWindow film: $200-$500. Blocks UV, reduces heat gain. Temporary solution before replacement.",
+      },
+      {
+        heading: 'Major Upgrades (Worth the Investment)',
+        body: "Attic insulation: $1,500-$3,000. R-49 for Denver. Saves $300-$600/year. Payback: 3-5 years. Do this first.\n\nWindow replacement: $8,000-$20,000. U-factor 0.30 or lower. Low-E coating. Argon fill. Saves $300-$600/year.\n\nHigh-efficiency HVAC: $5,000-$12,000. 16+ SEER AC, 95%+ AFUE furnace. Saves $400-$800/year. Replace when existing system fails.\n\nSolar panels: $15,000-$30,000 (after credits). Saves $1,000-$2,000/year. Excellent for Denver. Payback: 10-15 years.",
+      },
+      {
+        heading: 'Rebates and Incentives',
+        body: "Federal tax credits: Heat pumps: up to $2,000. Windows/doors: up to $600. Insulation: up to $1,200. Solar: 30% of cost.\n\nXcel Energy rebates: HVAC: $500-$1,000. Insulation: $200-$500. Smart thermostat: $50-$100. Water heater: $300-$600.\n\nDenver rebates: Check denvergov.org for current programs. Often stack with federal/utility rebates.\n\nTotal savings: Can offset 30-50% of upgrade costs. Always check current programs before starting work.",
+      },
+    ],
+    keyTakeaways: [
+      'Air sealing + attic insulation deliver best ROI (payback 2-5 years)',
+      'Solar panels excellent for Denver (300+ sunny days, 10-15 year payback)',
+      'Window replacement: U-factor 0.30 or lower with Low-E coating',
+      'Federal tax credits + Xcel rebates offset 30-50% of costs',
+      'Focus on insulation before upgrading HVAC',
+    ],
+    faqs: [
+      { q: 'What energy upgrade has the best ROI?', a: 'Air sealing ($300-$1,000) and attic insulation ($1,500-$3,000) deliver the best ROI. Payback: 2-5 years. Do these first before any other upgrades.' },
+      { q: 'Are solar panels worth it in Denver?', a: 'Yes. Denver\'s 300+ sunny days make solar excellent. After 30% federal tax credit and Xcel rebates, payback is 10-15 years. System lasts 25-30 years.' },
+      { q: 'Should I upgrade windows or HVAC first?', a: 'Insulation and air sealing first. Then windows if old/inefficient. HVAC last (only when existing system fails). Fixing envelope reduces HVAC load and costs.' },
+      { q: 'How much can I save with energy upgrades?', a: 'Comprehensive upgrades (insulation, air sealing, windows, HVAC) can reduce energy bills 30-50%. Average Denver home: $2,400/year → $1,200-$1,700/year.' },
+    ],
+    relatedGuides: ['cost-hvac-replacement-denver', 'cost-to-replace-windows-denver', 'top-home-improvements-roi-denver'],
+  },
 ]
 
 export function getGuideBySlug(slug: string): Guide | undefined {
