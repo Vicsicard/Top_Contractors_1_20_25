@@ -1,8 +1,8 @@
 name: Sync Hashnode Posts
 
 on:
-  schedule:
-    - cron: '0 */6 * * *'  # Run every 6 hours
+  # schedule:
+  #   - cron: '0 */6 * * *'  # Run every 6 hours (disabled - posts already in Supabase)
   workflow_dispatch:  # Allow manual triggering
   
 jobs:
