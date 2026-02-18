@@ -1876,6 +1876,246 @@ export const GUIDES: Guide[] = [
     ],
     relatedGuides: ['cost-siding-gutters-denver', 'best-roofing-companies-denver', 'best-home-improvements-roi-denver'],
   },
+  {
+    slug: 'kitchen-vs-bathroom-remodel-cost-denver',
+    title: 'Kitchen vs Bathroom Remodel Cost in Denver (2025 Comparison)',
+    metaTitle: 'Kitchen vs Bathroom Remodel Cost Denver | Which is Better ROI?',
+    metaDescription: 'Compare kitchen vs bathroom remodel costs in Denver. Which project delivers better ROI? Cost breakdowns, timelines, and which to prioritize for your home.',
+    category: 'comparison',
+    trade: 'Home Remodeling',
+    tradeSlug: 'home-remodelers',
+    relatedTradeSlug: 'kitchen-remodelers',
+    relatedTrade: 'Kitchen Remodelers',
+    intro: "Kitchen and bathroom remodels are the two most popular home improvement projects in Denver — and the highest ROI before selling. But which should you prioritize if you can only do one? This guide compares costs, ROI, timelines, and helps you decide.",
+    sections: [
+      {
+        heading: 'Cost Comparison',
+        body: "Kitchen remodel: $25,000–$60,000 (mid-range). $10,000–$25,000 (minor refresh). $60,000–$120,000+ (full gut).\n\nBathroom remodel: $15,000–$30,000 (mid-range). $8,000–$15,000 (minor refresh). $30,000–$60,000+ (luxury).\n\nKitchens cost 50–100% more than bathrooms due to: Larger square footage. More expensive cabinets and appliances. More complex plumbing and electrical. Longer timelines.\n\nBathrooms are more affordable but still deliver strong ROI.",
+      },
+      {
+        heading: 'ROI Comparison',
+        body: "Minor kitchen remodel: 70–80% ROI. Mid-range kitchen: 60–70% ROI. Major kitchen: 50–60% ROI.\n\nMinor bathroom remodel: 65–75% ROI. Mid-range bathroom: 60–70% ROI. Luxury bathroom: 50–60% ROI.\n\nBoth deliver similar ROI percentages, but kitchens add more absolute value due to higher costs. A $50,000 kitchen remodel adds $30,000–$35,000 in home value. A $20,000 bathroom remodel adds $13,000–$15,000.",
+      },
+      {
+        heading: 'Timeline Comparison',
+        body: "Kitchen remodel: 8–12 weeks for full remodel. 2–4 weeks for minor refresh. You'll be without a kitchen for most of this time.\n\nBathroom remodel: 3–6 weeks for full remodel. 1–2 weeks for minor refresh. You can use other bathrooms during construction.\n\nBathrooms are faster and less disruptive. Kitchens require more planning and temporary living arrangements.",
+      },
+      {
+        heading: 'Which to Prioritize',
+        body: "Choose kitchen if: You're selling within 2–3 years (kitchens are the #1 selling feature). Your kitchen is outdated or dysfunctional. You cook frequently and value the space. You have the budget for a quality remodel.\n\nChoose bathroom if: You have only one bathroom (critical for functionality). Your bathroom has water damage or mold. You're on a tighter budget. You want faster completion and less disruption.\n\nIf budget allows, do both — they complement each other and maximize home value.",
+      },
+      {
+        heading: 'Cost-Saving Strategies',
+        body: "Kitchen: Keep existing layout (moving plumbing/gas is expensive). Choose semi-custom cabinets over custom. Use quartz instead of exotic stone. Upgrade appliances selectively.\n\nBathroom: Keep existing plumbing locations. Use quality tile instead of natural stone. Choose standard tub/shower sizes. Upgrade fixtures selectively.\n\nBoth: Do cosmetic updates first (paint, hardware, lighting). Save structural changes for when you have full budget.",
+      },
+    ],
+    keyTakeaways: [
+      'Kitchens cost 50–100% more than bathrooms but add more absolute value',
+      'Both deliver 60–70% ROI for mid-range remodels',
+      'Bathrooms are faster (3–6 weeks vs 8–12 weeks) and less disruptive',
+      'Prioritize kitchen if selling soon, bathroom if only one exists',
+      'Minor updates deliver better ROI than major renovations',
+    ],
+    faqs: [
+      { q: 'Which remodel adds more value: kitchen or bathroom?', a: 'Kitchens add more absolute value due to higher costs, but both deliver similar ROI percentages (60–70% for mid-range remodels). A $50,000 kitchen adds $30,000–$35,000 in value. A $20,000 bathroom adds $13,000–$15,000.' },
+      { q: 'Should I remodel kitchen or bathroom first?', a: 'Remodel the kitchen first if selling within 2–3 years (it\'s the #1 selling feature). Remodel the bathroom first if you only have one bathroom or it has water damage/mold issues.' },
+      { q: 'Can I do a kitchen and bathroom remodel at the same time?', a: 'Yes, but expect significant disruption. Many homeowners move out during dual remodels. Doing them sequentially is less disruptive but takes longer overall.' },
+      { q: 'What is the minimum budget for a kitchen vs bathroom remodel?', a: 'Kitchen: $10,000 minimum for cosmetic refresh. $25,000+ for mid-range remodel. Bathroom: $8,000 minimum for cosmetic refresh. $15,000+ for mid-range remodel.' },
+    ],
+    relatedGuides: ['cost-kitchen-remodel-denver', 'cost-bathroom-remodel-denver', 'best-home-improvements-roi-denver'],
+  },
+  {
+    slug: 'roof-repair-vs-replace-denver',
+    title: 'Roof Repair vs Replace in Denver (2025 Decision Guide)',
+    metaTitle: 'Roof Repair vs Replace Denver | When to Repair vs Replace Your Roof',
+    metaDescription: 'Should you repair or replace your roof in Denver? Cost comparison, when to repair vs replace, and how to decide. Expert guidance for Denver homeowners.',
+    category: 'comparison',
+    trade: 'Roofing Contractors',
+    tradeSlug: 'roofers',
+    relatedTradeSlug: 'siding-gutters',
+    relatedTrade: 'Siding & Gutters',
+    intro: "After hail damage or discovering roof problems, Denver homeowners face a critical decision: repair or replace? The wrong choice wastes money. This guide helps you decide based on damage extent, roof age, and long-term costs.",
+    sections: [
+      {
+        heading: 'Cost Comparison',
+        body: "Roof repair: $300–$1,500 for minor repairs (5–10 shingles). $1,500–$5,000 for moderate repairs (multiple areas, flashing, valleys).\n\nRoof replacement: $8,000–$20,000 for asphalt shingles. $12,000–$18,000 for Class 4 impact-resistant shingles.\n\nRepair is 5–10x cheaper upfront but may not be cost-effective long-term if the roof is old or damage is widespread.",
+      },
+      {
+        heading: 'When to Repair',
+        body: "Repair if: Damage is localized (less than 30% of roof). Roof is less than 10 years old. Only a few shingles are damaged. No decking damage. No leaks or water infiltration. Repair cost is less than 25% of replacement cost.\n\nCommon repairable issues: Missing or damaged shingles from wind. Damaged flashing around chimneys or vents. Minor granule loss. Small leaks caught early.",
+      },
+      {
+        heading: 'When to Replace',
+        body: "Replace if: Damage is widespread (30%+ of roof). Roof is 15+ years old. Multiple leaks or water damage. Decking damage discovered. Curling, cupping, or widespread granule loss. Repair cost exceeds 25% of replacement cost.\n\nDenver-specific factors: Hail damage to multiple areas. UV damage causing brittleness. Multiple hail claims (insurance may require replacement). Roof approaching end of lifespan.",
+      },
+      {
+        heading: 'Insurance Considerations',
+        body: "Hail damage: Insurance typically covers replacement if damage is widespread. Adjusters look for: Bruising on shingles. Damaged flashing. Granule loss. Dented vents or gutters.\n\nIf your claim is approved for replacement, take it — repairs won't be covered again for the same damage. If denied, get a second opinion from a licensed roofer (not a storm chaser).\n\nClass 4 shingles: Qualify for 20–30% insurance discounts. Often pay for themselves in 5–7 years through savings.",
+      },
+      {
+        heading: 'Long-Term Cost Analysis',
+        body: "Scenario 1: 8-year-old roof, minor hail damage (10% of roof). Repair: $2,000. Expected remaining life: 10–12 years. Cost per year: $167.\n\nScenario 2: 15-year-old roof, moderate damage (40% of roof). Repair: $5,000. Expected remaining life: 3–5 years. Cost per year: $1,000–$1,667. Replace: $15,000. Expected life: 20–25 years. Cost per year: $600–$750.\n\nReplacement is often more cost-effective for older roofs with significant damage.",
+      },
+    ],
+    keyTakeaways: [
+      'Repair if damage is localized (<30%) and roof is under 10 years old',
+      'Replace if damage is widespread (30%+) or roof is 15+ years old',
+      'Repair costs over 25% of replacement cost favor replacement',
+      'Insurance-covered replacement is almost always the better choice',
+      'Class 4 shingles save 20–30% on insurance long-term',
+    ],
+    faqs: [
+      { q: 'How do I know if my roof needs repair or replacement?', a: 'Get 2–3 inspections from licensed roofers. Repair if damage is localized (<30%) and roof is under 10 years old. Replace if damage is widespread (30%+), roof is 15+ years old, or repair costs exceed 25% of replacement cost.' },
+      { q: 'Will insurance cover roof repair or replacement?', a: 'Insurance covers damage from covered perils (hail, wind, fire). Hail damage typically qualifies for replacement if widespread. Wear and tear is not covered. Get your own inspection — don\'t rely solely on insurance adjusters.' },
+      { q: 'How long does a repaired roof last?', a: 'Repairs don\'t extend roof lifespan — they maintain existing lifespan. A 15-year-old roof with repairs still has 5–10 years left, not 20–25 years like a new roof.' },
+      { q: 'Should I repair or replace after hail damage?', a: 'If insurance approves replacement, take it. If damage is widespread (30%+ of roof), replace even if paying out of pocket. Localized damage on newer roofs can be repaired.' },
+    ],
+    relatedGuides: ['cost-to-replace-roof-denver', 'best-roofing-companies-denver', 'repair-vs-replace-home-systems-denver'],
+  },
+  {
+    slug: 'furnace-vs-heat-pump-denver',
+    title: 'Furnace vs Heat Pump in Denver (2025 Comparison)',
+    metaTitle: 'Furnace vs Heat Pump Denver | Which is Best for Colorado Climate?',
+    metaDescription: 'Furnace vs heat pump for Denver homes: cost comparison, efficiency, performance in cold weather, and which is best for Colorado\'s climate. Expert guidance.',
+    category: 'comparison',
+    trade: 'HVAC',
+    tradeSlug: 'hvac',
+    relatedTradeSlug: 'electricians',
+    relatedTrade: 'Electricians',
+    intro: "Denver homeowners replacing heating systems face a critical choice: stick with a furnace or switch to a heat pump? Heat pumps are gaining popularity but have limitations in extreme cold. This guide compares costs, efficiency, and performance for Denver's climate.",
+    sections: [
+      {
+        heading: 'Cost Comparison',
+        body: "Gas furnace + AC: $5,000–$12,000 installed. Furnace: $3,000–$6,000. AC: $2,000–$6,000. Separate systems.\n\nHeat pump (heating + cooling): $6,000–$14,000 installed. Single system replaces both furnace and AC. Higher upfront cost but eliminates need for separate AC.\n\nHeat pump + backup heat: $8,000–$16,000. Recommended for Denver to handle sub-zero days.",
+      },
+      {
+        heading: 'Efficiency Comparison',
+        body: "Gas furnace: 95–98% AFUE (high-efficiency). Cheap to operate in Denver (natural gas is inexpensive). $600–$1,200/year heating costs.\n\nHeat pump: 300–400% efficient (HSPF 9–13). Uses electricity. $800–$1,400/year heating costs in Denver. More expensive to operate than gas but offset by cooling efficiency.\n\nElectric backup heat: 100% efficient but expensive. Only runs on coldest days (below 20°F).",
+      },
+      {
+        heading: 'Performance in Denver Climate',
+        body: "Gas furnace: Works perfectly in all temperatures. Reliable in -10°F to 100°F. No performance degradation. Proven technology.\n\nHeat pump: Excellent in mild weather (above 40°F). Good in moderate cold (20–40°F). Struggles below 20°F — efficiency drops significantly. Needs backup heat for sub-zero days (10–20 days/year in Denver).\n\nModern cold-climate heat pumps work to -15°F but still need backup for Denver's coldest days.",
+      },
+      {
+        heading: 'Pros and Cons',
+        body: "Furnace pros: Lower operating costs (gas is cheap). Works in all temperatures. Proven reliability. Familiar technology. Cons: Requires separate AC. Uses fossil fuels. Less efficient than heat pumps in mild weather.\n\nHeat pump pros: Single system (heating + cooling). Highly efficient in mild weather. No fossil fuels. Qualifies for tax credits and rebates. Cons: Higher operating costs in Denver (electricity). Needs backup heat for cold days. More complex technology.",
+      },
+      {
+        heading: 'Which to Choose for Denver',
+        body: "Choose gas furnace + AC if: You want lowest operating costs. You prioritize reliability in extreme cold. You have natural gas service. You want proven technology.\n\nChoose heat pump if: You want to eliminate fossil fuels. You qualify for significant rebates/tax credits. You're willing to pay higher operating costs. You have backup heat for cold days.\n\nHybrid system (heat pump + gas backup): Best of both worlds but highest upfront cost. Heat pump handles mild weather, gas kicks in for cold days.",
+      },
+    ],
+    keyTakeaways: [
+      'Gas furnace + AC: $5,000–$12,000, lowest operating costs in Denver',
+      'Heat pump: $6,000–$14,000, higher operating costs but single system',
+      'Heat pumps need backup heat for Denver\'s coldest days (below 20°F)',
+      'Gas furnace is most cost-effective for Denver\'s climate',
+      'Heat pumps qualify for tax credits and utility rebates',
+    ],
+    faqs: [
+      { q: 'Do heat pumps work in Denver winters?', a: 'Yes, but they need backup heat for the coldest days. Modern heat pumps work to -15°F but lose efficiency below 20°F. Denver has 10–20 sub-zero days per year when backup heat is needed.' },
+      { q: 'Is a heat pump cheaper to operate than a furnace in Denver?', a: 'No. Gas furnaces are cheaper to operate in Denver because natural gas is inexpensive. Heat pumps use electricity, which costs more. Furnace: $600–$1,200/year. Heat pump: $800–$1,400/year.' },
+      { q: 'What is a hybrid heat pump system?', a: 'A heat pump with gas furnace backup. The heat pump handles mild weather (most of the year). The gas furnace kicks in for the coldest days. Best efficiency but highest upfront cost ($10,000–$18,000).' },
+      { q: 'Are there rebates for heat pumps in Denver?', a: 'Yes. Federal tax credit: up to $2,000. Xcel Energy rebates: $500–$1,000. Total savings: $1,500–$3,000. Check current programs — they change annually.' },
+    ],
+    relatedGuides: ['cost-hvac-replacement-denver', 'best-hvac-companies-denver', 'repair-vs-replace-home-systems-denver'],
+  },
+  {
+    slug: 'hardwood-vs-lvp-flooring-denver',
+    title: 'Hardwood vs LVP Flooring in Denver (2025 Comparison)',
+    metaTitle: 'Hardwood vs LVP Flooring Denver | Which is Best for Your Home?',
+    metaDescription: 'Hardwood vs LVP flooring for Denver homes: cost comparison, durability, maintenance, and which is best for Colorado\'s dry climate. Expert guidance.',
+    category: 'comparison',
+    trade: 'Flooring',
+    tradeSlug: 'flooring',
+    relatedTradeSlug: 'painters',
+    relatedTrade: 'Painters',
+    intro: "Hardwood and LVP (luxury vinyl plank) are the two most popular flooring choices for Denver homes. Hardwood adds value but requires maintenance. LVP is waterproof and low-maintenance but doesn't add as much value. This guide compares costs, durability, and which is best for your home.",
+    sections: [
+      {
+        heading: 'Cost Comparison',
+        body: "Hardwood: $8–$15/sq ft installed. Solid hardwood: $10–$15/sq ft. Engineered hardwood: $8–$12/sq ft. Refinishing: $3–$5/sq ft every 10–15 years.\n\nLVP: $4–$8/sq ft installed. Budget LVP: $4–$6/sq ft. Premium LVP: $6–$8/sq ft. No refinishing needed.\n\nHardwood costs 50–100% more upfront and requires periodic refinishing. LVP is cheaper and maintenance-free.",
+      },
+      {
+        heading: 'Durability and Maintenance',
+        body: "Hardwood: Scratches and dents from furniture and pets. Water damage from spills if not cleaned quickly. Needs refinishing every 10–15 years. Lasts 50–100 years with maintenance. Adds significant home value.\n\nLVP: Scratch-resistant (better than hardwood). 100% waterproof (perfect for basements, kitchens, bathrooms). No refinishing needed. Lasts 15–25 years. Adds less value than hardwood.\n\nDenver's dry climate: Hardwood can gap and crack without proper humidity control. Engineered hardwood is more stable than solid.",
+      },
+      {
+        heading: 'Appearance and Feel',
+        body: "Hardwood: Natural wood grain, warmth, character. Each plank is unique. Feels solid underfoot. Timeless aesthetic. Premium look.\n\nLVP: Realistic wood-look (premium LVP is hard to distinguish from real wood). Consistent appearance. Slightly softer underfoot. Modern aesthetic. Some buyers can tell it's not real wood.\n\nResale impact: Hardwood is preferred by buyers and adds more value. LVP is acceptable but doesn't command premium pricing.",
+      },
+      {
+        heading: 'Best Use Cases',
+        body: "Choose hardwood for: Living rooms, dining rooms, bedrooms. Homes you plan to keep long-term. Areas without water exposure. When maximizing resale value. If you love natural wood.\n\nChoose LVP for: Basements (waterproof). Kitchens and bathrooms (waterproof). Rentals (low-maintenance). Homes with pets (scratch-resistant). Budget-conscious projects. Areas with water risk.",
+      },
+      {
+        heading: 'Denver-Specific Considerations',
+        body: "Hardwood in Denver: Dry climate causes wood to contract and gap. Use engineered hardwood (more stable than solid). Maintain 35–45% humidity with humidifier. Acclimate wood 48–72 hours before install.\n\nLVP in Denver: Handles dry climate perfectly. No humidity concerns. Ideal for basements (common in Denver). Works with radiant heat. No acclimation needed.",
+      },
+    ],
+    keyTakeaways: [
+      'Hardwood: $8–$15/sq ft, adds significant value, requires maintenance',
+      'LVP: $4–$8/sq ft, waterproof, low-maintenance, adds less value',
+      'Hardwood is best for main living areas when maximizing resale value',
+      'LVP is best for basements, kitchens, bathrooms, and rentals',
+      'Engineered hardwood is more stable than solid in Denver\'s dry climate',
+    ],
+    faqs: [
+      { q: 'Does LVP add value to a home like hardwood?', a: 'No. Hardwood adds more value and is preferred by buyers. LVP is acceptable but doesn\'t command premium pricing. Expect hardwood to add 1–3% to home value. LVP adds minimal value.' },
+      { q: 'Is LVP better than hardwood for basements?', a: 'Yes. LVP is 100% waterproof and ideal for basements. Hardwood can be damaged by moisture and is not recommended for below-grade installations.' },
+      { q: 'How long does LVP last compared to hardwood?', a: 'LVP lasts 15–25 years and cannot be refinished. Hardwood lasts 50–100 years and can be refinished 3–5 times. Hardwood is a better long-term investment if maintained.' },
+      { q: 'Which is better for pets: hardwood or LVP?', a: 'LVP is better for pets. It\'s more scratch-resistant and 100% waterproof (accidents won\'t damage it). Hardwood scratches easily and water damage from pet accidents is common.' },
+    ],
+    relatedGuides: ['cost-to-install-flooring-denver', 'best-flooring-contractors-denver', 'best-home-improvements-roi-denver'],
+  },
+  {
+    slug: 'vinyl-vs-fiberglass-windows-denver',
+    title: 'Vinyl vs Fiberglass Windows in Denver (2025 Comparison)',
+    metaTitle: 'Vinyl vs Fiberglass Windows Denver | Which is Best for Colorado?',
+    metaDescription: 'Vinyl vs fiberglass windows for Denver homes: cost comparison, durability, energy efficiency, and which is best for Colorado\'s climate. Expert guidance.',
+    category: 'comparison',
+    trade: 'Windows',
+    tradeSlug: 'windows',
+    relatedTradeSlug: 'siding-gutters',
+    relatedTrade: 'Siding & Gutters',
+    intro: "Vinyl and fiberglass are the two most popular window frame materials for Denver homes. Vinyl is affordable and low-maintenance. Fiberglass is more durable and energy-efficient but costs more. This guide compares costs, performance, and which is best for Colorado's climate.",
+    sections: [
+      {
+        heading: 'Cost Comparison',
+        body: "Vinyl windows: $500–$1,000 per window installed. Most affordable option. Good value for performance.\n\nFiberglass windows: $700–$1,500 per window installed. 30–50% more expensive than vinyl. Premium option.\n\nFull-house replacement (12 windows): Vinyl: $6,000–$12,000. Fiberglass: $8,400–$18,000.\n\nVinyl offers better value for most Denver homeowners. Fiberglass is worth the premium for long-term durability.",
+      },
+      {
+        heading: 'Durability and Lifespan',
+        body: "Vinyl: Lasts 20–30 years. Can become brittle in extreme cold (rare but possible in Denver). Frames can warp in extreme heat. No painting needed. Low maintenance.\n\nFiberglass: Lasts 30–50 years. Most durable frame material. Handles extreme temperatures better than vinyl. 8x stronger than vinyl. No warping, cracking, or brittleness. No painting needed. Lowest maintenance.\n\nDenver's climate: Temperature swings from -10°F to 100°F. Fiberglass handles this better than vinyl.",
+      },
+      {
+        heading: 'Energy Efficiency',
+        body: "Vinyl: Good insulation (U-factor 0.25–0.30). Expands/contracts more than fiberglass (can create air leaks over time). Adequate for Denver climate.\n\nFiberglass: Excellent insulation (U-factor 0.20–0.28). Minimal expansion/contraction (tighter seal long-term). Best energy efficiency. Better for extreme temperature swings.\n\nBoth qualify for Energy Star certification. Fiberglass has slight edge in long-term performance.",
+      },
+      {
+        heading: 'Appearance and Options',
+        body: "Vinyl: Limited color options (white, tan, beige). Cannot be painted. Wider frames (less glass area). Good for most homes.\n\nFiberglass: More color options. Can be painted if desired. Narrower frames (more glass area, better views). Premium appearance. Better for high-end homes.\n\nResale impact: Both are acceptable to buyers. Fiberglass may add slight premium in luxury homes.",
+      },
+      {
+        heading: 'Which to Choose for Denver',
+        body: "Choose vinyl if: You want best value for performance. You're on a budget. You plan to sell within 10–15 years. Your home is mid-range value.\n\nChoose fiberglass if: You want longest lifespan (30–50 years). You prioritize energy efficiency. You want best performance in temperature extremes. Your home is high-end. You plan to keep home long-term.\n\nBoth are good choices for Denver. Vinyl is best value. Fiberglass is best performance.",
+      },
+    ],
+    keyTakeaways: [
+      'Vinyl: $500–$1,000/window, lasts 20–30 years, best value',
+      'Fiberglass: $700–$1,500/window, lasts 30–50 years, best performance',
+      'Fiberglass handles Denver temperature swings better than vinyl',
+      'Both are low-maintenance and energy-efficient',
+      'Vinyl is best for most Denver homes, fiberglass for high-end homes',
+    ],
+    faqs: [
+      { q: 'Are fiberglass windows worth the extra cost?', a: 'Yes, if you plan to keep your home 20+ years. Fiberglass lasts 30–50 years vs 20–30 for vinyl. Better energy efficiency and durability justify the 30–50% premium for long-term ownership.' },
+      { q: 'Do vinyl windows crack in Denver cold?', a: 'Rarely. Modern vinyl windows are formulated for cold climates. Cracking is more common in extreme heat. Quality vinyl windows (Andersen, Pella) handle Denver\'s climate well.' },
+      { q: 'Which is more energy efficient: vinyl or fiberglass?', a: 'Fiberglass is slightly more energy efficient. Both achieve U-factor 0.25–0.30. Fiberglass has less expansion/contraction, maintaining tighter seal over time. Difference is small but measurable.' },
+      { q: 'Can you paint vinyl or fiberglass windows?', a: 'Vinyl cannot be painted (paint won\'t adhere properly). Fiberglass can be painted if desired. Both come in limited factory colors, but fiberglass offers more options.' },
+    ],
+    relatedGuides: ['cost-to-replace-windows-denver', 'best-window-companies-denver', 'best-home-improvements-roi-denver'],
+  },
 ]
 
 export function getGuideBySlug(slug: string): Guide | undefined {
