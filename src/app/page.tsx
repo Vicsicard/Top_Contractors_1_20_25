@@ -103,23 +103,16 @@ export default async function HomePage() {
           }}
         />
         
-        <header
-          className="relative w-full"
-          style={{
-            minHeight: 'clamp(400px, 70vh, 680px)',
-            backgroundImage: `url('/top banner image 1.png')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center center',
-            backgroundRepeat: 'no-repeat',
-          }}
-        >
-          {/* Subtle dark overlay */}
-          <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.15)' }} />
-          {/* CTA centered horizontally, sitting in lower third */}
-          <div className="absolute inset-0 flex items-end justify-center pb-10 sm:pb-12">
+        <header className="relative w-full">
+          <img
+            src="/top banner image 1.png"
+            alt="Find Trusted Denver Contractors for Your Next Project"
+            className="w-full h-auto block"
+          />
+          <div className="absolute inset-0 flex items-end justify-center pb-[8%]">
             <a
               href="/get-a-quote"
-              className="px-8 py-3.5 bg-primary hover:bg-blue-700 text-white font-semibold text-base sm:text-lg rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 w-auto max-w-xs sm:max-w-none"
+              className="px-8 py-3.5 bg-primary hover:bg-blue-700 text-white font-semibold text-base sm:text-lg rounded-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
               style={{ minHeight: '50px', lineHeight: '1.6' }}
             >
               Get Free Project Quotes
