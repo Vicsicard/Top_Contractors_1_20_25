@@ -1492,6 +1492,246 @@ export const GUIDES: Guide[] = [
     ],
     relatedGuides: ['how-to-choose-home-remodeler-denver', 'denver-building-codes-homeowners', 'best-home-improvements-roi-denver'],
   },
+  {
+    slug: 'best-painters-denver',
+    title: 'Best Painters in Denver (2025 Guide)',
+    metaTitle: 'Best Painters in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best painters in Denver. Compare top-rated painting contractors, what to look for, red flags to avoid, and how to choose the right painter for interior or exterior painting.',
+    category: 'comparison',
+    trade: 'Painters',
+    tradeSlug: 'painters',
+    relatedTradeSlug: 'siding-gutters',
+    relatedTrade: 'Siding & Gutters',
+    intro: "A quality paint job transforms your home and protects it from Denver's harsh UV exposure, temperature swings, and dry climate. The right painter delivers flawless results that last 7–10 years. The wrong one leaves you with peeling, uneven coverage, and wasted money.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver Painter',
+        body: "Top painters have: 10+ years experience with both interior and exterior painting. Proper licensing (Denver business license). $1M+ general liability insurance. Portfolio of completed Denver projects. Positive reviews on Google, Yelp, and Angi.\n\nThey provide detailed written estimates, use premium paints (Sherwin-Williams, Benjamin Moore), prep surfaces properly, protect your home and belongings, and clean up thoroughly daily.",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "No written estimate or vague scope. Requests for 50%+ payment upfront. No insurance or references. Quotes 40%+ below competitors. Skipping surface prep. Using cheap paint. No protection for floors, furniture, or landscaping.\n\nSurface prep is 70% of a quality paint job. Any painter who rushes this step will deliver poor results.",
+      },
+      {
+        heading: 'How to Compare Painters',
+        body: "Get 3 written quotes. Compare: Scope of work (rooms, surfaces, coats). Surface prep included (cleaning, sanding, priming, caulking, patching). Paint brand and grade. Number of coats. Protection and cleanup. Timeline. Warranty.\n\nAsk: How long have you been painting in Denver? Can I see 3 recent projects? What paint brands do you use? How do you prep surfaces? Are you insured? What is your warranty?",
+      },
+      {
+        heading: 'Interior vs. Exterior Painting',
+        body: "Interior painting: $2–$6 per sq ft. Includes walls, ceilings, trim. Prep is critical for smooth finish. Takes 2–5 days for average home.\n\nExterior painting: $3–$7 per sq ft. Includes siding, trim, doors. Requires pressure washing, scraping, priming. Weather-dependent. Takes 3–7 days. Denver's UV exposure demands quality exterior paint (Duration, Emerald, Aura).",
+      },
+      {
+        heading: 'Paint Quality Matters',
+        body: "Premium paints (Sherwin-Williams Duration, Benjamin Moore Aura): $60–$80/gallon. Better coverage, durability, color retention. Worth the cost for exteriors and high-traffic interiors.\n\nMid-grade (Sherwin-Williams SuperPaint, Benjamin Moore Regal): $40–$60/gallon. Good for most interior projects.\n\nBudget paints: $25–$40/gallon. Require more coats, fade faster, less durable. Only suitable for low-traffic areas or rentals.",
+      },
+    ],
+    keyTakeaways: [
+      'Get 3 written quotes from insured painters',
+      'Surface prep is 70% of quality — never skip it',
+      'Use premium paint for exteriors (Denver UV is brutal)',
+      'Check recent references and portfolio',
+      'Never pay more than 10–20% upfront',
+    ],
+    faqs: [
+      { q: 'How much does it cost to paint a house in Denver?', a: 'Interior: $2,000–$6,000 for average home. Exterior: $4,000–$12,000 depending on size and condition. Premium paint adds 20–30% but lasts 2–3 years longer.' },
+      { q: 'How long does exterior paint last in Denver?', a: 'Quality exterior paint lasts 7–10 years in Denver. Cheap paint fades and peels in 3–5 years due to UV exposure and temperature swings.' },
+      { q: 'What is the best time to paint exterior in Denver?', a: 'Late spring through early fall (May–September). Avoid painting when temps drop below 50°F or during monsoon season (July–August).' },
+      { q: 'Do I need to be home while painters work?', a: 'Not necessarily. Most painters can work independently once you approve colors and scope. Many homeowners leave during the day.' },
+    ],
+    relatedGuides: ['cost-to-paint-house-denver', 'how-to-choose-painter-denver', 'best-home-improvements-roi-denver'],
+  },
+  {
+    slug: 'best-flooring-contractors-denver',
+    title: 'Best Flooring Contractors in Denver (2025 Guide)',
+    metaTitle: 'Best Flooring Contractors in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best flooring contractors in Denver. Compare top-rated flooring installers, what to look for, red flags to avoid, and how to choose the right contractor for hardwood, LVP, tile, or carpet.',
+    category: 'comparison',
+    trade: 'Flooring',
+    tradeSlug: 'flooring',
+    relatedTradeSlug: 'painters',
+    relatedTrade: 'Painters',
+    intro: "Flooring is one of the most visible and high-impact home improvements. Quality installation is critical — even premium flooring fails if installed poorly. Denver's dry climate and temperature swings demand proper acclimation and installation techniques.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver Flooring Contractor',
+        body: "Top flooring contractors have: 10+ years experience with multiple flooring types. Manufacturer certifications (Shaw, Mohawk, Armstrong). Proper licensing and insurance ($1M+ general liability). Portfolio of completed Denver projects. Positive reviews.\n\nThey provide detailed written estimates, explain material options, handle subfloor prep, acclimate materials properly, and offer installation warranties (1–5 years).",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "No written estimate or vague scope. Requests for 50%+ payment upfront. No insurance or references. Quotes 40%+ below competitors. Skipping subfloor prep or moisture testing. No acclimation period for wood products. Using cheap underlayment.\n\nSubfloor prep is critical. Any contractor who skips leveling, moisture testing, or proper underlayment will deliver a floor that fails prematurely.",
+      },
+      {
+        heading: 'How to Compare Flooring Contractors',
+        body: "Get 3 written quotes. Compare: Material specs (brand, grade, thickness). Subfloor prep included (leveling, moisture barrier). Underlayment quality. Installation method. Transition strips and trim. Furniture moving. Disposal. Timeline. Warranty.\n\nAsk: How long have you been installing flooring? What certifications do you have? Can I see 3 recent projects? How do you prep subfloors? What is your installation warranty? Are you insured?",
+      },
+      {
+        heading: 'Flooring Types for Denver',
+        body: "Hardwood: $8–$15/sq ft installed. Beautiful, durable, adds value. Needs proper acclimation in Denver's dry climate. Engineered hardwood is more stable than solid.\n\nLVP (Luxury Vinyl Plank): $4–$8/sq ft installed. Waterproof, durable, low-maintenance. Best for basements, kitchens, bathrooms. Looks like wood.\n\nTile: $8–$18/sq ft installed. Waterproof, durable, cold underfoot. Best for bathrooms, kitchens, entryways. Radiant heat recommended for Denver winters.\n\nCarpet: $3–$8/sq ft installed. Warm, comfortable, sound-dampening. Best for bedrooms. Replace every 7–10 years.",
+      },
+      {
+        heading: 'Installation Quality Matters',
+        body: "Quality installation includes: Subfloor leveling (critical for LVP and tile). Moisture testing (prevents cupping and buckling). Proper acclimation (48–72 hours for wood products). Quality underlayment (sound dampening, moisture barrier). Expansion gaps (prevents buckling). Professional transitions and trim.\n\nPoor installation voids manufacturer warranties and causes premature failure.",
+      },
+    ],
+    keyTakeaways: [
+      'Get 3 written quotes from certified installers',
+      'Subfloor prep and moisture testing are non-negotiable',
+      'Acclimate wood products 48–72 hours in Denver\'s dry climate',
+      'Check manufacturer certifications and recent references',
+      'Never pay more than 10–20% upfront',
+    ],
+    faqs: [
+      { q: 'How much does flooring installation cost in Denver?', a: 'Hardwood: $8–$15/sq ft. LVP: $4–$8/sq ft. Tile: $8–$18/sq ft. Carpet: $3–$8/sq ft. Prices include materials and installation.' },
+      { q: 'What is the best flooring for Denver homes?', a: 'Engineered hardwood for living areas (more stable than solid in dry climate). LVP for basements and wet areas (waterproof). Tile for bathrooms and kitchens.' },
+      { q: 'How long does flooring installation take?', a: 'Most residential flooring installs take 2–5 days depending on square footage and material. Hardwood needs 2–3 days acclimation before install.' },
+      { q: 'Do I need to move furniture before flooring installation?', a: 'Most contractors will move furniture for a fee ($100–$300). Some include it in the quote. Confirm before signing.' },
+    ],
+    relatedGuides: ['cost-to-install-flooring-denver', 'how-to-choose-flooring-contractor-denver', 'best-home-improvements-roi-denver'],
+  },
+  {
+    slug: 'best-window-companies-denver',
+    title: 'Best Window Companies in Denver (2025 Guide)',
+    metaTitle: 'Best Window Companies in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best window companies in Denver. Compare top-rated window installers, what to look for, red flags to avoid, and how to choose the right company for window replacement.',
+    category: 'comparison',
+    trade: 'Windows',
+    tradeSlug: 'windows',
+    relatedTradeSlug: 'siding-gutters',
+    relatedTrade: 'Siding & Gutters',
+    intro: "Windows are a major investment — $8,000–$20,000 for a typical home. Quality windows and installation reduce energy bills, improve comfort, and add value. Poor installation negates even premium windows and leads to air leaks, water infiltration, and energy loss.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver Window Company',
+        body: "Top window companies have: 10+ years experience with window replacement. Manufacturer certifications (Andersen, Pella, Marvin). Proper licensing and insurance ($2M+ general liability). Portfolio of completed Denver projects. A+ BBB rating.\n\nThey provide detailed written estimates, explain window specs (U-factor, SHGC, Low-E), handle permits, install with proper flashing and air sealing, and offer installation warranties (5–10 years).",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "High-pressure sales tactics ('today only' pricing). Requests for 50%+ payment upfront. No insurance or references. Quotes without measuring windows. Skipping permits. Using cheap windows or improper installation methods.\n\nProper flashing and air sealing are critical. Any installer who rushes this step will create leaks and energy loss.",
+      },
+      {
+        heading: 'How to Compare Window Companies',
+        body: "Get 3 written quotes. Compare: Window specs (U-factor, SHGC, Low-E coating, gas fill). Frame material (vinyl, fiberglass, wood). Installation method (full-frame vs. insert). Flashing and air sealing. Warranty (manufacturer + installation). Permit handling. Timeline.\n\nAsk: How long have you been installing windows? What certifications do you have? Can I see 3 recent projects? What window specs do you recommend for Denver? How do you handle flashing? What is your installation warranty?",
+      },
+      {
+        heading: 'Window Specs for Denver',
+        body: "U-factor: 0.30 or lower (measures heat loss). Lower is better for Denver winters. SHGC (Solar Heat Gain Coefficient): 0.25–0.35 (measures solar heat). Lower is better for south/west-facing windows. Low-E coating: Reflects UV and infrared (critical for Denver's high altitude). Gas fill: Argon or krypton (improves insulation).\n\nEnergy Star certified windows qualify for utility rebates ($50–$100 per window from Xcel Energy).",
+      },
+      {
+        heading: 'Installation Quality Matters',
+        body: "Quality installation includes: Proper flashing (prevents water infiltration). Air sealing with low-expansion foam. Insulation around frame. Level and square installation. Interior and exterior trim. Proper operation and lock adjustment.\n\nPoor installation is the #1 cause of window failure — even premium windows fail if installed incorrectly.",
+      },
+    ],
+    keyTakeaways: [
+      'Get 3 written quotes from certified installers',
+      'Look for U-factor 0.30 or lower and Low-E coating',
+      'Proper flashing and air sealing are critical',
+      'Check manufacturer certifications and recent references',
+      'Never pay more than 10–20% upfront',
+    ],
+    faqs: [
+      { q: 'How much does window replacement cost in Denver?', a: 'Most Denver homeowners pay $8,000–$20,000 for full-house window replacement (10–15 windows). Individual windows cost $500–$1,500 installed depending on size and specs.' },
+      { q: 'What are the best windows for Denver?', a: 'Look for U-factor 0.30 or lower, SHGC 0.25–0.35, Low-E coating, and argon gas fill. Vinyl or fiberglass frames are most popular (low-maintenance, energy-efficient).' },
+      { q: 'How long does window replacement take?', a: 'Most residential window replacements take 1–2 days for a full house (10–15 windows). Individual windows can be replaced in 1–2 hours.' },
+      { q: 'Do I need a permit for window replacement in Denver?', a: 'Generally no for like-for-like replacement. Yes if changing window size or opening. Your contractor should verify and pull permits if needed.' },
+    ],
+    relatedGuides: ['cost-to-replace-windows-denver', 'how-to-choose-window-contractor-denver', 'best-home-improvements-roi-denver'],
+  },
+  {
+    slug: 'best-deck-builders-denver',
+    title: 'Best Deck Builders in Denver (2025 Guide)',
+    metaTitle: 'Best Deck Builders in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best deck builders in Denver. Compare top-rated deck contractors, what to look for, red flags to avoid, and how to choose the right builder for your deck project.',
+    category: 'comparison',
+    trade: 'Decks',
+    tradeSlug: 'decks',
+    relatedTradeSlug: 'fencing',
+    relatedTrade: 'Fencing',
+    intro: "A quality deck adds outdoor living space and increases home value. Denver's high altitude, UV exposure, and temperature swings demand proper materials and construction. A poorly built deck is a safety hazard and fails in 5–10 years instead of lasting 20–30.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver Deck Builder',
+        body: "Top deck builders have: 10+ years experience building decks in Denver. Licensed general contractor or specialty deck contractor. $2M+ general liability insurance. Portfolio of completed Denver decks. Positive reviews and references.\n\nThey provide detailed written estimates, explain material options, handle permits and inspections, use proper ledger board attachment, and offer structural warranties (5–10 years).",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "No written estimate or vague scope. Requests for 50%+ payment upfront. No insurance or references. Quotes 40%+ below competitors. Skipping permits. Improper ledger board attachment. Using untreated lumber for ground contact. No post footings below frost line.\n\nLedger board attachment is critical for safety. Any builder who skips proper flashing or uses incorrect fasteners is creating a collapse hazard.",
+      },
+      {
+        heading: 'How to Compare Deck Builders',
+        body: "Get 3 written quotes. Compare: Material specs (decking, framing, fasteners). Foundation method (concrete footings, helical piers). Ledger board attachment and flashing. Railing system. Stairs. Permit handling. Timeline. Warranty.\n\nAsk: How long have you been building decks? Can I see 3 recent projects? What materials do you recommend for Denver? How do you attach ledger boards? Do you handle permits? What is your structural warranty?",
+      },
+      {
+        heading: 'Deck Materials for Denver',
+        body: "Pressure-treated lumber: $15–$25/sq ft. Most affordable, requires annual maintenance, lasts 15–20 years. Good for framing, not ideal for decking in Denver's UV.\n\nComposite (Trex, TimberTech): $30–$45/sq ft. Low-maintenance, UV-resistant, lasts 25–30 years. Best for Denver's climate. Stays cooler than wood.\n\nCedar/Redwood: $25–$35/sq ft. Beautiful, naturally rot-resistant, requires annual sealing. Fades quickly in Denver sun.\n\nPVC (Azek): $35–$50/sq ft. Most durable, lowest maintenance, won't rot or fade. Premium option.",
+      },
+      {
+        heading: 'Construction Quality Matters',
+        body: "Quality construction includes: Footings below frost line (36–48\" in Denver). Proper ledger board attachment with through-bolts and flashing. Joist spacing per code (12–16\" depending on decking). Proper drainage slope. Code-compliant railings (36–42\" height, 4\" max spacing). Stairs with proper rise/run.\n\nPoor construction causes sagging, rot, and structural failure. Always insist on permits and inspections.",
+      },
+    ],
+    keyTakeaways: [
+      'Get 3 written quotes from licensed, insured deck builders',
+      'Composite decking is best for Denver (low-maintenance, UV-resistant)',
+      'Proper ledger board attachment is critical for safety',
+      'Insist on permits and inspections',
+      'Never pay more than 10–20% upfront',
+    ],
+    faqs: [
+      { q: 'How much does it cost to build a deck in Denver?', a: 'Most Denver decks cost $15–$45/sq ft depending on materials. A 300 sq ft deck costs $4,500–$13,500. Composite decking adds 50–100% over pressure-treated lumber but requires no maintenance.' },
+      { q: 'What is the best decking material for Denver?', a: 'Composite (Trex, TimberTech) is best for Denver. It handles UV exposure better than wood, requires no maintenance, and lasts 25–30 years. Stays cooler than wood in summer sun.' },
+      { q: 'Do I need a permit to build a deck in Denver?', a: 'Yes. Denver requires permits for all decks over 200 sq ft or more than 30\" above grade. Your contractor should pull permits and schedule inspections.' },
+      { q: 'How long does deck construction take?', a: 'Most residential decks take 1–2 weeks from start to finish. Complex designs or large decks can take 3–4 weeks.' },
+    ],
+    relatedGuides: ['cost-to-build-deck-denver', 'best-home-improvements-roi-denver', 'denver-building-codes-homeowners'],
+  },
+  {
+    slug: 'best-fence-companies-denver',
+    title: 'Best Fence Companies in Denver (2025 Guide)',
+    metaTitle: 'Best Fence Companies in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best fence companies in Denver. Compare top-rated fence contractors, what to look for, red flags to avoid, and how to choose the right company for fence installation.',
+    category: 'comparison',
+    trade: 'Fencing',
+    tradeSlug: 'fencing',
+    relatedTradeSlug: 'decks',
+    relatedTrade: 'Decks',
+    intro: "A quality fence provides privacy, security, and curb appeal. Denver's wind, UV exposure, and soil conditions demand proper materials and installation. A poorly built fence leans, sags, or fails in 5 years instead of lasting 15–25.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver Fence Company',
+        body: "Top fence companies have: 10+ years experience installing fences in Denver. Proper licensing and insurance ($1M+ general liability). Portfolio of completed Denver fences. Positive reviews and references. Knowledge of local HOA rules and setback requirements.\n\nThey provide detailed written estimates, explain material options, call 811 for utility locates, set posts properly, and offer warranties (1–5 years on installation).",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "No written estimate or vague scope. Requests for 50%+ payment upfront. No insurance or references. Quotes 40%+ below competitors. Skipping utility locates. Shallow post holes. No concrete for posts. Using untreated lumber for ground contact.\n\nPost installation is critical. Posts must be set in concrete below frost line (36\" in Denver) or the fence will lean and fail.",
+      },
+      {
+        heading: 'How to Compare Fence Companies',
+        body: "Get 3 written quotes. Compare: Material specs (wood species, vinyl grade, metal gauge). Post spacing and depth. Concrete for posts. Gate hardware. Height and style. Linear footage. Timeline. Warranty.\n\nAsk: How long have you been installing fences? Can I see 3 recent projects? How deep do you set posts? Do you use concrete? Do you call 811? What is your warranty? Are you insured?",
+      },
+      {
+        heading: 'Fence Materials for Denver',
+        body: "Wood (cedar, pine): $15–$30/linear ft. Natural look, requires annual staining, lasts 15–20 years. Cedar handles Denver's climate better than pine.\n\nVinyl: $20–$40/linear ft. Low-maintenance, won't rot or fade, lasts 20–30 years. Can become brittle in extreme cold. White or tan colors.\n\nChain link: $8–$15/linear ft. Most affordable, durable, low-maintenance. Not private. Good for dog runs and large areas.\n\nMetal (aluminum, steel): $25–$50/linear ft. Durable, low-maintenance, elegant. Powder-coated for rust resistance. Lasts 30+ years.",
+      },
+      {
+        heading: 'Installation Quality Matters',
+        body: "Quality installation includes: Calling 811 for utility locates (required by law). Post holes 36\" deep (below frost line). 1/3 of post length in ground. Concrete for all posts. Level and plumb installation. Proper gate hardware and bracing. Smooth finish with no exposed fasteners.\n\nPoor installation causes leaning, sagging, and premature failure. Wind is a major factor in Denver — proper post depth is critical.",
+      },
+    ],
+    keyTakeaways: [
+      'Get 3 written quotes from insured fence companies',
+      'Posts must be 36\" deep in concrete (Denver frost line)',
+      'Cedar or vinyl are best for Denver (low-maintenance, durable)',
+      'Always call 811 before digging (required by law)',
+      'Never pay more than 10–20% upfront',
+    ],
+    faqs: [
+      { q: 'How much does fence installation cost in Denver?', a: 'Wood: $15–$30/linear ft. Vinyl: $20–$40/linear ft. Chain link: $8–$15/linear ft. Metal: $25–$50/linear ft. Average 150 linear ft fence costs $2,250–$6,000.' },
+      { q: 'What is the best fence material for Denver?', a: 'Cedar wood or vinyl are best for Denver. Cedar handles UV and temperature swings well. Vinyl is lowest maintenance and lasts 20–30 years.' },
+      { q: 'Do I need a permit to install a fence in Denver?', a: 'Generally no for residential fences under 6 ft. Check with your HOA and verify setback requirements. Some neighborhoods have strict rules.' },
+      { q: 'How long does fence installation take?', a: 'Most residential fences (150–200 linear ft) take 2–4 days to install. Complex terrain or large projects can take 5–7 days.' },
+    ],
+    relatedGuides: ['cost-to-build-fence-denver', 'denver-building-codes-homeowners', 'best-home-improvements-roi-denver'],
+  },
 ]
 
 export function getGuideBySlug(slug: string): Guide | undefined {
