@@ -48,11 +48,13 @@ export default async function ServicesPage() {
   return (
     <main>
       <ServiceHero
-        title="Find Local Contractors in Denver"
-        description="Browse our directory of professional contractors serving the Denver metro area"
+        title="Denver's Most Trusted Contractor Directory"
+        description="Compare 500+ verified contractors across 15 trades. Real reviews, licensed professionals, free quotes. Find the right contractor for your project in minutes."
+        showStats={true}
+        showCTA={true}
       />
 
-      <section className="py-12 bg-white">
+      <section id="services" className="py-12 bg-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
             Browse by Service
