@@ -1732,6 +1732,150 @@ export const GUIDES: Guide[] = [
     ],
     relatedGuides: ['cost-to-build-fence-denver', 'denver-building-codes-homeowners', 'best-home-improvements-roi-denver'],
   },
+  {
+    slug: 'best-landscaping-companies-denver',
+    title: 'Best Landscaping Companies in Denver (2025 Guide)',
+    metaTitle: 'Best Landscaping Companies in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best landscaping companies in Denver. Compare top-rated landscapers, what to look for, red flags to avoid, and how to choose the right company for landscaping design, installation, or maintenance.',
+    category: 'comparison',
+    trade: 'Landscapers',
+    tradeSlug: 'landscapers',
+    relatedTradeSlug: 'masonry',
+    relatedTrade: 'Masonry',
+    intro: "Quality landscaping transforms your outdoor space and increases home value. Denver's high altitude, intense sun, and semi-arid climate demand drought-tolerant plants and proper irrigation. The right landscaper creates a beautiful, sustainable yard. The wrong one wastes money on plants that die and designs that fail.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver Landscaping Company',
+        body: "Top landscapers have: 10+ years experience with Denver's climate and native plants. Licensed and insured ($1M+ general liability). Portfolio of completed Denver projects. Knowledge of xeriscape principles and water-wise landscaping. Positive reviews and references.\n\nThey provide detailed written estimates, explain plant choices for Denver's climate, handle permits if needed, use quality materials, and offer warranties on plants and installation (typically 1 year).",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "No written estimate or vague scope. Requests for 50%+ payment upfront. No insurance or references. Quotes 40%+ below competitors. Recommending high-water plants for Denver. No irrigation plan. Using poor-quality soil or mulch.\n\nDenver's climate is harsh on plants. Any landscaper who doesn't understand xeriscape principles or native plants will create a yard that requires constant watering and replacement.",
+      },
+      {
+        heading: 'How to Compare Landscaping Companies',
+        body: "Get 3 written quotes. Compare: Design services included. Plant selection (native, drought-tolerant). Irrigation system specs. Hardscape materials (pavers, retaining walls). Soil amendments. Mulch type and depth. Timeline. Warranty on plants and labor.\n\nAsk: How long have you been landscaping in Denver? Can I see 3 recent projects? What plants do you recommend for my sun exposure? How do you handle irrigation? Do you offer maintenance services? What is your warranty?",
+      },
+      {
+        heading: 'Landscaping Services and Costs',
+        body: "Landscape design: $500–$3,000 depending on complexity. Full landscape installation: $5,000–$30,000+ depending on size and scope. Irrigation system: $2,500–$7,500 for average yard. Sod installation: $1–$2/sq ft. Xeriscaping: $3–$8/sq ft. Retaining walls: $25–$50/linear ft.\n\nXeriscaping costs more upfront but saves 30–50% on water bills and requires minimal maintenance.",
+      },
+      {
+        heading: 'Denver-Specific Considerations',
+        body: "Native and drought-tolerant plants: Blue grama grass, buffalo grass, Russian sage, penstemon, yucca, juniper. These thrive in Denver with minimal water.\n\nIrrigation: Drip irrigation is most efficient for Denver. Avoid spray systems that waste water. Smart controllers adjust for weather.\n\nSoil: Denver clay soil needs amendment with compost. Good drainage is critical.\n\nMulch: 2–3\" of mulch retains moisture and regulates soil temperature. Refresh annually.",
+      },
+    ],
+    keyTakeaways: [
+      'Get 3 written quotes from licensed, insured landscapers',
+      'Choose native, drought-tolerant plants for Denver climate',
+      'Invest in drip irrigation with smart controllers',
+      'Xeriscape saves 30–50% on water bills long-term',
+      'Never pay more than 10–20% upfront',
+    ],
+    faqs: [
+      { q: 'How much does landscaping cost in Denver?', a: 'Full landscape installation: $5,000–$30,000+ depending on size. Xeriscaping: $3–$8/sq ft. Irrigation: $2,500–$7,500. Sod: $1–$2/sq ft. Design fees: $500–$3,000.' },
+      { q: 'What are the best plants for Denver landscaping?', a: 'Native and drought-tolerant plants thrive: blue grama grass, buffalo grass, Russian sage, penstemon, yucca, juniper, serviceberry, and blue spruce. Avoid high-water plants like Kentucky bluegrass and most annuals.' },
+      { q: 'Do I need a permit for landscaping in Denver?', a: 'Generally no for basic landscaping. Yes for retaining walls over 4 ft, major grading, or irrigation systems that tap into city water. Your landscaper should verify.' },
+      { q: 'What is xeriscaping?', a: 'Xeriscaping is water-efficient landscaping using drought-tolerant plants, efficient irrigation, mulch, and proper soil. It reduces water use by 30–50% and requires minimal maintenance.' },
+    ],
+    relatedGuides: ['cost-landscaping-denver', 'best-home-improvements-roi-denver', 'denver-building-codes-homeowners'],
+  },
+  {
+    slug: 'best-masonry-contractors-denver',
+    title: 'Best Masonry Contractors in Denver (2025 Guide)',
+    metaTitle: 'Best Masonry Contractors in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best masonry contractors in Denver. Compare top-rated masons, what to look for, red flags to avoid, and how to choose the right contractor for brick, stone, or concrete work.',
+    category: 'comparison',
+    trade: 'Masonry',
+    tradeSlug: 'masonry',
+    relatedTradeSlug: 'landscapers',
+    relatedTrade: 'Landscapers',
+    intro: "Quality masonry work lasts 50–100 years and adds significant value to your home. Denver's freeze-thaw cycles and temperature swings demand proper materials and techniques. The right mason delivers beautiful, durable work. The wrong one creates cracking, water infiltration, and structural issues.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver Masonry Contractor',
+        body: "Top masons have: 15+ years experience with brick, stone, and concrete. Licensed and insured ($2M+ general liability). Portfolio of completed Denver projects. Knowledge of freeze-thaw resistant materials and proper mortar mixes. Positive reviews and references.\n\nThey provide detailed written estimates, explain material options, handle permits, use proper flashing and drainage, and offer structural warranties (5–10 years).",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "No written estimate or vague scope. Requests for 50%+ payment upfront. No insurance or references. Quotes 40%+ below competitors. Using improper mortar mix. Skipping flashing or weep holes. No expansion joints. Poor foundation prep.\n\nProper drainage and flashing are critical. Any mason who skips these steps will create water infiltration and structural failure.",
+      },
+      {
+        heading: 'How to Compare Masonry Contractors',
+        body: "Get 3 written quotes. Compare: Material specs (brick type, stone, mortar mix). Foundation and prep work. Flashing and drainage. Expansion joints. Reinforcement. Timeline. Warranty.\n\nAsk: How long have you been doing masonry in Denver? Can I see 3 recent projects? What mortar mix do you use for Denver's climate? How do you handle drainage? Do you pull permits? What is your structural warranty?",
+      },
+      {
+        heading: 'Masonry Services and Costs',
+        body: "Brick veneer: $15–$30/sq ft installed. Stone veneer: $20–$45/sq ft installed. Retaining walls: $25–$50/linear ft. Outdoor fireplace: $3,000–$8,000. Patio pavers: $12–$25/sq ft. Concrete driveway: $8–$15/sq ft. Chimney repair: $1,000–$5,000.\n\nNatural stone costs 50–100% more than manufactured but lasts longer and adds more value.",
+      },
+      {
+        heading: 'Denver-Specific Considerations',
+        body: "Freeze-thaw resistance: Use SW (severe weathering) rated brick and proper mortar mix (Type N or S). Avoid cheap brick that spalls.\n\nDrainage: Proper flashing, weep holes, and drainage behind walls prevent water infiltration and freeze damage.\n\nExpansion joints: Required every 20–30 ft to prevent cracking from temperature swings.\n\nFoundation: Must be below frost line (36–48\" in Denver) and properly reinforced.",
+      },
+    ],
+    keyTakeaways: [
+      'Get 3 written quotes from licensed, insured masons',
+      'Use SW-rated brick and proper mortar for Denver freeze-thaw cycles',
+      'Proper flashing and drainage are non-negotiable',
+      'Insist on permits and inspections for structural work',
+      'Never pay more than 10–20% upfront',
+    ],
+    faqs: [
+      { q: 'How much does masonry work cost in Denver?', a: 'Brick veneer: $15–$30/sq ft. Stone veneer: $20–$45/sq ft. Retaining walls: $25–$50/linear ft. Outdoor fireplace: $3,000–$8,000. Patio pavers: $12–$25/sq ft.' },
+      { q: 'What type of brick is best for Denver?', a: 'Use SW (severe weathering) rated brick. It handles freeze-thaw cycles better than MW or NW rated brick. Avoid cheap brick that spalls and cracks.' },
+      { q: 'Do I need a permit for masonry work in Denver?', a: 'Yes for retaining walls over 4 ft, structural walls, chimneys, and outdoor fireplaces. Your mason should pull permits and schedule inspections.' },
+      { q: 'How long does masonry work last in Denver?', a: 'Quality masonry lasts 50–100 years with proper maintenance. Poor masonry fails in 10–20 years due to water infiltration and freeze damage.' },
+    ],
+    relatedGuides: ['cost-masonry-work-denver', 'denver-building-codes-homeowners', 'best-home-improvements-roi-denver'],
+  },
+  {
+    slug: 'best-siding-contractors-denver',
+    title: 'Best Siding Contractors in Denver (2025 Guide)',
+    metaTitle: 'Best Siding Contractors in Denver, CO (2025) | Top Contractors Denver',
+    metaDescription: 'Find the best siding contractors in Denver. Compare top-rated siding installers, what to look for, red flags to avoid, and how to choose the right contractor for siding replacement or repair.',
+    category: 'comparison',
+    trade: 'Siding & Gutters',
+    tradeSlug: 'siding-gutters',
+    relatedTradeSlug: 'roofers',
+    relatedTrade: 'Roofing Contractors',
+    intro: "Siding protects your home from Denver's harsh weather — intense UV, hail, temperature swings, and dry climate. Quality siding and installation last 30–50 years and improve energy efficiency. Poor installation causes water infiltration, rot, and premature failure.",
+    sections: [
+      {
+        heading: 'What Makes a Great Denver Siding Contractor',
+        body: "Top siding contractors have: 10+ years experience with siding installation. Licensed and insured ($2M+ general liability). Manufacturer certifications (James Hardie, CertainTeed, Mastic). Portfolio of completed Denver projects. A+ BBB rating.\n\nThey provide detailed written estimates, explain material options, handle permits, install proper house wrap and flashing, and offer installation warranties (5–10 years).",
+      },
+      {
+        heading: 'Red Flags to Avoid',
+        body: "No written estimate or vague scope. Requests for 50%+ payment upfront. No insurance or references. Quotes 40%+ below competitors. Skipping house wrap or proper flashing. Using improper fasteners. No expansion gaps. Rushing installation.\n\nProper house wrap and flashing are critical for water protection. Any installer who skips these steps will create water infiltration and rot.",
+      },
+      {
+        heading: 'How to Compare Siding Contractors',
+        body: "Get 3 written quotes. Compare: Material specs (siding type, thickness, warranty). House wrap and moisture barrier. Flashing details. Trim and accessories. Insulation (if applicable). Permit handling. Timeline. Installation warranty.\n\nAsk: How long have you been installing siding? What certifications do you have? Can I see 3 recent projects? What house wrap do you use? How do you handle flashing? Do you pull permits? What is your installation warranty?",
+      },
+      {
+        heading: 'Siding Materials for Denver',
+        body: "Fiber cement (James Hardie): $8–$14/sq ft installed. Most popular in Denver. Fire-resistant, handles UV and hail well, lasts 30–50 years. Requires painting every 10–15 years.\n\nVinyl: $4–$8/sq ft installed. Low-maintenance, affordable. Can become brittle in extreme cold. Fades in UV. Lasts 20–30 years.\n\nWood (cedar, redwood): $8–$12/sq ft installed. Beautiful, natural. Requires annual maintenance. Fades quickly in Denver sun. Lasts 20–40 years with maintenance.\n\nStucco: $6–$10/sq ft installed. Popular in Denver. Durable, fire-resistant. Requires proper installation to prevent cracking. Lasts 50+ years.",
+      },
+      {
+        heading: 'Installation Quality Matters',
+        body: "Quality installation includes: Proper house wrap (Tyvek, Typar). Flashing around windows, doors, and penetrations. Correct fastener placement and spacing. Expansion gaps (prevents buckling). Proper trim and caulking. Level and plumb installation.\n\nPoor installation is the #1 cause of siding failure — even premium siding fails if installed incorrectly.",
+      },
+    ],
+    keyTakeaways: [
+      'Get 3 written quotes from certified installers',
+      'Fiber cement (James Hardie) is best for Denver climate',
+      'Proper house wrap and flashing are critical',
+      'Check manufacturer certifications and recent references',
+      'Never pay more than 10–20% upfront',
+    ],
+    faqs: [
+      { q: 'How much does siding replacement cost in Denver?', a: 'Most Denver homes pay $12,000–$30,000 for full siding replacement. Fiber cement: $8–$14/sq ft. Vinyl: $4–$8/sq ft. Wood: $8–$12/sq ft. Stucco: $6–$10/sq ft.' },
+      { q: 'What is the best siding for Denver?', a: 'Fiber cement (James Hardie) is most popular. It handles UV, hail, and temperature swings better than vinyl or wood. Fire-resistant and lasts 30–50 years.' },
+      { q: 'How long does siding installation take?', a: 'Most residential siding replacements take 1–2 weeks. Large homes or complex designs can take 3–4 weeks.' },
+      { q: 'Do I need a permit for siding replacement in Denver?', a: 'Yes. Denver requires permits for siding replacement. Your contractor should pull permits and schedule inspections.' },
+    ],
+    relatedGuides: ['cost-siding-gutters-denver', 'best-roofing-companies-denver', 'best-home-improvements-roi-denver'],
+  },
 ]
 
 export function getGuideBySlug(slug: string): Guide | undefined {
