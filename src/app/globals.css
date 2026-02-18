@@ -131,28 +131,7 @@
 /* Add styles for the header */
 header {
   position: relative;
-  background-color: #1e3a8a; /* Fallback color */
   transition: all 0.3s ease;
-}
-
-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.2),
-    rgba(0, 0, 0, 0.4)
-  );
-  z-index: 1;
-}
-
-header > div {
-  position: relative;
-  z-index: 2;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
