@@ -241,12 +241,12 @@ export default async function HomePage() {
           </section>
 
           {/* ── 7. FINAL CTA ────────────────────────────────────────────── */}
-          <section className="bg-primary-dark border-t border-blue-900 py-20 px-4 text-center">
+          <section className="border-t border-blue-900 py-20 px-4 text-center" style={{ backgroundColor: '#0f1f4a' }}>
             <div className="max-w-2xl mx-auto">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-4" style={{ color: '#ffffff' }}>
                 Ready to Start Your Home Improvement Project?
               </h2>
-              <p className="text-blue-200 text-base sm:text-lg mb-8">
+              <p className="text-base sm:text-lg mb-8" style={{ color: '#e2e8f0' }}>
                 Get free quotes from top-rated Denver contractors today. No obligation and no pressure.
               </p>
               <a
