@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getTradeBySlug, getAllSubregions, getAllTrades } from '@/utils/database'
+import { getTradeBySlug, getAllSubregions, getAllTrades, getContractorsByTradeAndSubregion } from '@/utils/database'
 import { generateBreadcrumbSchema, generateServiceSchema } from '@/utils/schema'
 import { MapPin, ArrowRight, ChevronRight, BadgeCheck, Clock, DollarSign, Star } from 'lucide-react'
 
@@ -162,6 +162,10 @@ export default async function TradePage({ params }: Props) {
       getAllSubregions(),
     ])
     if (!trade) notFound()
+
+    // Fetch top contractors in Denver for this trade
+    const denverContractors = await getContractorsByTradeAndSubregion(trade.slug, 'denver')
+    const featuredContractors = denverContractors.slice(0, 4)
 
     const content = getContent(trade.slug, trade.category_name)
     const breadcrumbSchema = generateBreadcrumbSchema(trade, null)
@@ -325,6 +329,36 @@ export default async function TradePage({ params }: Props) {
                 Request Free Quote <ArrowRight size={15} />
               </a>
             </div>
+
+            {/* Featured contractors */}
+            {featuredContractors.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 className="font-bold text-gray-900 mb-4 text-base">Top {trade.category_name} in Denver</h3>
+                <div className="space-y-2">
+                  {featuredContractors.map((c: any) => (
+                    <Link
+                      key={c.slug}
+                      href={`/contractors/${c.slug}`}
+                      className="flex items-center justify-between text-sm text-gray-700 hover:text-primary py-2 border-b border-gray-50 last:border-0 transition-colors group"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-800 group-hover:text-primary text-xs leading-snug truncate">{c.contractor_name}</p>
+                        {c.google_rating > 0 && (
+                          <p className="text-xs text-gray-400 mt-0.5">{c.google_rating.toFixed(1)}★ · {c.reviews_count || 0} reviews</p>
+                        )}
+                      </div>
+                      <ChevronRight size={13} className="text-gray-300 flex-shrink-0 ml-2" />
+                    </Link>
+                  ))}
+                </div>
+                <Link
+                  href={`/services/${params.trade}/denver`}
+                  className="inline-flex items-center gap-1 text-xs text-primary font-medium mt-3"
+                >
+                  View all Denver contractors <ArrowRight size={11} />
+                </Link>
+              </div>
+            )}
 
             {/* Browse by location */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">

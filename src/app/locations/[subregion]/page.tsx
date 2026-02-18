@@ -78,11 +78,11 @@ export default async function LocationHubPage({ params }: Props) {
 
     if (!subregion) notFound();
 
-    // Fetch contractor counts per trade for this subregion
+    // Fetch contractor counts + top contractors per trade for this subregion
     const tradeCounts = await Promise.all(
       trades.map(async (trade) => {
         const contractors = await getContractorsByTradeAndSubregion(trade.slug, subregion.slug);
-        return { trade, count: contractors.length };
+        return { trade, count: contractors.length, topContractors: contractors.slice(0, 2) };
       })
     );
 
@@ -234,22 +234,43 @@ export default async function LocationHubPage({ params }: Props) {
                 Highly rated professionals serving {subregion.subregion_name} and surrounding areas
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {activeTrades.slice(0, 6).map(({ trade }) => (
-                  <Link
+                {activeTrades.slice(0, 6).map(({ trade, topContractors }) => (
+                  <div
                     key={trade.slug}
-                    href={`/services/${trade.slug}/${subregion.slug}`}
-                    className="group flex flex-col p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                    className="flex flex-col p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-200"
                   >
-                    <p className="font-semibold text-gray-900 group-hover:text-primary text-sm mb-1 transition-colors duration-200">
+                    <Link
+                      href={`/services/${trade.slug}/${subregion.slug}`}
+                      className="font-semibold text-gray-900 hover:text-primary text-sm mb-1 transition-colors duration-200"
+                    >
                       {trade.category_name} in {subregion.subregion_name}
-                    </p>
+                    </Link>
                     <p className="text-xs text-gray-400 mb-3">
                       Verified contractors serving your area
                     </p>
-                    <span className="inline-flex items-center gap-1 text-xs text-primary font-medium mt-auto">
-                      View Contractors <ArrowRight size={11} />
-                    </span>
-                  </Link>
+                    {topContractors.length > 0 && (
+                      <div className="space-y-1.5 mb-3">
+                        {topContractors.map((c: any) => (
+                          <Link
+                            key={c.slug}
+                            href={`/contractors/${c.slug}`}
+                            className="flex items-center justify-between text-xs text-gray-600 hover:text-primary transition-colors py-1 border-t border-gray-50"
+                          >
+                            <span className="truncate">{c.contractor_name}</span>
+                            {c.google_rating > 0 && (
+                              <span className="text-yellow-500 font-semibold ml-2 flex-shrink-0">{c.google_rating.toFixed(1)}★</span>
+                            )}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                    <Link
+                      href={`/services/${trade.slug}/${subregion.slug}`}
+                      className="inline-flex items-center gap-1 text-xs text-primary font-medium mt-auto"
+                    >
+                      View All <ArrowRight size={11} />
+                    </Link>
+                  </div>
                 ))}
               </div>
             </div>
@@ -307,6 +328,29 @@ export default async function LocationHubPage({ params }: Props) {
             </a>
           </div>
         </section>
+
+        {/* Internal link strip — service hubs */}
+        <div className="bg-white border-t border-gray-200 py-8 px-4">
+          <div className="max-w-5xl mx-auto">
+            <p className="text-xs text-gray-400 text-center mb-4">Browse top services in {subregion.subregion_name}</p>
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
+              {[
+                { label: 'Roofing Contractors',   href: `/services/roofing-contractors/${subregion.slug}` },
+                { label: 'Plumbing Contractors',  href: `/services/plumbing-contractors/${subregion.slug}` },
+                { label: 'Electricians',          href: `/services/electricians/${subregion.slug}` },
+                { label: 'HVAC Contractors',      href: `/services/hvac-contractors/${subregion.slug}` },
+                { label: 'Kitchen Remodeling',    href: `/services/kitchen-remodeling/${subregion.slug}` },
+                { label: 'Bathroom Remodeling',   href: `/services/bathroom-remodeling/${subregion.slug}` },
+                { label: 'Painting Contractors',  href: `/services/painting-contractors/${subregion.slug}` },
+                { label: 'Landscaping',           href: `/services/landscaping-contractors/${subregion.slug}` },
+              ].map(({ label, href }) => (
+                <Link key={href} href={href} className="text-xs text-gray-500 hover:text-primary hover:underline transition-colors">
+                  {label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
 
         {/* Internal link strip — other locations */}
         <div className="bg-white border-t border-gray-200 py-8 px-4">

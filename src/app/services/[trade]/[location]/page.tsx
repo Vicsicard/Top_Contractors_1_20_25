@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import { ServiceHero } from '@/components/services/ServiceHero'
 import { ServiceFAQs } from '@/components/services/ServiceFAQs'
 import { ContractorCard } from '@/components/services/ContractorCard'
@@ -15,6 +16,7 @@ import {
   generateBreadcrumbSchema,
   generateServiceSchema 
 } from '@/utils/schema'
+import { ChevronRight, MapPin, ArrowRight } from 'lucide-react'
 
 interface Props {
   params: {
@@ -37,16 +39,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     return {
-      title: `${trade.category_name} in ${location.subregion_name} | Top Contractors Denver`,
-      description: `Find professional ${trade.category_name.toLowerCase()} in ${location.subregion_name}. Browse our directory of local ${trade.category_name.toLowerCase()} serving ${location.subregion_name} and surrounding areas.`,
+      title: `${trade.category_name} in ${location.subregion_name}, CO | Top Contractors Denver`,
+      description: `Find verified ${trade.category_name.toLowerCase()} in ${location.subregion_name}, CO. Compare local contractors, read reviews, and get free quotes. Serving ${location.subregion_name} and surrounding areas.`,
       alternates: {
-        canonical: `/services/${params.trade}/${params.location}/`,
+        canonical: `https://topcontractorsdenver.com/services/${params.trade}/${params.location}/`,
       },
       openGraph: {
         type: 'website',
-        url: `/services/${params.trade}/${params.location}/`,
-        title: `${trade.category_name} in ${location.subregion_name} | Top Contractors Denver`,
-        description: `Find professional ${trade.category_name.toLowerCase()} in ${location.subregion_name}. Browse our directory of local ${trade.category_name.toLowerCase()} serving ${location.subregion_name} and surrounding areas.`,
+        url: `https://topcontractorsdenver.com/services/${params.trade}/${params.location}/`,
+        title: `${trade.category_name} in ${location.subregion_name}, CO | Top Contractors Denver`,
+        description: `Find verified ${trade.category_name.toLowerCase()} in ${location.subregion_name}, CO. Compare local contractors, read reviews, and get free quotes.`,
       },
     }
   } catch (error) {
@@ -88,9 +90,31 @@ export default async function TradeLocationPage({ params }: Props) {
 
     return (
       <main>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              generateLocalBusinessSchema(trade, location),
+              generateBreadcrumbSchema(trade, location),
+              generateServiceSchema(trade, location),
+            ]),
+          }}
+        />
+
+        {/* Breadcrumb */}
+        <nav className="bg-white border-b border-gray-100 py-3 px-4">
+          <div className="max-w-7xl mx-auto flex items-center gap-1.5 text-xs text-gray-500 flex-wrap">
+            <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+            <ChevronRight size={12} />
+            <Link href={`/services/${params.trade}`} className="hover:text-primary transition-colors">{trade.category_name}</Link>
+            <ChevronRight size={12} />
+            <span className="text-gray-700 font-medium">{location.subregion_name}</span>
+          </div>
+        </nav>
+
         <ServiceHero
           title={`${trade.category_name} in ${location.subregion_name}`}
-          description={`Find professional ${trade.category_name.toLowerCase()} in ${location.subregion_name}. Browse our directory of local contractors serving your area.`}
+          description={`Find verified ${trade.category_name.toLowerCase()} in ${location.subregion_name}, CO. Browse local contractors, compare ratings, and get free quotes.`}
         />
 
         {/* Contractors Section */}
@@ -124,17 +148,66 @@ export default async function TradeLocationPage({ params }: Props) {
           trade={trade.category_name}
           location={location.subregion_name}
         />
-        
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
-              generateLocalBusinessSchema(trade, location),
-              generateBreadcrumbSchema(trade, location),
-              generateServiceSchema(trade, location),
-            ]),
-          }}
-        />
+
+        {/* Internal link strip */}
+        <div className="bg-white border-t border-gray-200 py-10 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+
+              {/* Back to trade hub */}
+              <div>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Service Hub</p>
+                <Link
+                  href={`/services/${params.trade}`}
+                  className="flex items-center gap-1.5 text-sm text-gray-700 hover:text-primary transition-colors font-medium"
+                >
+                  <ArrowRight size={13} className="rotate-180" />
+                  All {trade.category_name} in Denver
+                </Link>
+              </div>
+
+              {/* Location hub */}
+              <div>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Location Hub</p>
+                <Link
+                  href={`/locations/${params.location}`}
+                  className="flex items-center gap-1.5 text-sm text-gray-700 hover:text-primary transition-colors font-medium"
+                >
+                  <MapPin size={13} />
+                  All Contractors in {location.subregion_name}
+                </Link>
+              </div>
+
+              {/* Other locations for this trade */}
+              <div>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">{trade.category_name} Nearby</p>
+                <div className="flex flex-wrap gap-x-3 gap-y-1.5">
+                  {[
+                    { label: 'Denver',      slug: 'denver' },
+                    { label: 'Aurora',      slug: 'aurora' },
+                    { label: 'Lakewood',    slug: 'lakewood' },
+                    { label: 'Arvada',      slug: 'arvada' },
+                    { label: 'Westminster', slug: 'westminster' },
+                    { label: 'Thornton',    slug: 'thornton' },
+                  ]
+                    .filter((l) => l.slug !== params.location)
+                    .slice(0, 5)
+                    .map(({ label, slug }) => (
+                      <Link
+                        key={slug}
+                        href={`/services/${params.trade}/${slug}`}
+                        className="text-xs text-gray-500 hover:text-primary hover:underline transition-colors"
+                      >
+                        {label}
+                      </Link>
+                    ))}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
       </main>
     )
   } catch (error) {

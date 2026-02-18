@@ -339,11 +339,20 @@ export default async function ContractorProfilePage({ params }: Props) {
                   )}
                   <Link
                     href={`/services/${tradeSlug}`}
-                    className="flex items-center justify-between text-sm text-gray-700 hover:text-primary py-2 transition-colors"
+                    className="flex items-center justify-between text-sm text-gray-700 hover:text-primary py-2 border-b border-gray-50 transition-colors"
                   >
                     <span>All {tradeName} in Denver</span>
                     <ChevronRight size={14} className="text-gray-400" />
                   </Link>
+                  {locationSlug && (
+                    <Link
+                      href={`/locations/${locationSlug}`}
+                      className="flex items-center justify-between text-sm text-gray-700 hover:text-primary py-2 transition-colors"
+                    >
+                      <span>All Contractors in {locationName}</span>
+                      <ChevronRight size={14} className="text-gray-400" />
+                    </Link>
+                  )}
                 </div>
               </div>
             )}
