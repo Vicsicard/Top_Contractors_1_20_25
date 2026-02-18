@@ -26,20 +26,20 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 const SERVICES = [
-  { name: 'Bathroom Remodeling',    desc: 'Trusted bathroom remodeling contractors in Denver', slug: 'bathroom-remodeling',    icon: Bath },
+  { name: 'Bathroom Remodelers',    desc: 'Trusted bathroom remodeling contractors in Denver', slug: 'bathroom-remodelers',    icon: Bath },
   { name: 'Decks',                  desc: 'Trusted deck contractors in Denver',                slug: 'decks',                  icon: Layers },
-  { name: 'Electrician',            desc: 'Licensed electricians in Denver',                   slug: 'electrician',            icon: Zap },
+  { name: 'Electricians',           desc: 'Licensed electricians in Denver',                   slug: 'electricians',           icon: Zap },
   { name: 'Epoxy Garage',           desc: 'Epoxy flooring specialists in Denver',              slug: 'epoxy-garage',           icon: LayoutGrid },
   { name: 'Fencing',                desc: 'Trusted fence contractors in Denver',               slug: 'fencing',                icon: SeparatorHorizontal },
   { name: 'Flooring',               desc: 'Professional flooring contractors in Denver',       slug: 'flooring',               icon: LayoutGrid },
-  { name: 'Home Remodeling',        desc: 'Full-service home remodeling contractors',          slug: 'home-remodeling',        icon: Home },
+  { name: 'Home Remodelers',        desc: 'Full-service home remodeling contractors',          slug: 'home-remodelers',        icon: Home },
   { name: 'HVAC',                   desc: 'Heating and air conditioning experts',              slug: 'hvac',                   icon: Wind },
-  { name: 'Kitchen Remodeling',     desc: 'Kitchen remodeling specialists',                    slug: 'kitchen-remodeling',     icon: Hammer },
-  { name: 'Landscaper',             desc: 'Professional landscapers in Denver',                slug: 'landscaper',             icon: Leaf },
+  { name: 'Kitchen Remodelers',     desc: 'Kitchen remodeling specialists',                    slug: 'kitchen-remodelers',     icon: Hammer },
+  { name: 'Landscapers',            desc: 'Professional landscapers in Denver',                slug: 'landscapers',            icon: Leaf },
   { name: 'Masonry',                desc: 'Stone and masonry specialists',                     slug: 'masonry',                icon: Blocks },
-  { name: 'Painting',               desc: 'Interior and exterior painters',                    slug: 'painting',               icon: Paintbrush },
-  { name: 'Plumbing',               desc: 'Licensed plumbers in Denver',                       slug: 'plumbing',               icon: Wrench },
-  { name: 'Roofer',                 desc: 'Professional roofers in Denver',                    slug: 'roofer',                 icon: HardHat },
+  { name: 'Painters',               desc: 'Interior and exterior painters',                    slug: 'painters',               icon: Paintbrush },
+  { name: 'Plumbers',               desc: 'Licensed plumbers in Denver',                       slug: 'plumbers',               icon: Wrench },
+  { name: 'Roofers',                desc: 'Professional roofers in Denver',                    slug: 'roofers',                icon: HardHat },
   { name: 'Siding & Gutters',       desc: 'Siding and gutter specialists',                     slug: 'siding-gutters',         icon: AppWindow },
   { name: 'Windows',                desc: 'Window installation experts',                       slug: 'windows',                icon: DoorOpen },
 ] as const;

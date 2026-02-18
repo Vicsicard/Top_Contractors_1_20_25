@@ -31,7 +31,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'How much does roof replacement cost in Denver? Average prices, material options, what affects cost, and how to get the best value. Updated for 2025.',
     category: 'cost',
     trade: 'Roofing Contractors',
-    tradeSlug: 'roofer',
+    tradeSlug: 'roofers',
     intro: "Denver roofing costs vary widely. With Colorado's hail seasons, UV exposure, and snow loads, knowing what to expect before calling a contractor puts you in a much stronger position.",
     sections: [
       {
@@ -77,7 +77,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'How much does a kitchen remodel cost in Denver? Average prices by scope, what affects cost, ROI data, and tips to stay on budget. Updated for 2025.',
     category: 'cost',
     trade: 'Kitchen Remodeling',
-    tradeSlug: 'kitchen-remodeling',
+    tradeSlug: 'kitchen-remodelers',
     intro: "A kitchen remodel is the most popular home improvement project in Denver and one of the highest-ROI investments before selling. Costs vary enormously based on scope, materials, and layout changes.",
     sections: [
       {
@@ -123,7 +123,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'How much does a bathroom remodel cost in Denver? Average prices for hall baths, master baths, and full renovations. Updated for 2025.',
     category: 'cost',
     trade: 'Bathroom Remodeling',
-    tradeSlug: 'bathroom-remodeling',
+    tradeSlug: 'bathroom-remodelers',
     intro: "Bathroom remodels are among the most requested projects in Denver. Understanding realistic costs before you start will help you plan effectively and avoid budget surprises.",
     sections: [
       {
@@ -165,7 +165,7 @@ export const GUIDES: Guide[] = [
     metaDescription: "What to look for when hiring a roofer in Denver. License checks, red flags, questions to ask, and how to compare quotes.",
     category: 'hiring',
     trade: 'Roofing Contractors',
-    tradeSlug: 'roofer',
+    tradeSlug: 'roofers',
     intro: "Denver's roofing market is flooded with contractors — especially after hail events. Knowing how to separate qualified local professionals from storm chasers can save you thousands.",
     sections: [
       {
@@ -211,7 +211,7 @@ export const GUIDES: Guide[] = [
     metaDescription: "Do you need a permit to replace a roof in Denver? Yes. Here's what's required, how much it costs, and what happens if you skip it.",
     category: 'permit',
     trade: 'Roofing Contractors',
-    tradeSlug: 'roofer',
+    tradeSlug: 'roofers',
     intro: "Yes — Denver requires a permit for roof replacements. It's a consumer protection measure ensuring work is inspected and meets building code.",
     sections: [
       {
@@ -251,7 +251,7 @@ export const GUIDES: Guide[] = [
     metaDescription: "When is the best time to replace a roof in Denver? Learn how Denver's seasons affect roofing projects, pricing, and contractor availability.",
     category: 'seasonal',
     trade: 'Roofing Contractors',
-    tradeSlug: 'roofer',
+    tradeSlug: 'roofers',
     intro: "Denver's climate creates distinct roofing seasons. Knowing when to schedule your replacement can affect pricing, availability, and installation quality.",
     sections: [
       {
@@ -334,7 +334,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'What permits do you need for a kitchen remodel in Denver? Which work requires permits, how much they cost, and what happens without them.',
     category: 'permit',
     trade: 'Kitchen Remodeling',
-    tradeSlug: 'kitchen-remodeling',
+    tradeSlug: 'kitchen-remodelers',
     intro: "Kitchen remodels in Denver often require permits — but not always. The key question is whether your project involves electrical, plumbing, or structural work. Here's how to know what's required.",
     sections: [
       {
@@ -406,7 +406,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'How much does it cost to paint a house in Denver? Average prices for interior and exterior painting, what affects cost, and how to get the best value.',
     category: 'cost',
     trade: 'Painting Contractors',
-    tradeSlug: 'painting',
+    tradeSlug: 'painters',
     intro: "Painting is one of the highest-ROI home improvements in Denver. Denver's intense UV and weather extremes make paint quality especially important. Here's what Denver homeowners actually pay.",
     sections: [
       { heading: 'Average House Painting Cost in Denver', body: "Exterior painting (1,500–2,500 sq ft home): $3,500–$8,000. Larger homes or complex trim can reach $10,000–$15,000.\n\nInterior whole house: $4,000–$12,000 depending on square footage and ceiling height.\n\nSingle room interior: $400–$900 for a standard bedroom; $800–$1,500 for rooms with high ceilings or extensive trim.\n\nExterior trim only: $800–$2,500." },
@@ -496,7 +496,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'What to look for when hiring a plumber in Denver. License verification, questions to ask, red flags, and how to compare quotes.',
     category: 'hiring',
     trade: 'Plumbing Contractors',
-    tradeSlug: 'plumbing',
+    tradeSlug: 'plumbers',
     intro: "Denver's aging housing stock, hard water, and extreme winter temperatures create unique plumbing challenges. Choosing the right plumber can mean the difference between a lasting fix and a recurring problem.",
     sections: [
       { heading: 'Colorado Plumbing License Requirements', body: "Colorado requires plumbers to be licensed at the state level. Master Plumber: can pull permits, design systems, and supervise work. Journeyman Plumber: works under master supervision.\n\nVerify licenses through the Colorado DORA website. A legitimate Denver plumber provides their license number without hesitation." },
@@ -527,7 +527,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'How to find, vet, and hire the right remodeling contractor in Denver. What to check, questions to ask, contract essentials, and red flags to avoid.',
     category: 'hiring',
     trade: 'Home Remodeling',
-    tradeSlug: 'home-remodeling',
+    tradeSlug: 'home-remodelers',
     intro: "Hiring a remodeling contractor is one of the most significant financial decisions a Denver homeowner makes. A great contractor delivers on time, on budget, with quality work. A bad one can cost tens of thousands in repairs.",
     sections: [
       { heading: 'Colorado General Contractor Licensing', body: "Colorado does not require a state-level GC license for residential remodeling — but Denver requires a city contractor license. Always verify a contractor holds a valid Denver contractor license. For specific trades within a remodel, those subcontractors must hold state trade licenses." },
@@ -557,7 +557,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'The essential questions every Denver homeowner should ask before hiring any contractor. Covers licensing, insurance, contracts, timelines, and red flags.',
     category: 'hiring',
     trade: 'Home Remodeling',
-    tradeSlug: 'home-remodeling',
+    tradeSlug: 'home-remodelers',
     intro: "Most homeowner regrets about contractors come from not asking the right questions before signing. These 12 questions apply to any trade — roofing, plumbing, remodeling, HVAC — and will help you separate qualified Denver professionals from contractors to avoid.",
     sections: [
       { heading: 'Licensing and Insurance Questions', body: "1. Are you licensed for this type of work in Colorado and Denver? Always verify independently — check DORA for state licenses.\n\n2. Can you provide certificates of insurance for general liability and workers' compensation? Call the insurer to verify coverage is current.\n\n3. Will you pull all required permits? A contractor who suggests skipping permits is either unlicensed or cutting corners." },
@@ -587,7 +587,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'Should you repair or replace your roof in Denver? How to decide based on age, damage extent, insurance, and cost. Expert guidance for Colorado homeowners.',
     category: 'hiring',
     trade: 'Roofing Contractors',
-    tradeSlug: 'roofer',
+    tradeSlug: 'roofers',
     intro: "After a hail storm or when your roof starts leaking, Denver homeowners face a critical decision: repair or replace? The wrong choice costs thousands. Here's how to make the right call.",
     sections: [
       { heading: 'The 50% Rule', body: "The industry standard: if repair cost exceeds 50% of full replacement cost, replace the roof. For a Denver home where replacement costs $12,000–$15,000, repairs over $6,000–$7,500 typically justify replacement. But age and damage type matter just as much." },
@@ -617,7 +617,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'Which home improvements have the best ROI in Denver? Data-driven rankings of the top upgrades by return on investment for Colorado homeowners.',
     category: 'hiring',
     trade: 'Home Remodeling',
-    tradeSlug: 'home-remodeling',
+    tradeSlug: 'home-remodelers',
     intro: "Not all home improvements are equal when it comes to return on investment. In Denver's competitive real estate market, some upgrades consistently deliver strong returns while others rarely recoup their cost.",
     sections: [
       { heading: 'Top ROI Home Improvements in Denver', body: "1. Garage door replacement: 90–95% ROI — highest-returning project nationally.\n2. Minor kitchen remodel (refresh, not gut): 75–85% ROI.\n3. Deck addition (wood): 65–75% ROI — Denver's outdoor lifestyle makes outdoor space highly valued.\n4. Window replacement: 65–75% ROI — energy efficiency is a selling point in Denver's climate.\n5. Bathroom remodel (mid-range): 60–70% ROI.\n6. Roof replacement: 55–65% ROI — removes a major buyer objection." },
@@ -647,7 +647,7 @@ export const GUIDES: Guide[] = [
     metaDescription: "Do you need a permit to finish a basement in Denver? Yes. Here's what's required, what inspections happen, costs, and what happens if you skip permits.",
     category: 'permit',
     trade: 'Home Remodeling',
-    tradeSlug: 'home-remodeling',
+    tradeSlug: 'home-remodelers',
     intro: "Yes — finishing a basement in Denver requires permits. This is one of the most common permit questions Denver homeowners ask, and one of the most important to get right. Unpermitted basement finishes are a significant liability at resale.",
     sections: [
       { heading: 'What Permits Are Required to Finish a Basement', body: "Building permit: Required for all basement finishing work — framing, insulation, general construction.\nElectrical permit: Required for any new circuits, outlets, or lighting.\nPlumbing permit: Required if adding a bathroom, wet bar, or any new plumbing.\nMechanical permit: Required if adding or modifying HVAC or extending ductwork.\n\nAll permits are pulled through Denver CPD. Your general contractor should handle all applications." },
@@ -677,7 +677,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'Key Denver building codes homeowners need to know before starting any home improvement project. Permits, inspections, egress, electrical, and more.',
     category: 'permit',
     trade: 'Home Remodeling',
-    tradeSlug: 'home-remodeling',
+    tradeSlug: 'home-remodelers',
     intro: "Denver building codes exist to protect homeowners, future buyers, and occupants. Understanding the basics helps you ask the right questions, avoid costly mistakes, and ensure your contractor is doing the work correctly.",
     sections: [
       { heading: 'How Denver Building Codes Work', body: "Denver adopts the International Residential Code (IRC) with local amendments. Denver Community Planning and Development (CPD) enforces codes through the permit and inspection process. Codes are updated periodically — your contractor should know the current applicable code for your project type." },
@@ -707,7 +707,7 @@ export const GUIDES: Guide[] = [
     metaDescription: 'Should you remodel or rebuild your home in Denver? How to decide based on cost, condition, timeline, and neighborhood. Expert guidance for Colorado homeowners.',
     category: 'hiring',
     trade: 'Home Remodeling',
-    tradeSlug: 'home-remodeling',
+    tradeSlug: 'home-remodelers',
     intro: "Denver homeowners with aging or functionally obsolete homes sometimes face the ultimate question: invest in a major remodel, or tear down and rebuild? It's a high-stakes decision with no universal right answer — but there's a clear framework for making it.",
     sections: [
       { heading: 'When Remodeling Makes More Sense', body: "Remodeling is usually the better choice when:\n\nThe home has good bones — solid foundation, sound structure, quality framing. Structural issues are the most expensive thing to fix in a rebuild.\n\nThe layout works with modifications. If you can achieve your goals without moving load-bearing walls or reconfiguring the entire floor plan, remodeling is far more cost-effective.\n\nThe neighborhood supports the investment. If comparable homes sell for $600,000–$800,000, a $200,000 remodel on a $400,000 home makes financial sense.\n\nYou want to preserve character. Older Denver homes in neighborhoods like Highlands, Congress Park, and Park Hill have architectural character that's impossible to replicate in new construction." },
