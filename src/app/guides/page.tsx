@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { GUIDES, GUIDE_CATEGORIES, type GuideCategory } from '@/data/guides'
-import { ArrowRight, DollarSign, BookOpen, Clock, FileText, Sun, ChevronRight } from 'lucide-react'
+import { ArrowRight, DollarSign, BookOpen, Clock, FileText, Sun, ChevronRight, Award } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Denver Home Improvement Guides | Top Contractors Denver',
@@ -16,27 +16,30 @@ export const metadata: Metadata = {
 }
 
 const CATEGORY_ICONS: Record<GuideCategory, React.ElementType> = {
-  cost:     DollarSign,
-  hiring:   BookOpen,
-  timeline: Clock,
-  permit:   FileText,
-  seasonal: Sun,
+  cost:       DollarSign,
+  hiring:     BookOpen,
+  timeline:   Clock,
+  permit:     FileText,
+  seasonal:   Sun,
+  comparison: Award,
 }
 
 const CATEGORY_COLORS: Record<GuideCategory, string> = {
-  cost:     'bg-blue-50 text-blue-600 border-blue-100',
-  hiring:   'bg-green-50 text-green-600 border-green-100',
-  timeline: 'bg-purple-50 text-purple-600 border-purple-100',
-  permit:   'bg-orange-50 text-orange-600 border-orange-100',
-  seasonal: 'bg-yellow-50 text-yellow-600 border-yellow-100',
+  cost:       'bg-blue-50 text-blue-600 border-blue-100',
+  hiring:     'bg-green-50 text-green-600 border-green-100',
+  timeline:   'bg-purple-50 text-purple-600 border-purple-100',
+  permit:     'bg-orange-50 text-orange-600 border-orange-100',
+  seasonal:   'bg-yellow-50 text-yellow-600 border-yellow-100',
+  comparison: 'bg-indigo-50 text-indigo-600 border-indigo-100',
 }
 
 const CATEGORY_BADGE_COLORS: Record<GuideCategory, string> = {
-  cost:     'bg-blue-50 text-blue-700 border-blue-100',
-  hiring:   'bg-green-50 text-green-700 border-green-100',
-  timeline: 'bg-purple-50 text-purple-700 border-purple-100',
-  permit:   'bg-orange-50 text-orange-700 border-orange-100',
-  seasonal: 'bg-yellow-50 text-yellow-700 border-yellow-100',
+  cost:       'bg-blue-50 text-blue-700 border-blue-100',
+  hiring:     'bg-green-50 text-green-700 border-green-100',
+  timeline:   'bg-purple-50 text-purple-700 border-purple-100',
+  permit:     'bg-orange-50 text-orange-700 border-orange-100',
+  seasonal:   'bg-yellow-50 text-yellow-700 border-yellow-100',
+  comparison: 'bg-indigo-50 text-indigo-700 border-indigo-100',
 }
 
 export default function GuidesIndexPage() {
