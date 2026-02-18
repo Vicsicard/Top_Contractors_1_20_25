@@ -3,7 +3,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getTradeBySlug, getAllSubregions, getAllTrades, getContractorsByTradeAndSubregion } from '@/utils/database'
 import { generateBreadcrumbSchema, generateServiceSchema } from '@/utils/schema'
-import { MapPin, ArrowRight, ChevronRight, BadgeCheck, Clock, DollarSign, Star } from 'lucide-react'
+import { MapPin, ArrowRight, ChevronRight, BadgeCheck, Clock, DollarSign, Star, BookOpen } from 'lucide-react'
+import { getGuidesByTrade } from '@/data/guides'
 
 interface Props {
   params: { trade: string }
@@ -166,6 +167,8 @@ export default async function TradePage({ params }: Props) {
     // Fetch top contractors in Denver for this trade
     const denverContractors = await getContractorsByTradeAndSubregion(trade.slug, 'denver')
     const featuredContractors = denverContractors.slice(0, 4)
+
+    const relatedGuides = getGuidesByTrade(trade.slug).slice(0, 4)
 
     const content = getContent(trade.slug, trade.category_name)
     const breadcrumbSchema = generateBreadcrumbSchema(trade, null)
@@ -378,6 +381,33 @@ export default async function TradePage({ params }: Props) {
                 ))}
               </div>
             </div>
+
+            {/* Related guides */}
+            {relatedGuides.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 className="font-bold text-gray-900 mb-4 text-base flex items-center gap-2">
+                  <BookOpen size={15} className="text-primary" /> Related Guides
+                </h3>
+                <div className="space-y-2">
+                  {relatedGuides.map((g) => (
+                    <Link
+                      key={g.slug}
+                      href={`/guides/${g.slug}`}
+                      className="flex items-start gap-2 text-xs text-gray-700 hover:text-primary py-2 border-b border-gray-50 last:border-0 transition-colors"
+                    >
+                      <ArrowRight size={11} className="flex-shrink-0 mt-0.5 text-gray-400" />
+                      <span className="leading-snug">{g.title}</span>
+                    </Link>
+                  ))}
+                </div>
+                <Link
+                  href="/guides"
+                  className="inline-flex items-center gap-1 text-xs text-primary font-medium mt-3"
+                >
+                  All Denver guides <ArrowRight size={11} />
+                </Link>
+              </div>
+            )}
 
             {/* Sidebar CTA */}
             <div className="rounded-2xl p-6 text-center" style={{ backgroundColor: '#0f1f4a' }}>
