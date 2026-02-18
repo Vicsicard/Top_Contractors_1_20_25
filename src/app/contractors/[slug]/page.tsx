@@ -9,8 +9,9 @@ import {
 import { generateContractorSchema, generateContractorBreadcrumbSchema } from '@/utils/schema';
 import {
   MapPin, Phone, Globe, Star, BadgeCheck, ArrowRight,
-  Clock, ShieldCheck, ChevronRight
+  Clock, ShieldCheck, ChevronRight, BookOpen
 } from 'lucide-react';
+import { getGuidesByTrade } from '@/data/guides';
 
 interface Props {
   params: { slug: string };
@@ -357,6 +358,34 @@ export default async function ContractorProfilePage({ params }: Props) {
               </div>
             )}
 
+            {/* Related guides */}
+            {(() => {
+              const guides = getGuidesByTrade(tradeSlug || '').slice(0, 3)
+              if (!guides.length) return null
+              return (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                  <h3 className="font-bold text-gray-900 mb-3 text-base flex items-center gap-2">
+                    <BookOpen size={15} className="text-primary" /> {tradeName} Guides
+                  </h3>
+                  <div className="space-y-1">
+                    {guides.map((g) => (
+                      <Link
+                        key={g.slug}
+                        href={`/guides/${g.slug}/`}
+                        className="flex items-start gap-2 text-sm text-gray-700 hover:text-primary py-2 border-b border-gray-50 last:border-0 transition-colors"
+                      >
+                        <ChevronRight size={13} className="text-gray-400 flex-shrink-0 mt-0.5" />
+                        <span className="leading-snug">{g.title}</span>
+                      </Link>
+                    ))}
+                  </div>
+                  <Link href="/guides/" className="inline-flex items-center gap-1 text-xs text-primary font-medium mt-3">
+                    All guides <ArrowRight size={11} />
+                  </Link>
+                </div>
+              )
+            })()}
+
             {/* Nearby contractors */}
             {nearbyContractors.length > 0 && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
@@ -404,14 +433,14 @@ export default async function ContractorProfilePage({ params }: Props) {
             <p className="text-xs text-gray-400 text-center mb-4">Find more contractors in Denver</p>
             <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
               {[
-                { label: 'Roofing Contractors',    href: '/services/roofing-contractors' },
-                { label: 'Plumbing Contractors',   href: '/services/plumbing-contractors' },
+                { label: 'Roofers',               href: '/services/roofers' },
+                { label: 'Plumbers',               href: '/services/plumbers' },
                 { label: 'Electricians',           href: '/services/electricians' },
-                { label: 'Kitchen Remodelers',     href: '/services/kitchen-remodeling' },
-                { label: 'Bathroom Remodelers',    href: '/services/bathroom-remodeling' },
-                { label: 'HVAC Contractors',       href: '/services/hvac-contractors' },
-                { label: 'Painting Contractors',   href: '/services/painting-contractors' },
-                { label: 'Landscaping',            href: '/services/landscaping-contractors' },
+                { label: 'Kitchen Remodelers',     href: '/services/kitchen-remodelers' },
+                { label: 'Bathroom Remodelers',    href: '/services/bathroom-remodelers' },
+                { label: 'HVAC',                   href: '/services/hvac' },
+                { label: 'Painters',               href: '/services/painters' },
+                { label: 'Landscapers',            href: '/services/landscapers' },
               ].map(({ label, href }) => (
                 <Link key={href} href={href} className="text-xs text-gray-500 hover:text-primary hover:underline transition-colors">
                   {label}

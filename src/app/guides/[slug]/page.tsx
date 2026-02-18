@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { GUIDES, GUIDE_CATEGORIES, getGuideBySlug, type GuideCategory } from '@/data/guides'
+import { GUIDES, GUIDE_CATEGORIES, getGuideBySlug, getGuidesByCategory, type GuideCategory } from '@/data/guides'
 import { ArrowRight, ChevronRight, BadgeCheck, DollarSign, BookOpen, Clock, FileText, Sun } from 'lucide-react'
 
 interface Props {
@@ -212,6 +212,25 @@ export default function GuidePage({ params }: Props) {
               </div>
             </div>
           )}
+
+          {/* Location hub link */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h3 className="font-bold text-gray-900 mb-3 text-sm">Find Contractors Near You</h3>
+            <div className="space-y-1">
+              {[
+                { label: 'Denver Contractors',      href: '/locations/denver' },
+                { label: 'Aurora Contractors',      href: '/locations/aurora' },
+                { label: 'Lakewood Contractors',    href: '/locations/lakewood' },
+                { label: 'Arvada Contractors',      href: '/locations/arvada' },
+                { label: 'Westminster Contractors', href: '/locations/westminster' },
+              ].map(({ label, href }) => (
+                <Link key={href} href={href} className="flex items-center justify-between text-sm text-gray-700 hover:text-primary py-1.5 border-b border-gray-50 last:border-0 transition-colors">
+                  <span>{label}</span>
+                  <ChevronRight size={13} className="text-gray-400" />
+                </Link>
+              ))}
+            </div>
+          </div>
 
           {/* Service hub link */}
           <div className="rounded-2xl p-6 text-center" style={{ backgroundColor: '#0f1f4a' }}>

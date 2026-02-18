@@ -11,30 +11,31 @@ import {
   MapPin, ArrowRight, ChevronRight, BadgeCheck, Star,
   Bath, Zap, Wind, Paintbrush, Hammer, Layers, Blocks,
   DoorOpen, AppWindow, LayoutGrid, Leaf, Wrench, HardHat,
-  SeparatorHorizontal, Home
+  SeparatorHorizontal, Home, BookOpen
 } from 'lucide-react';
+import { GUIDES } from '@/data/guides';
 
 interface Props {
   params: { subregion: string };
 }
 
 const TRADE_ICONS: Record<string, React.ElementType> = {
-  'bathroom-remodeling': Bath,
-  'deck-builders': Layers,
+  'bathroom-remodelers': Bath,
+  'decks': Layers,
   'electricians': Zap,
-  'epoxy-garage-flooring': LayoutGrid,
-  'fencing-contractors': SeparatorHorizontal,
-  'flooring-contractors': LayoutGrid,
-  'home-remodeling': Home,
-  'hvac-contractors': Wind,
-  'kitchen-remodeling': Hammer,
-  'landscaping-contractors': Leaf,
-  'masonry-contractors': Blocks,
-  'painting-contractors': Paintbrush,
-  'plumbing-contractors': Wrench,
-  'roofing-contractors': HardHat,
-  'siding-contractors': AppWindow,
-  'window-contractors': DoorOpen,
+  'epoxy-garage': LayoutGrid,
+  'fencing': SeparatorHorizontal,
+  'flooring': LayoutGrid,
+  'home-remodelers': Home,
+  'hvac': Wind,
+  'kitchen-remodelers': Hammer,
+  'landscapers': Leaf,
+  'masonry': Blocks,
+  'painters': Paintbrush,
+  'plumbers': Wrench,
+  'roofers': HardHat,
+  'siding-gutters': AppWindow,
+  'windows': DoorOpen,
 };
 
 export async function generateStaticParams() {
@@ -329,20 +330,50 @@ export default async function LocationHubPage({ params }: Props) {
           </div>
         </section>
 
+        {/* Guides section */}
+        <section className="bg-white border-t border-gray-100 py-14 px-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 mb-1">Denver Homeowner Guides</h2>
+                <p className="text-gray-500 text-sm">Cost guides, hiring tips, and permit info for {subregion.subregion_name} homeowners.</p>
+              </div>
+              <Link href="/guides/" className="hidden sm:inline-flex items-center gap-1 text-primary font-semibold text-sm hover:underline flex-shrink-0 ml-4">
+                All guides <ArrowRight size={14} />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {GUIDES.slice(0, 6).map((guide) => (
+                <Link
+                  key={guide.slug}
+                  href={`/guides/${guide.slug}/`}
+                  className="group flex flex-col bg-gray-50 rounded-2xl border border-gray-100 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+                >
+                  <span className="text-xs font-semibold text-primary mb-2 uppercase tracking-wide">{guide.category}</span>
+                  <h3 className="font-bold text-gray-900 text-sm leading-snug mb-2 group-hover:text-primary transition-colors">{guide.title}</h3>
+                  <span className="mt-auto inline-flex items-center gap-1 text-xs text-primary font-medium">
+                    Read guide <ArrowRight size={11} />
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Internal link strip — service hubs */}
         <div className="bg-white border-t border-gray-200 py-8 px-4">
           <div className="max-w-5xl mx-auto">
             <p className="text-xs text-gray-400 text-center mb-4">Browse top services in {subregion.subregion_name}</p>
             <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
               {[
-                { label: 'Roofing Contractors',   href: `/services/roofing-contractors/${subregion.slug}` },
-                { label: 'Plumbing Contractors',  href: `/services/plumbing-contractors/${subregion.slug}` },
-                { label: 'Electricians',          href: `/services/electricians/${subregion.slug}` },
-                { label: 'HVAC Contractors',      href: `/services/hvac-contractors/${subregion.slug}` },
-                { label: 'Kitchen Remodeling',    href: `/services/kitchen-remodeling/${subregion.slug}` },
-                { label: 'Bathroom Remodeling',   href: `/services/bathroom-remodeling/${subregion.slug}` },
-                { label: 'Painting Contractors',  href: `/services/painting-contractors/${subregion.slug}` },
-                { label: 'Landscaping',           href: `/services/landscaping-contractors/${subregion.slug}` },
+                { label: 'Roofers',              href: `/services/roofers/${subregion.slug}` },
+                { label: 'Plumbers',             href: `/services/plumbers/${subregion.slug}` },
+                { label: 'Electricians',         href: `/services/electricians/${subregion.slug}` },
+                { label: 'HVAC',                 href: `/services/hvac/${subregion.slug}` },
+                { label: 'Kitchen Remodelers',   href: `/services/kitchen-remodelers/${subregion.slug}` },
+                { label: 'Bathroom Remodelers',  href: `/services/bathroom-remodelers/${subregion.slug}` },
+                { label: 'Painters',             href: `/services/painters/${subregion.slug}` },
+                { label: 'Landscapers',          href: `/services/landscapers/${subregion.slug}` },
               ].map(({ label, href }) => (
                 <Link key={href} href={href} className="text-xs text-gray-500 hover:text-primary hover:underline transition-colors">
                   {label}
