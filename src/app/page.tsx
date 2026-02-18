@@ -73,10 +73,51 @@ export default async function HomePage() {
       headline: 'Find Trusted Contractors in Denver, CO for Your Next Project',
       keywords: 'Denver contractors, home improvement Denver, remodeling contractors, hire contractors Denver, compare contractors, contractor quotes Denver',
     };
+    const faqPageSchema = {
+      '@type': 'FAQPage',
+      '@id': 'https://topcontractorsdenver.com/#faq',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'How do I hire a contractor in Denver?',
+          acceptedAnswer: { '@type': 'Answer', text: 'Browse our directory by service type, review contractor profiles and ratings, then submit a free quote request. We connect you directly with verified local professionals who specialize in your project.' },
+        },
+        {
+          '@type': 'Question',
+          name: 'Are the contractors on your platform licensed and insured?',
+          acceptedAnswer: { '@type': 'Answer', text: 'Yes. Every contractor in our network is required to hold valid state licensing and carry appropriate insurance coverage before being listed. We verify credentials as part of our vetting process.' },
+        },
+        {
+          '@type': 'Question',
+          name: 'How much does it cost to get a quote?',
+          acceptedAnswer: { '@type': 'Answer', text: 'Getting quotes through our platform is completely free. There is no obligation to hire and no fees for homeowners. Simply submit your project details and receive quotes from qualified local contractors.' },
+        },
+        {
+          '@type': 'Question',
+          name: 'How long does a typical home improvement project take in Denver?',
+          acceptedAnswer: { '@type': 'Answer', text: 'Project timelines vary by scope. Minor repairs may take a day or two, while full remodels can take several weeks. Your contractor will provide a detailed timeline during the quoting process based on your specific project.' },
+        },
+        {
+          '@type': 'Question',
+          name: 'What areas in the Denver metro do your contractors serve?',
+          acceptedAnswer: { '@type': 'Answer', text: 'Our contractors serve the entire Denver metro area including Denver, Aurora, Lakewood, Arvada, Westminster, Thornton, Centennial, Highlands Ranch, Littleton, Englewood, and surrounding communities.' },
+        },
+        {
+          '@type': 'Question',
+          name: 'What types of home improvement projects can I find contractors for?',
+          acceptedAnswer: { '@type': 'Answer', text: 'We cover all major trades including kitchen remodeling, bathroom remodeling, roofing, HVAC, plumbing, electrical, flooring, painting, landscaping, fencing, windows, siding, masonry, and general contracting.' },
+        },
+        {
+          '@type': 'Question',
+          name: 'How do I compare contractors before hiring?',
+          acceptedAnswer: { '@type': 'Answer', text: 'Each contractor profile includes their service area, specialties, and verified reviews from real Denver homeowners. You can request multiple quotes and compare pricing, timelines, and credentials before making a decision.' },
+        },
+      ],
+    };
 
     return (
       <div className="min-h-screen bg-white">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@graph': [organizationSchema, websiteSchema, webpageSchema, breadcrumbSchema] }) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@graph': [organizationSchema, websiteSchema, webpageSchema, breadcrumbSchema, faqPageSchema] }) }} />
 
         {/* ── 1. HERO ─────────────────────────────────────────────────── */}
         <header
