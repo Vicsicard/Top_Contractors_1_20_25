@@ -1,7 +1,9 @@
 ﻿import { Metadata } from 'next';
+import Link from 'next/link';
 import { getAllTrades } from '@/utils/database';
 import { generateOrganizationSchema } from '@/utils/schema';
 import FAQAccordion from '@/components/FAQAccordion';
+import { GUIDES } from '@/data/guides';
 import {
   ShieldCheck, MapPin, Star, BadgeCheck, Clock, ArrowRight,
   FileText, Home, Bath, Zap, Wind, Paintbrush,
@@ -208,7 +210,81 @@ export default async function HomePage() {
             </div>
           </section>
 
-          {/* ── 4. MID-PAGE CTA ─────────────────────────────────────────── */}
+          {/* ── 4. FEATURED GUIDES ──────────────────────────────────────── */}
+          {(() => {
+            const FEATURED_SLUGS = [
+              'cost-to-replace-roof-denver',
+              'cost-kitchen-remodel-denver',
+              'cost-bathroom-remodel-denver',
+              'cost-hvac-replacement-denver',
+              'questions-to-ask-before-hiring-contractor-denver',
+              'best-home-improvements-roi-denver',
+            ];
+            const featured = FEATURED_SLUGS.map(s => GUIDES.find(g => g.slug === s)).filter(Boolean) as typeof GUIDES;
+            const categoryColors: Record<string, string> = {
+              cost:     'bg-green-50 text-green-700',
+              hiring:   'bg-blue-50 text-blue-700',
+              permit:   'bg-orange-50 text-orange-700',
+              timeline: 'bg-purple-50 text-purple-700',
+              seasonal: 'bg-yellow-50 text-yellow-700',
+            };
+            return (
+              <section className="bg-gray-50 border-t border-gray-100 py-20 px-4">
+                <div className="max-w-7xl mx-auto">
+                  <div className="flex items-end justify-between mb-10">
+                    <div>
+                      <h2 className="text-2xl sm:text-3xl font-extrabold text-primary-dark mb-2">
+                        Denver Homeowner Guides
+                      </h2>
+                      <p className="text-gray-500 text-sm sm:text-base max-w-xl">
+                        Local cost data, hiring advice, and permit guides for Denver home improvement projects.
+                      </p>
+                    </div>
+                    <Link
+                      href="/guides/"
+                      className="hidden sm:inline-flex items-center gap-1 text-primary font-semibold text-sm hover:underline flex-shrink-0 ml-4"
+                    >
+                      View all guides <ArrowRight size={15} />
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {featured.map((guide) => (
+                      <Link
+                        key={guide.slug}
+                        href={`/guides/${guide.slug}/`}
+                        className="group flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-200 overflow-hidden"
+                      >
+                        <div className="p-6 flex flex-col flex-1">
+                          <span className={`inline-block text-xs font-semibold px-2.5 py-1 rounded-full mb-3 w-fit ${categoryColors[guide.category] ?? 'bg-gray-100 text-gray-600'}`}>
+                            {guide.category.charAt(0).toUpperCase() + guide.category.slice(1)}
+                          </span>
+                          <h3 className="font-bold text-primary-dark text-base leading-snug mb-2 group-hover:text-primary transition-colors">
+                            {guide.title}
+                          </h3>
+                          <p className="text-gray-500 text-sm leading-relaxed line-clamp-2 flex-1">
+                            {guide.metaDescription}
+                          </p>
+                          <span className="mt-4 inline-flex items-center gap-1 text-primary text-sm font-semibold">
+                            Read guide <ArrowRight size={14} />
+                          </span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                  <div className="mt-8 text-center sm:hidden">
+                    <Link
+                      href="/guides/"
+                      className="inline-flex items-center gap-1 text-primary font-semibold text-sm hover:underline"
+                    >
+                      View all guides <ArrowRight size={15} />
+                    </Link>
+                  </div>
+                </div>
+              </section>
+            );
+          })()}
+
+          {/* ── 5. MID-PAGE CTA ─────────────────────────────────────────── */}
           <section className="bg-blue-50 border-t border-blue-100 py-14 px-4 text-center">
             <p className="text-lg sm:text-xl font-bold text-primary-dark mb-2">
               Ready to connect with trusted local contractors?
