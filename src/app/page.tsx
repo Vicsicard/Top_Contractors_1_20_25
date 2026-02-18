@@ -1,138 +1,111 @@
-import { Metadata } from 'next';
-import { CategoryList } from '@/components/CategoryList';
+﻿import { Metadata } from 'next';
 import { getAllTrades } from '@/utils/database';
 import { generateOrganizationSchema } from '@/utils/schema';
-import { ShieldCheck, MapPin, Star, BadgeCheck, Clock, PhoneCall, ArrowRight } from 'lucide-react';
+import FAQAccordion from '@/components/FAQAccordion';
+import {
+  ShieldCheck, MapPin, Star, BadgeCheck, Clock, ArrowRight,
+  FileText, Home, Bath, Zap, Wind, Paintbrush,
+  Hammer, Layers, Blocks, DoorOpen, AppWindow,
+  LayoutGrid, Leaf, Wrench, HardHat, SeparatorHorizontal, Users
+} from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Top Contractors Denver | Find Local Contractors for Home Services',
-  description: 'Find the best local contractors in Denver for your home improvement, remodeling, and repair projects. Read reviews, compare pros, and get free quotes.',
-  alternates: {
-    canonical: 'https://topcontractorsdenver.com/',
-  },
+  description: 'Find trusted local contractors in Denver for home improvement, remodeling, and repair projects. Compare verified pros and get free quotes.',
+  alternates: { canonical: 'https://topcontractorsdenver.com/' },
   openGraph: {
     title: 'Top Contractors Denver | Find Local Contractors for Home Services',
-    description: 'Find the best local contractors in Denver for your home improvement, remodeling, and repair projects. Read reviews, compare pros, and get free quotes.',
+    description: 'Find trusted local contractors in Denver for home improvement, remodeling, and repair projects. Compare verified pros and get free quotes.',
     url: 'https://topcontractorsdenver.com/',
     type: 'website',
   }
 };
 
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 3600;
+
+const SERVICES = [
+  { name: 'Bathroom Remodelers',    desc: 'Trusted bathroom remodeling contractors in Denver', slug: 'bathroom-remodeling',    icon: Bath },
+  { name: 'Deck Builders',          desc: 'Trusted deck contractors in Denver',                slug: 'deck-builders',          icon: Layers },
+  { name: 'Electricians',           desc: 'Licensed electricians in Denver',                   slug: 'electricians',           icon: Zap },
+  { name: 'Epoxy Garage Flooring',  desc: 'Epoxy flooring specialists in Denver',              slug: 'epoxy-garage-flooring',  icon: LayoutGrid },
+  { name: 'Fencing Contractors',    desc: 'Trusted fence contractors in Denver',               slug: 'fencing-contractors',    icon: SeparatorHorizontal },
+  { name: 'Flooring Contractors',   desc: 'Professional flooring contractors in Denver',       slug: 'flooring-contractors',   icon: LayoutGrid },
+  { name: 'Home Remodeling',        desc: 'Full-service home remodeling contractors',          slug: 'home-remodeling',        icon: Home },
+  { name: 'HVAC Contractors',       desc: 'Heating and air conditioning experts',              slug: 'hvac-contractors',       icon: Wind },
+  { name: 'Kitchen Remodelers',     desc: 'Kitchen remodeling specialists',                    slug: 'kitchen-remodeling',     icon: Hammer },
+  { name: 'Landscaping Contractors',desc: 'Professional landscapers in Denver',                slug: 'landscaping-contractors',icon: Leaf },
+  { name: 'Masonry Contractors',    desc: 'Stone and masonry specialists',                     slug: 'masonry-contractors',    icon: Blocks },
+  { name: 'Painting Contractors',   desc: 'Interior and exterior painters',                    slug: 'painting-contractors',   icon: Paintbrush },
+  { name: 'Plumbing Contractors',   desc: 'Licensed plumbers in Denver',                       slug: 'plumbing-contractors',   icon: Wrench },
+  { name: 'Roofing Contractors',    desc: 'Professional roofers in Denver',                    slug: 'roofing-contractors',    icon: HardHat },
+  { name: 'Siding and Gutters',     desc: 'Siding and gutter specialists',                     slug: 'siding-contractors',     icon: AppWindow },
+  { name: 'Window Contractors',     desc: 'Window installation experts',                       slug: 'window-contractors',     icon: DoorOpen },
+] as const;
 
 export default async function HomePage() {
   try {
-    console.log('[HomePage] Fetching categories...');
     const categories = await getAllTrades();
-    console.log(`[HomePage] Successfully fetched ${categories?.length || 0} categories`);
-    
-    if (!categories || categories.length === 0) {
-      console.error('[HomePage] No categories returned from getAllTrades');
-    } else {
-      console.log('[HomePage] First few categories:', categories.slice(0, 3).map(c => c.category_name));
-    }
+    console.log(`[HomePage] Fetched ${categories?.length || 0} categories`);
 
-    // Generate website and organization schemas
     const organizationSchema = generateOrganizationSchema();
     const websiteSchema = {
       '@type': 'WebSite',
       '@id': 'https://topcontractorsdenver.com/#website',
       url: 'https://topcontractorsdenver.com/',
       name: 'Top Contractors Denver',
-      description: 'Find the best local contractors in Denver for your home improvement, remodeling, and repair projects.',
-      potentialAction: [
-        {
-          '@type': 'SearchAction',
-          target: {
-            '@type': 'EntryPoint',
-            urlTemplate: 'https://topcontractorsdenver.com/search?q={search_term_string}'
-          },
-          'query-input': 'required name=search_term_string'
-        }
-      ]
+      description: 'Find trusted local contractors in Denver for home improvement, remodeling, and repair projects.',
+      potentialAction: [{ '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: 'https://topcontractorsdenver.com/search?q={search_term_string}' }, 'query-input': 'required name=search_term_string' }]
     };
-    
     const breadcrumbSchema = {
       '@type': 'BreadcrumbList',
       '@id': 'https://topcontractorsdenver.com/#breadcrumb',
-      itemListElement: [
-        {
-          '@type': 'ListItem',
-          position: 1,
-          name: 'Home',
-          item: 'https://topcontractorsdenver.com/'
-        }
-      ]
+      itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://topcontractorsdenver.com/' }]
     };
-    
     const webpageSchema = {
       '@type': 'WebPage',
       '@id': 'https://topcontractorsdenver.com/#webpage',
       url: 'https://topcontractorsdenver.com/',
       inLanguage: 'en-US',
-      name: 'Home',
-      isPartOf: {
-        '@id': 'https://topcontractorsdenver.com/#website'
-      },
-      breadcrumb: {
-        '@id': 'https://topcontractorsdenver.com/#breadcrumb'
-      },
-      description: 'Find the best local contractors in Denver for your home improvement, remodeling, and repair projects.',
-      headline: 'Top Contractors Denver',
-      image: 'https://topcontractorsdenver.com/images/denver-sky-4.jpg',
-      keywords: 'Denver contractors, home improvement, remodeling, repair',
-      mainEntityOfPage: {
-        '@id': 'https://topcontractorsdenver.com/#webpage'
-      }
+      name: 'Top Contractors Denver',
+      isPartOf: { '@id': 'https://topcontractorsdenver.com/#website' },
+      breadcrumb: { '@id': 'https://topcontractorsdenver.com/#breadcrumb' },
+      description: 'Find trusted local contractors in Denver for home improvement, remodeling, and repair projects.',
+      headline: 'Find Trusted Contractors in Denver, CO for Your Next Project',
+      keywords: 'Denver contractors, home improvement Denver, remodeling contractors, hire contractors Denver, compare contractors, contractor quotes Denver',
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-b from-white to-blue-50">
-        {/* Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@graph': [
-                organizationSchema,
-                websiteSchema,
-                webpageSchema,
-                breadcrumbSchema
-              ]
-            })
-          }}
-        />
-        
+      <div className="min-h-screen bg-white">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@graph': [organizationSchema, websiteSchema, webpageSchema, breadcrumbSchema] }) }} />
+
+        {/* ── 1. HERO ─────────────────────────────────────────────────── */}
         <header
           className="relative w-full"
           style={{
-            backgroundImage: `url('/top banner image 1.png')`,
+            backgroundImage: "url('/top banner image 1.png')",
             backgroundSize: 'cover',
             backgroundPosition: 'center 20%',
             backgroundRepeat: 'no-repeat',
-            minHeight: 'clamp(480px, 70vh, 680px)',
+            minHeight: 'clamp(520px, 75vh, 720px)',
           }}
         >
-          {/* Dark overlay for text readability */}
-          <div className="absolute inset-0" style={{ background: 'rgba(10,20,50,0.55)' }} />
-          {/* Hero content */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-8">
-            <div className="max-w-4xl mx-auto">
-              <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-white leading-tight mb-3 drop-shadow-lg">
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(10,20,60,0.85) 0%, rgba(10,20,60,0.5) 55%, rgba(10,20,60,0.1) 100%)' }} />
+          <div className="absolute inset-0 flex flex-col justify-center px-6 sm:px-12 lg:px-20">
+            <div className="max-w-xl">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4 drop-shadow-lg">
                 Find Trusted Contractors in Denver, CO for Your Next Project
               </h1>
-              <h2 className="text-sm sm:text-lg md:text-2xl font-semibold text-blue-200 mb-4 drop-shadow">
+              <h2 className="text-base sm:text-xl font-semibold text-blue-200 mb-4">
                 Compare Verified Local Contractors and Get Free Project Quotes
               </h2>
-              <p className="hidden sm:block text-sm sm:text-base text-gray-200 max-w-2xl mx-auto mb-8 leading-relaxed">
-                Browse vetted local pros, compare services, and confidently hire the right contractor for your home improvement or construction project. Our Denver contractor directory helps you find reliable professionals across all trades.
+              <p className="hidden sm:block text-sm sm:text-base text-gray-200 mb-8 leading-relaxed">
+                Browse vetted local pros, compare services, and confidently hire the right contractor for your home improvement or construction project.
               </p>
               <a
                 href="/get-a-quote"
-                className="inline-block px-10 py-4 bg-primary hover:bg-blue-700 text-white font-bold text-base sm:text-lg rounded-xl shadow-2xl hover:shadow-blue-900/40 transform hover:scale-105 transition-all duration-300"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-primary hover:bg-blue-700 text-white font-bold text-base sm:text-lg rounded-xl shadow-2xl hover:scale-105 transition-all duration-200"
               >
-                Get Free Project Quotes
+                Get Free Project Quotes <ArrowRight size={18} />
               </a>
               <p className="mt-3 text-xs sm:text-sm text-blue-200 opacity-90">
                 Free &bull; No obligation &bull; Connect with local pros
@@ -140,106 +113,177 @@ export default async function HomePage() {
             </div>
           </div>
         </header>
-        
-        <main className="container mx-auto px-4 py-12">
-          <div className="section-light p-8 -mt-20 relative z-10">
-            <CategoryList categories={categories} />
-          </div>
-          
-          {/* Trust Bar */}
-          <section className="mt-10 mb-2">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+        {/* ── 2. TRUST BAR ────────────────────────────────────────────── */}
+        <div className="w-full bg-gray-50 border-b border-gray-200">
+          <div className="max-w-5xl mx-auto px-4">
+            <div className="flex flex-col sm:flex-row items-stretch divide-y sm:divide-y-0 sm:divide-x divide-gray-200">
               {[
-                { icon: BadgeCheck, label: '500+', sub: 'Verified Contractors' },
-                { icon: Star, label: '4.8★', sub: 'Average Rating' },
-                { icon: MapPin, label: 'Denver', sub: 'Metro Coverage' },
-                { icon: Clock, label: 'Free', sub: 'Same-Day Quotes' },
+                { icon: BadgeCheck, label: '500+',    sub: 'Verified Contractors' },
+                { icon: Star,       label: '4.8★',    sub: 'Average Rating' },
+                { icon: MapPin,     label: 'Serving', sub: 'the Denver Metro Area' },
+                { icon: Clock,      label: 'Free',    sub: 'Project Quotes' },
               ].map(({ icon: Icon, label, sub }) => (
-                <div key={sub} className="flex flex-col items-center text-center p-4 bg-white rounded-xl shadow-sm border border-gray-100">
-                  <Icon size={22} className="text-primary mb-2" strokeWidth={1.75} />
-                  <span className="text-xl font-bold text-primary-dark">{label}</span>
-                  <span className="text-xs text-gray-500 mt-0.5">{sub}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Why Choose Us */}
-          <section className="mt-14 text-center">
-            <h2 className="text-3xl font-bold text-primary-dark mb-3">
-              Your Trusted Source for Denver Home Services
-            </h2>
-            <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto">
-              Every contractor is vetted, licensed, and reviewed by real Denver homeowners.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                {
-                  icon: ShieldCheck,
-                  color: 'bg-blue-50 text-blue-600',
-                  title: 'Quality Assurance',
-                  desc: 'Every contractor undergoes thorough vetting and maintains high service standards before joining our network.',
-                },
-                {
-                  icon: MapPin,
-                  color: 'bg-orange-50 text-orange-500',
-                  title: 'Local Denver Expertise',
-                  desc: "Our contractors know Denver's unique building codes, climate, and requirements inside and out.",
-                },
-                {
-                  icon: Star,
-                  color: 'bg-green-50 text-green-600',
-                  title: 'Verified Reviews',
-                  desc: 'Real feedback from Denver homeowners helps you choose the right contractor with confidence.',
-                },
-              ].map(({ icon: Icon, color, title, desc }) => (
-                <div key={title} className="p-7 bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow border border-gray-50 text-left">
-                  <div className={`inline-flex p-3 rounded-xl mb-4 ${color}`}>
-                    <Icon size={24} strokeWidth={1.75} />
+                <div key={sub} className="flex items-center justify-center gap-3 px-6 py-5 flex-1">
+                  <Icon size={20} className="text-primary flex-shrink-0" strokeWidth={2} />
+                  <div>
+                    <span className="font-bold text-primary-dark text-sm">{label} </span>
+                    <span className="text-gray-500 text-sm">{sub}</span>
                   </div>
-                  <h3 className="text-lg font-semibold text-primary-dark mb-2">{title}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{desc}</p>
                 </div>
               ))}
             </div>
-          </section>
+          </div>
+        </div>
 
-          {/* How It Works */}
-          <section className="mt-16 bg-white rounded-2xl shadow-md p-8 md:p-12">
-            <h2 className="text-3xl font-bold text-primary-dark mb-2 text-center">How It Works</h2>
-            <p className="text-gray-500 text-center mb-10">Get matched with the right contractor in 3 easy steps</p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                { step: '1', icon: PhoneCall, title: 'Tell Us Your Project', desc: 'Fill out a quick form describing your project, timeline, and budget.' },
-                { step: '2', icon: BadgeCheck, title: 'Get Matched', desc: "We connect you with verified Denver contractors who specialize in your project type." },
-                { step: '3', icon: Star, title: 'Compare & Hire', desc: 'Review quotes, check ratings, and hire the best contractor for your needs.' },
-              ].map(({ step, icon: Icon, title, desc }) => (
-                <div key={step} className="flex flex-col items-center text-center">
-                  <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg mb-4 shadow-md">
-                    {step}
-                  </div>
-                  <Icon size={22} className="text-primary mb-3" strokeWidth={1.75} />
-                  <h3 className="font-semibold text-primary-dark text-lg mb-2">{title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
-                </div>
-              ))}
+        <main>
+
+          {/* ── 3. CATEGORY GRID ────────────────────────────────────────── */}
+          <section className="bg-white py-20 px-4">
+            <div className="max-w-7xl mx-auto">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-primary-dark mb-2 text-center">
+                Find Local Contractors by Service
+              </h2>
+              <p className="text-gray-500 text-center mb-12 text-sm sm:text-base max-w-xl mx-auto">
+                Browse our network of verified professionals across all major trades in Denver
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {SERVICES.map(({ name, desc, slug, icon: Icon }) => (
+                  <a
+                    key={slug}
+                    href={`/services/${slug}`}
+                    className="group flex flex-col p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-200"
+                  >
+                    <div className="p-3 bg-blue-50 rounded-xl text-primary w-fit mb-4 group-hover:bg-blue-100 transition-colors duration-200">
+                      <Icon size={22} strokeWidth={1.75} />
+                    </div>
+                    <span className="font-semibold text-primary-dark group-hover:text-primary text-sm sm:text-base leading-snug mb-1 transition-colors duration-200">
+                      {name}
+                    </span>
+                    <span className="text-xs text-gray-500 leading-relaxed">{desc}</span>
+                  </a>
+                ))}
+              </div>
             </div>
           </section>
 
-          {/* Bottom CTA */}
-          <section className="mt-16 mb-12 rounded-2xl bg-primary-dark text-white text-center py-14 px-6">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Start Your Project?</h2>
-            <p className="text-blue-200 text-lg mb-8 max-w-xl mx-auto">
-              Get free quotes from Denver&apos;s top-rated contractors today. No obligation, no hassle.
+          {/* ── 4. MID-PAGE CTA ─────────────────────────────────────────── */}
+          <section className="bg-blue-50 border-t border-blue-100 py-14 px-4 text-center">
+            <p className="text-lg sm:text-xl font-bold text-primary-dark mb-2">
+              Ready to connect with trusted local contractors?
             </p>
+            <p className="text-gray-500 text-sm mb-6">Free quotes from verified Denver professionals — no obligation.</p>
             <a
               href="/get-a-quote"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary-dark font-bold text-lg rounded-xl shadow-xl hover:bg-blue-50 transition-all duration-300"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-primary hover:bg-blue-700 text-white font-bold text-base rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
             >
-              Get Free Project Quotes
-              <ArrowRight size={20} />
+              Get Free Project Quotes <ArrowRight size={18} />
             </a>
           </section>
+
+          {/* ── 5. AUTHORITY SECTION ────────────────────────────────────── */}
+          <section className="bg-white border-t border-gray-100 py-20 px-4">
+            <div className="max-w-5xl mx-auto text-center">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-primary-dark mb-3">
+                Your Trusted Source for Denver Home Services
+              </h2>
+              <p className="text-gray-500 mb-14 max-w-2xl mx-auto text-sm sm:text-base">
+                Every contractor is vetted, licensed, and reviewed by real Denver homeowners to ensure quality workmanship and dependable service.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {[
+                  { icon: ShieldCheck, color: 'bg-blue-50 text-blue-600',    title: 'Quality Assurance',      desc: 'Every contractor undergoes a thorough vetting process and maintains high service standards before joining our network.' },
+                  { icon: MapPin,      color: 'bg-orange-50 text-orange-500', title: 'Local Denver Expertise', desc: 'Our contractors understand Denver building codes, climate considerations, and local construction requirements.' },
+                  { icon: Star,        color: 'bg-green-50 text-green-600',   title: 'Verified Reviews',       desc: 'Real feedback from homeowners helps you compare contractors and choose with confidence.' },
+                ].map(({ icon: Icon, color, title, desc }) => (
+                  <div key={title} className="p-8 bg-white rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 border border-gray-100 text-left">
+                    <div className={`inline-flex p-3 rounded-xl mb-5 ${color}`}>
+                      <Icon size={26} strokeWidth={1.75} />
+                    </div>
+                    <h3 className="text-lg font-bold text-primary-dark mb-2">{title}</h3>
+                    <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* ── 6. HOW IT WORKS ─────────────────────────────────────────── */}
+          <section className="bg-gray-50 border-t border-gray-100 py-20 px-4">
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-primary-dark mb-2 text-center">
+                How to Find the Right Contractor in Denver
+              </h2>
+              <p className="text-gray-500 text-center mb-14 text-sm sm:text-base">
+                Get matched with qualified professionals in three simple steps.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                {[
+                  { step: '1', icon: FileText, title: 'Tell Us Your Project', desc: 'Describe your project scope, timeline, and budget using our quick request form.' },
+                  { step: '2', icon: Users,    title: 'Get Matched',          desc: 'We connect you with verified Denver contractors who specialize in your project type.' },
+                  { step: '3', icon: Home,     title: 'Compare and Hire',     desc: 'Review quotes, check ratings, and hire the best contractor for your needs.' },
+                ].map(({ step, icon: Icon, title, desc }) => (
+                  <div key={step} className="flex flex-col items-center text-center">
+                    <div className="relative mb-6">
+                      <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Icon size={28} className="text-primary" strokeWidth={1.75} />
+                      </div>
+                      <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center shadow">
+                        {step}
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-primary-dark text-lg mb-2">{title}</h3>
+                    <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* ── 7. FINAL CTA ────────────────────────────────────────────── */}
+          <section className="bg-primary-dark border-t border-blue-900 py-20 px-4 text-center">
+            <div className="max-w-2xl mx-auto">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4">
+                Ready to Start Your Home Improvement Project?
+              </h2>
+              <p className="text-blue-200 text-base sm:text-lg mb-8">
+                Get free quotes from top-rated Denver contractors today. No obligation and no pressure.
+              </p>
+              <a
+                href="/get-a-quote"
+                className="inline-flex items-center gap-2 px-10 py-4 bg-white text-primary-dark font-bold text-lg rounded-xl shadow-xl hover:bg-blue-50 hover:scale-105 transition-all duration-200"
+              >
+                Get Free Project Quotes <ArrowRight size={20} />
+              </a>
+            </div>
+          </section>
+
+          {/* ── 8. SEO AUTHORITY BLOCK ──────────────────────────────────── */}
+          <section className="bg-gray-50 border-t border-gray-200 py-14 px-4">
+            <div className="max-w-4xl mx-auto">
+              <p className="text-gray-500 text-sm sm:text-base leading-relaxed text-center">
+                Denver homeowners rely on trusted contractors for remodeling, repairs, and construction projects of all sizes.
+                Whether you are planning a kitchen renovation, bathroom remodel, roofing replacement, or new home improvement project,
+                finding reliable professionals is essential. Our platform helps you compare experienced contractors, review services,
+                and request quotes from trusted local companies serving the entire Denver metro area including Denver, Aurora,
+                Lakewood, Arvada, Westminster, Thornton, Centennial, Highlands Ranch, and Littleton.
+              </p>
+            </div>
+          </section>
+
+          {/* ── 9. FAQ ──────────────────────────────────────────────────── */}
+          <section className="bg-white border-t border-gray-100 py-20 px-4">
+            <div className="max-w-3xl mx-auto">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-primary-dark mb-3 text-center">
+                Frequently Asked Questions
+              </h2>
+              <p className="text-gray-500 text-center mb-12 text-sm sm:text-base">
+                Common questions about hiring contractors in Denver
+              </p>
+              <FAQAccordion />
+            </div>
+          </section>
+
         </main>
       </div>
     );

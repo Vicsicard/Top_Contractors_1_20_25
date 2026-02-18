@@ -80,9 +80,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="md:col-span-2">
-            <h3 className="text-lg font-semibold mb-4">Top Contractors</h3>
+            <h3 className="text-lg font-semibold mb-4">Top Contractors Denver</h3>
             <p className="text-gray-300 mb-4">
-              Connecting you with the best contractors for your projects.
+              Top Contractors Denver connects homeowners with trusted local professionals for remodeling, repairs, and construction services across the Denver metro area.
             </p>
             <div className="flex items-center text-gray-300 hover:text-white transition">
               <EnvelopeIcon className="h-5 w-5 mr-2" />
